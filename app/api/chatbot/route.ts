@@ -3,9 +3,9 @@ import OpenAI from "openai";
 import { checkChatbotLimit, getIp } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/server";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+function getOpenAI() {
+  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+}
 
 const SYSTEM_PROMPT = `You are a helpful assistant for MakeoverArena, a study abroad consultancy based in Nigeria.
 
@@ -60,7 +60,11 @@ export async function POST(request: NextRequest) {
     // Limit to last 10 messages to avoid token overflow
     const recentMessages = messages.slice(-10);
 
-    const completion = await openai.chat.completions.create({
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json({ error: "Chatbot unavailable" }, { status: 503 });
+    }
+
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
