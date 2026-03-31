@@ -6,7 +6,7 @@ export default async function ClientLayout({ children }: { children: React.React
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/auth/login");
+    redirect("/login");
   }
 
   // Check if this is actually a staff member trying to access client area

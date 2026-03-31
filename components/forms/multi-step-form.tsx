@@ -135,7 +135,7 @@ export function MultiStepForm() {
         email: finalData.email,
         inquiry: inquiryId,
       });
-      router.push(`/auth/login?${params.toString()}`);
+      router.push(`/login?${params.toString()}`);
       setIsSuccess(true);
     } catch {
       toast.error("Something went wrong. Please try again.");

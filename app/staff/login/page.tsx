@@ -34,7 +34,7 @@ export default function StaffLoginPage() {
         throw error;
       }
 
-      router.push(`/auth/verify?email=${encodeURIComponent(email.trim())}&staff=1`);
+      router.push(`/verify?email=${encodeURIComponent(email.trim())}&staff=1`);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to send code");
     } finally {
@@ -101,7 +101,7 @@ export default function StaffLoginPage() {
 
         <p className="mt-4 text-center text-xs text-white/30">
           Not staff?{" "}
-          <Link href="/auth/login" className="text-white/50 hover:text-white/70 transition-colors">
+          <Link href="/login" className="text-white/50 hover:text-white/70 transition-colors">
             Client login
           </Link>
         </p>

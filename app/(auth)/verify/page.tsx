@@ -164,7 +164,7 @@ function VerifyForm() {
 
         <div className="mt-6 pt-6 border-t border-border text-center">
           <Link
-            href={isStaff ? "/staff/login" : "/auth/login"}
+            href={isStaff ? "/staff/login" : "/login"}
             className="text-sm text-navy-500 dark:text-navy-400 hover:text-navy-700 dark:hover:text-white transition-colors"
           >
             ← Use a different email

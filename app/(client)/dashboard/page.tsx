@@ -8,7 +8,7 @@ export default async function ClientDashboardPage() {
   const db = supabase as any;
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) redirect("/auth/login");
+  if (!user) redirect("/login");
 
   const { data: profile } = await db
     .from("client_profiles")
@@ -16,7 +16,7 @@ export default async function ClientDashboardPage() {
     .eq("id", user.id)
     .single();
 
-  if (!profile) redirect("/auth/login?setup=1");
+  if (!profile) redirect("/login?setup=1");
 
   const [applicationsResult, paymentsResult, consultationsResult] = await Promise.all([
     db

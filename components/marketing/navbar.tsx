@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, UserCircle } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 const serviceLinks = [
@@ -76,27 +77,22 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-[72px]">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 bg-gold-500 rounded-lg flex items-center justify-center shrink-0">
-              <span className="font-display text-navy-900 font-bold text-base sm:text-lg leading-none">M</span>
-            </div>
-            <div className="leading-none">
-              <span
+          <Link href="/" className="flex items-center shrink-0 group">
+            <div className={cn(
+              "relative transition-all duration-300",
+              isDark ? "bg-white/10 rounded-xl p-1" : ""
+            )}>
+              <Image
+                src="/makeover-logo.png"
+                alt="MakeoverArena"
+                width={120}
+                height={40}
                 className={cn(
-                  "font-display font-semibold text-lg sm:text-xl leading-none tracking-tight transition-colors",
-                  isDark ? "text-white" : "text-navy-900"
+                  "h-10 w-auto object-contain transition-all duration-300",
+                  !isDark && "mix-blend-multiply"
                 )}
-              >
-                Makeover
-              </span>
-              <span
-                className={cn(
-                  "font-display font-semibold text-lg sm:text-xl leading-none tracking-tight transition-colors",
-                  isDark ? "text-gold-400" : "text-gold-500"
-                )}
-              >
-                Arena
-              </span>
+                priority
+              />
             </div>
           </Link>
 
@@ -166,20 +162,8 @@ export function Navbar() {
             ))}
           </nav>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons + Profile */}
           <div className="hidden lg:flex items-center gap-2 shrink-0">
-            <Link
-              href="/auth/login"
-              className={cn(
-                "p-2 rounded-lg transition-all duration-150",
-                isDark
-                  ? "text-white/80 hover:text-white hover:bg-white/10"
-                  : "text-navy-600 hover:text-navy-900 hover:bg-navy-50"
-              )}
-              aria-label="My Account"
-            >
-              <UserCircle className="w-5 h-5" />
-            </Link>
             <Link
               href="/book"
               className={cn(
@@ -196,6 +180,18 @@ export function Navbar() {
               className="px-4 py-2 rounded-lg text-sm font-semibold bg-gold-500 text-navy-900 hover:bg-gold-400 transition-all duration-150 shadow-sm whitespace-nowrap"
             >
               Start Application →
+            </Link>
+            <Link
+              href="/login"
+              className={cn(
+                "p-2 rounded-lg transition-all duration-150 ml-1",
+                isDark
+                  ? "text-white/80 hover:text-white hover:bg-white/10"
+                  : "text-navy-600 hover:text-navy-900 hover:bg-navy-50"
+              )}
+              aria-label="My Account"
+            >
+              <UserCircle className="w-5 h-5" />
             </Link>
           </div>
 
@@ -306,6 +302,12 @@ export function Navbar() {
               className="block px-4 py-3 rounded-lg text-sm font-semibold text-center bg-gold-500 text-navy-900 hover:bg-gold-400 transition-colors"
             >
               Start Application →
+            </Link>
+            <Link
+              href="/login"
+              className="block px-4 py-3 rounded-lg text-sm font-medium text-center border border-navy-200 text-navy-700 hover:bg-navy-50 transition-colors"
+            >
+              My Account
             </Link>
           </div>
         </div>

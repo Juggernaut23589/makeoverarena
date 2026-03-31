@@ -36,7 +36,7 @@ function LoginForm() {
 
       const params = new URLSearchParams({ email: email.trim() });
       if (inquiryId) params.set("inquiry", inquiryId);
-      router.push(`/auth/verify?${params.toString()}`);
+      router.push(`/verify?${params.toString()}`);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Failed to send code");
     } finally {
