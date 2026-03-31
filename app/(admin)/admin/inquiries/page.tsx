@@ -1,0 +1,260 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { createAdminClient } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Inquiries | Admin",
+};
+
+const PAGE_SIZE = 20;
+
+const statusColors: Record<string, string> = {
+  new: "bg-blue-100 text-blue-700",
+  reviewed: "bg-yellow-100 text-yellow-700",
+  contacted: "bg-purple-100 text-purple-700",
+  consultation_booked: "bg-green-100 text-green-700",
+  proposal_sent: "bg-orange-100 text-orange-700",
+  client: "bg-emerald-100 text-emerald-700",
+  lost: "bg-red-100 text-red-700",
+  on_hold: "bg-gray-100 text-gray-700",
+};
+
+const statusLabels: Record<string, string> = {
+  new: "New",
+  reviewed: "Reviewed",
+  contacted: "Contacted",
+  consultation_booked: "Consult Booked",
+  proposal_sent: "Proposal Sent",
+  client: "Client",
+  lost: "Lost",
+  on_hold: "On Hold",
+};
+
+const priorityDot: Record<string, string> = {
+  high: "bg-red-400",
+  medium: "bg-yellow-400",
+  low: "bg-green-400",
+};
+
+export default async function InquiriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string; service?: string; priority?: string; page?: string }>;
+}) {
+  const params = await searchParams;
+  const page = Math.max(1, Number(params.page ?? 1));
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
+
+  const supabase = await createAdminClient();
+
+  // Build query with optional filters
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let query = (supabase as any)
+    .from("inquiries")
+    .select(
+      "id, full_name, email, phone, service_type, preferred_countries, budget_range, status, priority, created_at, assigned_to",
+      { count: "exact" }
+    )
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (params.status) query = query.eq("status", params.status);
+  if (params.service) query = query.eq("service_type", params.service);
+  if (params.priority) query = query.eq("priority", params.priority);
+
+  const { data: inquiries, count } = await query;
+
+  const total = count ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+
+  // New today
+  const today = new Date().toISOString().slice(0, 10);
+  const { count: newToday } = await supabase
+    .from("inquiries")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "new")
+    .gte("created_at", today);
+
+  return (
+    <div className="p-6 lg:p-8">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="font-display text-3xl text-navy-900">Inquiries</h1>
+          <p className="text-navy-500 text-sm mt-1">
+            {total} total · {newToday ?? 0} new today
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <button className="inline-flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 rounded-lg text-sm hover:bg-navy-50 transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export CSV
+          </button>
+        </div>
+      </div>
+
+      {/* Filters (URL-based) */}
+      <form method="GET" className="bg-white rounded-xl shadow-card p-4 mb-5">
+        <div className="flex flex-wrap gap-3 items-center">
+          <div className="relative flex-1 min-w-48">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="search"
+              placeholder="Search by name, email, or phone..."
+              className="w-full h-9 pl-9 pr-4 text-sm border border-border rounded-lg bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gold-400"
+              disabled
+              title="Search coming soon"
+            />
+          </div>
+          <select
+            name="status"
+            defaultValue={params.status ?? ""}
+            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+          >
+            <option value="">All Status</option>
+            {Object.entries(statusLabels).map(([v, l]) => (
+              <option key={v} value={v}>{l}</option>
+            ))}
+          </select>
+          <select
+            name="service"
+            defaultValue={params.service ?? ""}
+            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+          >
+            <option value="">All Services</option>
+            <option value="undergraduate">Undergraduate</option>
+            <option value="graduate">Graduate</option>
+            <option value="phd">PhD</option>
+            <option value="scholarship">Scholarship</option>
+            <option value="visa">Visa</option>
+          </select>
+          <select
+            name="priority"
+            defaultValue={params.priority ?? ""}
+            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+          >
+            <option value="">All Priority</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <button
+            type="submit"
+            className="h-9 px-4 text-sm bg-navy-900 text-white rounded-lg hover:bg-navy-800 transition-colors"
+          >
+            Filter
+          </button>
+          {(params.status || params.service || params.priority) && (
+            <Link href="/admin/inquiries" className="h-9 px-3 text-sm text-navy-500 hover:text-navy-800 flex items-center">
+              Clear
+            </Link>
+          )}
+        </div>
+      </form>
+
+      {/* Table */}
+      <div className="bg-white rounded-xl shadow-card overflow-hidden">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border bg-navy-50">
+              <th className="text-left px-5 py-3 text-xs font-semibold text-navy-500 uppercase tracking-wide">Student</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-500 uppercase tracking-wide">Service</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-500 uppercase tracking-wide hidden md:table-cell">Countries</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-500 uppercase tracking-wide hidden lg:table-cell">Budget</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-500 uppercase tracking-wide">Status</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-500 uppercase tracking-wide hidden sm:table-cell">Date</th>
+              <th className="px-4 py-3" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {(!inquiries || inquiries.length === 0) && (
+              <tr>
+                <td colSpan={7} className="px-5 py-12 text-center text-navy-400 text-sm">
+                  No inquiries found.
+                </td>
+              </tr>
+            )}
+            {(inquiries ?? []).map((inquiry: {
+              id: string; full_name: string; email: string; service_type: string;
+              preferred_countries: string[]; budget_range: string; status: string;
+              priority: string; created_at: string;
+            }) => (
+              <tr key={inquiry.id} className="hover:bg-navy-50/40 transition-colors cursor-pointer">
+                <td className="px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-navy-100 flex items-center justify-center text-navy-700 font-semibold text-xs shrink-0">
+                      {inquiry.full_name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-medium text-navy-900">{inquiry.full_name}</span>
+                        <span className={cn("w-1.5 h-1.5 rounded-full", priorityDot[inquiry.priority] ?? "bg-gray-300")} />
+                      </div>
+                      <div className="text-navy-400 text-xs">{inquiry.email}</div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-4 py-4 text-navy-700 capitalize">{inquiry.service_type}</td>
+                <td className="px-4 py-4 text-navy-600 hidden md:table-cell">
+                  {(inquiry.preferred_countries as string[]).slice(0, 2).join(", ")}
+                </td>
+                <td className="px-4 py-4 text-navy-600 hidden lg:table-cell text-xs">{inquiry.budget_range}</td>
+                <td className="px-4 py-4">
+                  <span className={cn("inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium", statusColors[inquiry.status] ?? "bg-gray-100 text-gray-700")}>
+                    {statusLabels[inquiry.status] ?? inquiry.status}
+                  </span>
+                </td>
+                <td className="px-4 py-4 text-navy-400 text-xs hidden sm:table-cell">
+                  {new Date(inquiry.created_at).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}
+                </td>
+                <td className="px-4 py-4">
+                  <button className="text-navy-400 hover:text-navy-700 p-1 rounded-lg hover:bg-navy-100 transition-colors">
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+                    </svg>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Pagination */}
+        <div className="flex items-center justify-between px-5 py-3 border-t border-border">
+          <span className="text-xs text-navy-500">
+            Showing {from + 1}–{Math.min(to + 1, total)} of {total} inquiries
+          </span>
+          <div className="flex gap-1">
+            <Link
+              href={{ pathname: "/admin/inquiries", query: { ...params, page: page - 1 } }}
+              className={cn("px-3 py-1.5 text-xs border border-border rounded-lg text-navy-600 hover:bg-navy-50", page <= 1 && "opacity-40 pointer-events-none")}
+            >
+              ← Prev
+            </Link>
+            {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => i + 1).map((p) => (
+              <Link
+                key={p}
+                href={{ pathname: "/admin/inquiries", query: { ...params, page: p } }}
+                className={cn("px-3 py-1.5 text-xs border rounded-lg", p === page ? "bg-navy-900 text-white border-navy-900 font-medium" : "border-border text-navy-600 hover:bg-navy-50")}
+              >
+                {p}
+              </Link>
+            ))}
+            <Link
+              href={{ pathname: "/admin/inquiries", query: { ...params, page: page + 1 } }}
+              className={cn("px-3 py-1.5 text-xs border border-border rounded-lg text-navy-600 hover:bg-navy-50", page >= totalPages && "opacity-40 pointer-events-none")}
+            >
+              Next →
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
