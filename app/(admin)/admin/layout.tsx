@@ -1,25 +1,18 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import { AdminSidebar } from "@/components/admin/sidebar";
+import { headers } from "next/headers";
+import { AdminShell } from "@/components/admin/admin-shell";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
+  const hdrs = await headers();
+  const pathname = hdrs.get("x-pathname") ?? "";
 
-  if (!session) {
-    redirect("/admin/login");
+  // Login page renders without the admin chrome.
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
   }
 
-  return (
-    <div className="flex h-screen bg-navy-50 overflow-hidden">
-      <AdminSidebar />
-      <main className="flex-1 overflow-y-auto">
-        {children}
-      </main>
-    </div>
-  );
+  return <AdminShell>{children}</AdminShell>;
 }

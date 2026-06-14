@@ -2,6 +2,7 @@ import { Navbar } from "@/components/marketing/navbar";
 import { Footer } from "@/components/marketing/footer";
 import { ChatbotWidget } from "@/components/chatbot/chatbot-widget";
 import { FloatingButtons } from "@/components/ui/floating-buttons";
+import { CookieBanner } from "@/components/ui/cookie-banner";
 
 export default function PublicLayout({
   children,
@@ -15,6 +16,7 @@ export default function PublicLayout({
       <Footer />
       <ChatbotWidget />
       <FloatingButtons />
+      <CookieBanner />
     </>
   );
 }

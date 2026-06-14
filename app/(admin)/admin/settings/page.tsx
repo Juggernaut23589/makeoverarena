@@ -26,6 +26,15 @@ const roleColors: Record<string, string> = {
   viewer: "bg-gray-100 text-gray-600",
 };
 
+/** True only when an env var is present and not a placeholder (and matches an expected prefix). */
+function envReady(value: string | undefined, prefix?: string): boolean {
+  if (!value) return false;
+  if (/your|placeholder|xxxx|change-me|here/i.test(value)) return false;
+  if (value.startsWith("G-XXXX")) return false;
+  if (prefix && !value.startsWith(prefix)) return false;
+  return true;
+}
+
 export default function SettingsPage() {
   return (
     <div className="p-6 lg:p-8 max-w-5xl">
@@ -52,6 +61,7 @@ export default function SettingsPage() {
             </button>
           </div>
           <div className="bg-white rounded-xl shadow-card overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-navy-50">
@@ -94,6 +104,7 @@ export default function SettingsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </section>
 
@@ -146,39 +157,52 @@ export default function SettingsPage() {
           <div className="bg-white rounded-xl shadow-card divide-y divide-border">
             {[
               {
+                name: "Supabase",
+                description: "Database — stores all inquiries, clients, payments, documents",
+                icon: "🗄️",
+                configured: envReady(process.env.NEXT_PUBLIC_SUPABASE_URL, "https") && envReady(process.env.SUPABASE_SERVICE_ROLE_KEY),
+              },
+              {
                 name: "Cal.com",
                 description: "Booking and consultation scheduling",
                 icon: "📅",
-                status: "not_configured",
-                field: "CAL_API_KEY",
+                configured: envReady(process.env.NEXT_PUBLIC_CALCOM_URL, "http"),
               },
               {
                 name: "Resend",
                 description: "Transactional email delivery",
                 icon: "✉️",
-                status: "configured",
-                field: "RESEND_API_KEY",
+                configured: envReady(process.env.RESEND_API_KEY, "re_"),
               },
               {
                 name: "OpenAI",
                 description: "AI chatbot assistant",
                 icon: "🤖",
-                status: "configured",
-                field: "OPENAI_API_KEY",
+                configured: envReady(process.env.OPENAI_API_KEY, "sk-"),
               },
               {
                 name: "Google Analytics",
                 description: "Website traffic and event tracking",
                 icon: "📊",
-                status: "not_configured",
-                field: "NEXT_PUBLIC_GA_MEASUREMENT_ID",
+                configured: envReady(process.env.NEXT_PUBLIC_GA_ID, "G-"),
+              },
+              {
+                name: "Paystack",
+                description: "Online payment processing (NGN, African cards)",
+                icon: "💳",
+                configured: envReady(process.env.PAYSTACK_SECRET_KEY, "sk_"),
+              },
+              {
+                name: "WhatsApp Cloud API",
+                description: "Live customer chat inbox",
+                icon: "💬",
+                configured: envReady(process.env.WHATSAPP_ACCESS_TOKEN) && envReady(process.env.WHATSAPP_PHONE_NUMBER_ID),
               },
               {
                 name: "Upstash Redis",
                 description: "Rate limiting and caching",
                 icon: "⚡",
-                status: "not_configured",
-                field: "UPSTASH_REDIS_REST_URL",
+                configured: envReady(process.env.UPSTASH_REDIS_REST_URL, "https"),
               },
             ].map((integration) => (
               <div key={integration.name} className="flex items-center gap-4 px-5 py-4">
@@ -189,12 +213,12 @@ export default function SettingsPage() {
                 </div>
                 <span
                   className={`text-xs px-2.5 py-1 rounded-full font-medium shrink-0 ${
-                    integration.status === "configured"
+                    integration.configured
                       ? "bg-green-100 text-green-700"
                       : "bg-amber-100 text-amber-700"
                   }`}
                 >
-                  {integration.status === "configured" ? "Connected" : "Not configured"}
+                  {integration.configured ? "Connected" : "Not configured"}
                 </span>
                 <button className="text-xs text-navy-400 hover:text-navy-700 hover:bg-navy-100 px-2 py-1 rounded transition-colors shrink-0">
                   Configure

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Dashboard | Admin",
@@ -48,15 +48,16 @@ function formatDateLabel(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-NG", { month: "short", day: "numeric" });
 }
 
+function cn(...classes: (string | boolean | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
 export default async function AdminDashboard() {
-  const supabase = await createAdminClient();
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const startOfWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
   const todayStr = now.toISOString().slice(0, 10);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const db = supabase as any;
   const [
     { count: inquiryCount },
     { count: inquiryLastMonth },
@@ -66,20 +67,19 @@ export default async function AdminDashboard() {
     { data: funnelRaw },
     { count: activeClients },
   ] = await Promise.all([
-    db.from("inquiries").select("*", { count: "exact", head: true }).gte("created_at", startOfMonth),
-    db.from("inquiries").select("*", { count: "exact", head: true }).gte("created_at", new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()).lt("created_at", startOfMonth),
-    db.from("consultations").select("*", { count: "exact", head: true }).gte("created_at", startOfWeek),
-    db.from("inquiries").select("id, full_name, service_type, preferred_countries, status, priority, created_at").order("created_at", { ascending: false }).limit(5),
-    db.from("consultations").select("id, student_name, scheduled_date, scheduled_time, inquiry_id").eq("status", "scheduled").gte("scheduled_date", todayStr).order("scheduled_date").order("scheduled_time").limit(3),
-    db.from("inquiries").select("status").gte("created_at", startOfMonth),
-    db.from("inquiries").select("*", { count: "exact", head: true }).eq("status", "client"),
+    supabaseAdmin?.from("inquiries").select("*", { count: "exact", head: true }).gte("created_at", startOfMonth) ?? Promise.resolve({ count: 0 }),
+    supabaseAdmin?.from("inquiries").select("*", { count: "exact", head: true }).gte("created_at", new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString()).lt("created_at", startOfMonth) ?? Promise.resolve({ count: 0 }),
+    supabaseAdmin?.from("consultations").select("*", { count: "exact", head: true }).gte("created_at", startOfWeek) ?? Promise.resolve({ count: 0 }),
+    supabaseAdmin?.from("inquiries").select("id, full_name, service_type, preferred_countries, status, priority, created_at").order("created_at", { ascending: false }).limit(5) ?? Promise.resolve({ data: [] }),
+    supabaseAdmin?.from("consultations").select("id, student_name, scheduled_date, scheduled_time, inquiry_id").eq("status", "scheduled").gte("scheduled_date", todayStr).order("scheduled_date").order("scheduled_time").limit(3) ?? Promise.resolve({ data: [] }),
+    supabaseAdmin?.from("inquiries").select("status").gte("created_at", startOfMonth) ?? Promise.resolve({ data: [] }),
+    supabaseAdmin?.from("inquiries").select("*", { count: "exact", head: true }).eq("status", "client") ?? Promise.resolve({ count: 0 }),
   ]);
 
   const thisMonth = inquiryCount ?? 0;
   const lastMonth = inquiryLastMonth ?? 0;
   const pctChange = lastMonth > 0 ? Math.round(((thisMonth - lastMonth) / lastMonth) * 100) : 0;
 
-  // Funnel counts
   const funnel = {
     new: 0, reviewed: 0, contacted: 0, consultation_booked: 0, client: 0,
   };
@@ -134,7 +134,7 @@ export default async function AdminDashboard() {
       color: "text-gold-600 bg-gold-50",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0M7 10a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
       ),
     },
@@ -150,7 +150,6 @@ export default async function AdminDashboard() {
 
   return (
     <div className="p-6 lg:p-8 max-w-screen-xl">
-      {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="font-display text-3xl text-navy-900">Dashboard</h1>
@@ -170,7 +169,6 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map((stat) => (
           <div key={stat.label} className="bg-white rounded-xl shadow-card p-5">
@@ -189,7 +187,6 @@ export default async function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Inquiries */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-card">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <h2 className="font-semibold text-navy-900">Recent Inquiries</h2>
@@ -224,7 +221,6 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        {/* Upcoming Consultations */}
         <div className="bg-white rounded-xl shadow-card">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <h2 className="font-semibold text-navy-900">Upcoming</h2>
@@ -249,7 +245,6 @@ export default async function AdminDashboard() {
             ))}
           </div>
 
-          {/* Quick Actions */}
           <div className="px-6 py-4 border-t border-border space-y-2">
             <p className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-3">Quick Actions</p>
             <Link
@@ -274,7 +269,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Conversion Funnel */}
       <div className="mt-6 bg-white rounded-xl shadow-card p-6">
         <h2 className="font-semibold text-navy-900 mb-5">Conversion Funnel — This Month</h2>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
@@ -297,8 +291,4 @@ export default async function AdminDashboard() {
       </div>
     </div>
   );
-}
-
-function cn(...classes: (string | boolean | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { createAdminClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -63,22 +63,8 @@ export default async function ConsultationsPage({
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
-  const supabase = await createAdminClient();
   const today = new Date().toISOString().slice(0, 10);
   const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().slice(0, 10);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase as any)
-    .from("consultations")
-    .select(
-      "id, student_name, student_email, student_phone, scheduled_date, scheduled_time, duration_minutes, meeting_link, status, outcome, consultation_notes",
-      { count: "exact" }
-    )
-    .order("scheduled_date", { ascending: false })
-    .order("scheduled_time", { ascending: false })
-    .range(from, to);
-
-  if (params.status) query = query.eq("status", params.status);
 
   const [
     { data: consultations, count },
@@ -88,12 +74,21 @@ export default async function ConsultationsPage({
     { count: noShowCount },
     { count: resolvedCount },
   ] = await Promise.all([
-    query,
-    supabase.from("consultations").select("*", { count: "exact", head: true }).eq("scheduled_date", today),
-    supabase.from("consultations").select("*", { count: "exact", head: true }).eq("status", "scheduled").gt("scheduled_date", today),
-    supabase.from("consultations").select("*", { count: "exact", head: true }).eq("status", "completed").gte("scheduled_date", startOfMonth),
-    supabase.from("consultations").select("*", { count: "exact", head: true }).eq("status", "no_show").gte("scheduled_date", startOfMonth),
-    supabase.from("consultations").select("*", { count: "exact", head: true }).in("status", ["completed", "no_show"]).gte("scheduled_date", startOfMonth),
+    (async () => {
+      let q = supabaseAdmin?.from("consultations")
+        .select("id, student_name, student_email, student_phone, scheduled_date, scheduled_time, duration_minutes, meeting_link, status, outcome, consultation_notes", { count: "exact" })
+        .order("scheduled_date", { ascending: false })
+        .order("scheduled_time", { ascending: false })
+        .range(from, to);
+      if (params.status && q) q = q.eq("status", params.status);
+      const r = await q;
+      return { data: r?.data ?? [], count: r?.count ?? 0 };
+    })(),
+    supabaseAdmin?.from("consultations").select("*", { count: "exact", head: true }).eq("scheduled_date", today) ?? Promise.resolve({ count: 0 }),
+    supabaseAdmin?.from("consultations").select("*", { count: "exact", head: true }).eq("status", "scheduled").gt("scheduled_date", today) ?? Promise.resolve({ count: 0 }),
+    supabaseAdmin?.from("consultations").select("*", { count: "exact", head: true }).eq("status", "completed").gte("scheduled_date", startOfMonth) ?? Promise.resolve({ count: 0 }),
+    supabaseAdmin?.from("consultations").select("*", { count: "exact", head: true }).eq("status", "no_show").gte("scheduled_date", startOfMonth) ?? Promise.resolve({ count: 0 }),
+    supabaseAdmin?.from("consultations").select("*", { count: "exact", head: true }).in("status", ["completed", "no_show"]).gte("scheduled_date", startOfMonth) ?? Promise.resolve({ count: 0 }),
   ]);
 
   const total = count ?? 0;
@@ -104,7 +99,6 @@ export default async function ConsultationsPage({
 
   return (
     <div className="p-6 lg:p-8">
-      {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="font-display text-3xl text-navy-900">Consultations</h1>
@@ -125,7 +119,6 @@ export default async function ConsultationsPage({
         </a>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
           { label: "Today", value: todayCount ?? 0, color: "text-blue-600 bg-blue-50", icon: "📅" },
@@ -143,7 +136,6 @@ export default async function ConsultationsPage({
         ))}
       </div>
 
-      {/* Filters */}
       <form method="GET" className="bg-white rounded-xl shadow-card p-4 mb-5">
         <div className="flex flex-wrap gap-3 items-center">
           <select
@@ -170,8 +162,8 @@ export default async function ConsultationsPage({
         </div>
       </form>
 
-      {/* Table */}
       <div className="bg-white rounded-xl shadow-card overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-navy-50">
@@ -190,11 +182,7 @@ export default async function ConsultationsPage({
                 </td>
               </tr>
             )}
-            {(consultations ?? []).map((c: {
-              id: string; student_name: string; student_email: string;
-              scheduled_date: string; scheduled_time: string; duration_minutes: number;
-              meeting_link: string | null; status: string; outcome: string | null;
-            }) => (
+            {(consultations ?? []).map((c) => (
               <tr key={c.id} className="hover:bg-navy-50/40 transition-colors cursor-pointer">
                 <td className="px-5 py-4">
                   <div className="flex items-center gap-3">
@@ -250,8 +238,8 @@ export default async function ConsultationsPage({
             ))}
           </tbody>
         </table>
+        </div>
 
-        {/* Pagination */}
         <div className="flex items-center justify-between px-5 py-3 border-t border-border">
           <span className="text-xs text-navy-500">Showing {from + 1}–{Math.min(to + 1, total)} of {total}</span>
           <div className="flex gap-1">

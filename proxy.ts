@@ -1,54 +1,42 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 
-export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+const COOKIE_NAME = "admin_session";
 
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({ request });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
-        },
-      },
-    }
-  );
+function verifyToken(token: string): boolean {
+  const secret = process.env.ADMIN_PASSWORD ?? "";
+  const email = process.env.ADMIN_EMAIL ?? "";
+  const password = process.env.ADMIN_PASSWORD ?? "";
+  if (!password) return false;
+  const expected = crypto
+    .createHmac("sha256", secret)
+    .update(email + password)
+    .digest("hex");
+  try {
+    return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+  } catch {
+    return false;
+  }
+}
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-  const isAdminPath =
-    request.nextUrl.pathname.startsWith("/admin") &&
-    !request.nextUrl.pathname.startsWith("/admin/login");
+  // Pass pathname to layouts via header (used to conditionally render sidebar)
+  const response = NextResponse.next();
+  response.headers.set("x-pathname", pathname);
 
-  if (isAdminPath && !user) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/admin/login";
-    return NextResponse.redirect(loginUrl);
+  if (!pathname.startsWith("/admin")) return response;
+  if (pathname === "/admin/login") return response;
+
+  const token = request.cookies.get(COOKIE_NAME)?.value;
+  if (!token || !verifyToken(token)) {
+    return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 
-  // Redirect logged-in users away from login
-  if (request.nextUrl.pathname === "/admin/login" && user) {
-    const dashboardUrl = request.nextUrl.clone();
-    dashboardUrl.pathname = "/admin";
-    return NextResponse.redirect(dashboardUrl);
-  }
-
-  return supabaseResponse;
+  return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)"],
 };

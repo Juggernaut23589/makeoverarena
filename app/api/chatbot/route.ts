@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { checkChatbotLimit, getIp } from "@/lib/rate-limit";
-import { createAdminClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase";
 
 function getOpenAI() {
   return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -41,7 +41,6 @@ IMPORTANT RULES:
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
     const ip = getIp(request);
     const { allowed } = await checkChatbotLimit(ip);
     if (!allowed) {
@@ -57,11 +56,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid messages" }, { status: 400 });
     }
 
-    // Limit to last 10 messages to avoid token overflow
     const recentMessages = messages.slice(-10);
 
-    if (!process.env.OPENAI_API_KEY) {
-      return NextResponse.json({ error: "Chatbot unavailable" }, { status: 503 });
+    const openaiKey = process.env.OPENAI_API_KEY ?? "";
+    const openaiReady = openaiKey.startsWith("sk-") && !/your|placeholder|xxxx|here/i.test(openaiKey);
+    if (!openaiReady) {
+      return NextResponse.json(
+        { error: "The assistant is offline right now. Please book a consultation or email info@makeoverarena.com." },
+        { status: 503 }
+      );
     }
 
     const completion = await getOpenAI().chat.completions.create({
@@ -78,8 +81,7 @@ export async function POST(request: NextRequest) {
       completion.choices[0]?.message?.content ??
       "I'm sorry, I couldn't generate a response.";
 
-    // Persist conversation asynchronously (non-blocking)
-    if (sessionId && typeof sessionId === "string") {
+    if (sessionId && typeof sessionId === "string" && supabaseAdmin) {
       void persistConversation(sessionId, messages, content);
     }
 
@@ -99,25 +101,23 @@ async function persistConversation(
   assistantReply: string
 ) {
   try {
-    const supabase = await createAdminClient();
+    if (!supabaseAdmin) return;
+    
     const allMessages = [
       ...messages,
       { role: "assistant", content: assistantReply },
     ];
 
-    // Upsert: create on first message, update thereafter
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any).from("chat_conversations").upsert(
+    await supabaseAdmin.from("chat_conversations").upsert(
       {
         session_id: sessionId,
         messages: allMessages,
         message_count: allMessages.length,
         updated_at: new Date().toISOString(),
-      } as any,
+      } as Record<string, unknown>,
       { onConflict: "session_id" }
     );
   } catch (err) {
-    // Non-fatal — don't affect the response
     console.error("[chatbot] Failed to persist conversation:", err);
   }
 }

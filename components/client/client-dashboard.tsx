@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useState, useRef } from "react";
 import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabase";
 
 interface ClientProfile {
   id: string;
@@ -43,6 +42,7 @@ interface Payment {
   description: string;
   paid_at: string | null;
   created_at: string;
+  authorization_url?: string | null;
 }
 
 interface Consultation {
@@ -56,11 +56,23 @@ interface Consultation {
   meeting_link: string | null;
 }
 
+interface Document {
+  id: string;
+  file_name: string;
+  document_type: string;
+  file_size: number | null;
+  status: string;
+  created_at: string;
+  review_notes: string | null;
+}
+
 interface Props {
   profile: ClientProfile;
   applications: Application[];
   payments: Payment[];
   consultations: Consultation[];
+  documents: Document[];
+  clientId: string;
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -77,17 +89,36 @@ const STATUS_BADGE: Record<string, string> = {
   failed: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
   overdue: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
   partial: "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300",
+  pending_review: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700 dark:text-yellow-300",
+  approved: "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300",
+  needs_resubmission: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
 };
 
-type Tab = "overview" | "profile" | "applications" | "consultations" | "payments";
+const DOC_TYPE_LABELS: Record<string, string> = {
+  transcript: "Academic Transcript",
+  certificate: "Certificate",
+  id: "ID Card",
+  passport: "Passport",
+  sop: "Statement of Purpose",
+  lor: "Letter of Recommendation",
+  cv: "CV / Résumé",
+  test_scores: "Test Scores",
+  financial: "Financial Documents",
+  other: "Other",
+};
 
-export function ClientDashboard({ profile, applications, payments, consultations }: Props) {
-  const router = useRouter();
+type Tab = "overview" | "profile" | "applications" | "consultations" | "payments" | "documents";
+
+export function ClientDashboard({ profile, applications, payments, consultations, documents, clientId }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<ClientProfile>>(profile);
   const [saving, setSaving] = useState(false);
-  const [showPayModal, setShowPayModal] = useState(false);
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [docType, setDocType] = useState("transcript");
+  const [docList, setDocList] = useState<Document[]>(documents);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const upcomingConsultation = consultations.find(
     (c) => c.status === "scheduled" && new Date(`${c.scheduled_date}T${c.scheduled_time}`) >= new Date()
@@ -95,40 +126,94 @@ export function ClientDashboard({ profile, applications, payments, consultations
 
   const totalPaid = payments.filter((p) => p.status === "paid").reduce((s, p) => s + p.amount, 0);
   const totalOwed = payments.filter((p) => p.status === "pending").reduce((s, p) => s + p.amount, 0);
-
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/");
-  };
+  const pendingPayment = payments.find((p) => p.status === "pending");
 
   const handleSaveProfile = async () => {
     setSaving(true);
-    try {
-      const supabase = createClient();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const db = supabase as any;
-      const { error } = await db
-        .from("client_profiles")
-        .update({
-          full_name: editData.full_name,
-          phone: editData.phone,
-          city: editData.city,
-          country: editData.country,
-          field_of_study: editData.field_of_study,
-          graduation_year: editData.graduation_year,
-        })
-        .eq("id", profile.id);
-
-      if (error) throw error;
+    const res = await fetch(`/api/client/profile`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: editData.phone, city: editData.city, graduation_year: editData.graduation_year, field_of_study: editData.field_of_study }),
+    });
+    if (res.ok) {
       toast.success("Profile updated");
       setEditMode(false);
-      router.refresh();
-    } catch {
-      toast.error("Failed to save changes");
-    } finally {
-      setSaving(false);
+    } else {
+      toast.error("Failed to save profile");
     }
+    setSaving(false);
+  };
+
+  const handlePay = async (payment: Payment) => {
+    setPayingId(payment.id);
+    try {
+      if (payment.authorization_url) {
+        window.location.href = payment.authorization_url;
+        return;
+      }
+      const res = await fetch("/api/payments/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          client_id: clientId,
+          payment_id: payment.id,
+          email: profile.email,
+          amount: payment.amount,
+          description: payment.description,
+        }),
+      });
+      const data = (await res.json()) as { authorization_url?: string; error?: string };
+      if (!res.ok || !data.authorization_url) {
+        toast.error(data.error ?? "Payment failed to initialize");
+        return;
+      }
+      window.location.href = data.authorization_url;
+    } catch {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setPayingId(null);
+    }
+  };
+
+  const handleDocUpload = async () => {
+    const file = fileRef.current?.files?.[0];
+    if (!file) { toast.error("Please select a file"); return; }
+    if (file.size > 10 * 1024 * 1024) { toast.error("File must be under 10MB"); return; }
+
+    setUploadingDoc(true);
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("client_id", clientId);
+    formData.append("document_type", docType);
+
+    try {
+      const res = await fetch("/api/documents/upload", { method: "POST", body: formData });
+      const data = (await res.json()) as { id?: string; file_name?: string; error?: string };
+      if (!res.ok) {
+        toast.error(data.error ?? "Upload failed");
+        return;
+      }
+      toast.success("Document uploaded successfully");
+      setDocList((prev) => [{
+        id: data.id!,
+        file_name: data.file_name!,
+        document_type: docType,
+        file_size: file.size,
+        status: "pending_review",
+        created_at: new Date().toISOString(),
+        review_notes: null,
+      }, ...prev]);
+      if (fileRef.current) fileRef.current.value = "";
+    } catch {
+      toast.error("Upload failed. Please try again.");
+    } finally {
+      setUploadingDoc(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    if (supabase) await supabase.auth.signOut();
+    window.location.href = "/login";
   };
 
   const tabs: { id: Tab; label: string }[] = [
@@ -137,11 +222,11 @@ export function ClientDashboard({ profile, applications, payments, consultations
     { id: "applications", label: "Applications" },
     { id: "consultations", label: "Consultations" },
     { id: "payments", label: "Payments" },
+    { id: "documents", label: "Documents" },
   ];
 
   return (
     <div className="min-h-screen bg-cream dark:bg-navy-950">
-      {/* Header */}
       <header className="bg-white dark:bg-navy-900 border-b border-border shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -150,30 +235,32 @@ export function ClientDashboard({ profile, applications, payments, consultations
             </div>
             <span className="font-display text-navy-900 dark:text-white font-medium">My Dashboard</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-navy-100 dark:bg-navy-700 flex items-center justify-center text-xs font-semibold text-navy-700 dark:text-white">
                 {profile.full_name.charAt(0)}
               </div>
               <span className="text-sm text-navy-600 dark:text-white/70">{profile.full_name.split(" ")[0]}</span>
             </div>
-            <button onClick={handleSignOut} className="text-sm text-navy-400 dark:text-white/40 hover:text-navy-600 dark:hover:text-white/70 transition-colors">
+            <button
+              onClick={handleLogout}
+              className="text-xs text-navy-400 hover:text-navy-700 dark:hover:text-white border border-border rounded-lg px-2 py-1 transition-colors"
+            >
               Sign out
             </button>
           </div>
         </div>
       </header>
 
-      {/* Tabs */}
       <div className="bg-white dark:bg-navy-900 border-b border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <nav className="flex gap-1 overflow-x-auto scrollbar-hide">
+          <nav className="-mx-4 sm:mx-0 flex gap-0 overflow-x-auto scrollbar-hide px-4 sm:px-0">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "px-4 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-all",
+                  "shrink-0 px-3 sm:px-4 py-3.5 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-all",
                   activeTab === tab.id
                     ? "border-gold-500 text-navy-900 dark:text-white"
                     : "border-transparent text-navy-500 dark:text-white/50 hover:text-navy-700 dark:hover:text-white/70"
@@ -187,14 +274,13 @@ export function ClientDashboard({ profile, applications, payments, consultations
       </div>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-        {/* OVERVIEW */}
+        {/* ── OVERVIEW ── */}
         {activeTab === "overview" && (
           <>
             <h2 className="font-display text-2xl text-navy-900 dark:text-white">
               Welcome back, {profile.full_name.split(" ")[0]}
             </h2>
 
-            {/* Quick stats */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { label: "Applications", value: applications.length, icon: "📋" },
@@ -210,7 +296,6 @@ export function ClientDashboard({ profile, applications, payments, consultations
               ))}
             </div>
 
-            {/* Next consultation */}
             {upcomingConsultation && (
               <div className="bg-navy-900 rounded-xl p-6 border border-white/10">
                 <div className="flex items-center gap-2 mb-3">
@@ -235,23 +320,24 @@ export function ClientDashboard({ profile, applications, payments, consultations
               </div>
             )}
 
-            {/* Payment status banner */}
-            {totalOwed > 0 && (
+            {totalOwed > 0 && pendingPayment && (
               <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700/30 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
                   <p className="font-semibold text-orange-800 dark:text-orange-300">Payment due</p>
-                  <p className="text-orange-600 dark:text-orange-400 text-sm">You have ₦{totalOwed.toLocaleString()} outstanding</p>
+                  <p className="text-orange-600 dark:text-orange-400 text-sm">
+                    {pendingPayment.description} — ₦{totalOwed.toLocaleString()}
+                  </p>
                 </div>
                 <button
-                  onClick={() => setShowPayModal(true)}
-                  className="px-5 py-2.5 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-500 transition-colors whitespace-nowrap"
+                  onClick={() => handlePay(pendingPayment)}
+                  disabled={payingId === pendingPayment.id}
+                  className="px-5 py-2.5 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-500 transition-colors whitespace-nowrap disabled:opacity-60"
                 >
-                  Make Payment →
+                  {payingId === pendingPayment.id ? "Redirecting…" : "Pay Now via Paystack →"}
                 </button>
               </div>
             )}
 
-            {/* Active applications */}
             {applications.length > 0 && (
               <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card overflow-hidden">
                 <div className="px-5 py-4 border-b border-border">
@@ -263,9 +349,6 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       <div className="min-w-0">
                         <p className="text-navy-900 dark:text-white font-medium text-sm truncate">{app.title}</p>
                         <p className="text-navy-500 dark:text-white/40 text-xs capitalize">{app.type} · {app.destination_country ?? app.institution ?? "—"}</p>
-                        {app.assigned_staff_name && (
-                          <p className="text-navy-400 dark:text-white/30 text-xs mt-0.5">Handled by: {app.assigned_staff_name}</p>
-                        )}
                       </div>
                       <span className={cn("text-xs px-2.5 py-1 rounded-full font-medium shrink-0", STATUS_BADGE[app.status] ?? "bg-gray-100 text-gray-600")}>
                         {app.status.replace(/_/g, " ")}
@@ -278,7 +361,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
           </>
         )}
 
-        {/* PROFILE */}
+        {/* ── PROFILE ── */}
         {activeTab === "profile" && (
           <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card">
             <div className="px-6 py-5 border-b border-border flex items-center justify-between">
@@ -296,11 +379,11 @@ export function ClientDashboard({ profile, applications, payments, consultations
             </div>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
               {[
-                { label: "Full Name", key: "full_name", value: profile.full_name },
+                { label: "Full Name", key: "full_name", value: profile.full_name, readonly: true },
                 { label: "Email", key: "email", value: profile.email, readonly: true },
                 { label: "Phone", key: "phone", value: profile.phone },
                 { label: "City", key: "city", value: profile.city },
-                { label: "Country", key: "country", value: profile.country },
+                { label: "Country", key: "country", value: profile.country, readonly: true },
                 { label: "Education Level", key: "education_level", value: profile.education_level, readonly: true },
                 { label: "Field of Study", key: "field_of_study", value: profile.field_of_study },
                 { label: "GPA / Percentage", key: "gpa_percentage", value: profile.gpa_percentage, readonly: true },
@@ -319,7 +402,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
                     />
                   ) : (
-                    <p className="text-navy-800 dark:text-white/80 text-sm">{field.value ?? <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                    <p className="text-navy-800 dark:text-white/80 text-sm">{String(field.value ?? "") || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
                   )}
                 </div>
               ))}
@@ -327,7 +410,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
           </div>
         )}
 
-        {/* APPLICATIONS */}
+        {/* ── APPLICATIONS ── */}
         {activeTab === "applications" && (
           <div className="space-y-4">
             <h2 className="font-display text-2xl text-navy-900 dark:text-white">My Applications</h2>
@@ -341,9 +424,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 <div key={app.id} className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card overflow-hidden">
                   <div className="px-5 py-4 flex items-start justify-between gap-4 border-b border-border">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-gold-600 dark:text-gold-400 capitalize">{app.type}</span>
-                      </div>
+                      <span className="text-xs font-semibold uppercase tracking-wider text-gold-600 dark:text-gold-400 capitalize">{app.type}</span>
                       <h4 className="font-display text-lg text-navy-900 dark:text-white">{app.title}</h4>
                       <p className="text-navy-500 dark:text-white/50 text-xs mt-0.5">
                         {[app.institution, app.destination_country].filter(Boolean).join(" · ")}
@@ -353,18 +434,13 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       {app.status.replace(/_/g, " ")}
                     </span>
                   </div>
-
-                  {/* Stages */}
                   {Array.isArray(app.stages) && app.stages.length > 0 && (
                     <div className="px-5 py-4">
                       <p className="text-xs font-medium text-navy-500 dark:text-white/50 mb-3 uppercase tracking-wider">Progress</p>
                       <div className="space-y-2.5">
                         {app.stages.map((stage, i) => (
                           <div key={i} className="flex items-center gap-3">
-                            <div className={cn(
-                              "w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-xs",
-                              stage.status === "completed" ? "bg-green-500 text-white" : "bg-border dark:bg-white/10 text-navy-400"
-                            )}>
+                            <div className={cn("w-5 h-5 rounded-full flex items-center justify-center shrink-0 text-xs", stage.status === "completed" ? "bg-green-500 text-white" : "bg-border dark:bg-white/10 text-navy-400")}>
                               {stage.status === "completed" ? "✓" : i + 1}
                             </div>
                             <p className={cn("text-sm", stage.status === "completed" ? "text-navy-700 dark:text-white/80" : "text-navy-400 dark:text-white/40")}>
@@ -378,19 +454,13 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       </div>
                     </div>
                   )}
-
-                  {app.assigned_staff_name && (
-                    <div className="px-5 pb-4 text-xs text-navy-400 dark:text-white/30">
-                      Handled by <span className="font-medium text-navy-600 dark:text-white/60">{app.assigned_staff_name}</span>
-                    </div>
-                  )}
                 </div>
               ))
             )}
           </div>
         )}
 
-        {/* CONSULTATIONS */}
+        {/* ── CONSULTATIONS ── */}
         {activeTab === "consultations" && (
           <div className="space-y-4">
             <h2 className="font-display text-2xl text-navy-900 dark:text-white">Consultations</h2>
@@ -398,10 +468,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-12 text-center">
                 <div className="text-4xl mb-3">📅</div>
                 <p className="text-navy-500 dark:text-white/50 text-sm mb-4">No consultations scheduled yet.</p>
-                <a
-                  href="/book"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 text-navy-900 rounded-lg font-semibold text-sm hover:bg-gold-400 transition-colors"
-                >
+                <a href="/book" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 text-navy-900 rounded-lg font-semibold text-sm hover:bg-gold-400 transition-colors">
                   Book a Consultation →
                 </a>
               </div>
@@ -410,23 +477,14 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 <div key={c.id} className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={cn("text-xs px-2.5 py-0.5 rounded-full font-medium", STATUS_BADGE[c.status] ?? "bg-gray-100 text-gray-600")}>
-                        {c.status}
-                      </span>
-                      {c.outcome && (
-                        <span className="text-xs text-navy-400 dark:text-white/40 capitalize">{c.outcome.replace(/_/g, " ")}</span>
-                      )}
+                      <span className={cn("text-xs px-2.5 py-0.5 rounded-full font-medium", STATUS_BADGE[c.status] ?? "bg-gray-100 text-gray-600")}>{c.status}</span>
+                      {c.outcome && <span className="text-xs text-navy-400 dark:text-white/40 capitalize">{c.outcome.replace(/_/g, " ")}</span>}
                     </div>
                     <p className="text-navy-900 dark:text-white font-medium">{formatDate(c.scheduled_date)}</p>
                     <p className="text-navy-500 dark:text-white/40 text-sm">{c.scheduled_time} · {c.timezone}</p>
                   </div>
                   {c.meeting_link && c.status === "scheduled" && (
-                    <a
-                      href={c.meeting_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg text-sm font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap"
-                    >
+                    <a href={c.meeting_link} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg text-sm font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap">
                       Join Meeting →
                     </a>
                   )}
@@ -436,22 +494,11 @@ export function ClientDashboard({ profile, applications, payments, consultations
           </div>
         )}
 
-        {/* PAYMENTS */}
+        {/* ── PAYMENTS ── */}
         {activeTab === "payments" && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="font-display text-2xl text-navy-900 dark:text-white">Payments</h2>
-              {totalOwed > 0 && (
-                <button
-                  onClick={() => setShowPayModal(true)}
-                  className="px-5 py-2.5 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors"
-                >
-                  Make Payment →
-                </button>
-              )}
-            </div>
+            <h2 className="font-display text-2xl text-navy-900 dark:text-white">Payments</h2>
 
-            {/* Summary */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {[
                 { label: "Total Paid", value: `₦${totalPaid.toLocaleString()}`, style: "text-green-600 dark:text-green-400" },
@@ -465,7 +512,6 @@ export function ClientDashboard({ profile, applications, payments, consultations
               ))}
             </div>
 
-            {/* Payment history */}
             <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card overflow-hidden">
               <div className="px-5 py-4 border-b border-border">
                 <h3 className="font-medium text-navy-900 dark:text-white">Payment History</h3>
@@ -484,9 +530,16 @@ export function ClientDashboard({ profile, applications, payments, consultations
                         <span className={cn("text-xs px-2.5 py-0.5 rounded-full font-medium", STATUS_BADGE[p.status] ?? "bg-gray-100 text-gray-600")}>
                           {p.status}
                         </span>
-                        <span className="font-medium text-navy-900 dark:text-white text-sm">
-                          {p.currency} {p.amount.toLocaleString()}
-                        </span>
+                        <span className="font-medium text-navy-900 dark:text-white text-sm">₦{p.amount.toLocaleString()}</span>
+                        {p.status === "pending" && (
+                          <button
+                            onClick={() => handlePay(p)}
+                            disabled={payingId === p.id}
+                            className="text-xs px-3 py-1.5 bg-gold-500 text-navy-900 rounded-lg font-semibold hover:bg-gold-400 transition-colors disabled:opacity-60"
+                          >
+                            {payingId === p.id ? "…" : "Pay"}
+                          </button>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -495,37 +548,81 @@ export function ClientDashboard({ profile, applications, payments, consultations
             </div>
           </div>
         )}
-      </main>
 
-      {/* Payment Modal */}
-      {showPayModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-navy-800 rounded-2xl shadow-elevated border border-border w-full max-w-md p-6">
-            <h3 className="font-display text-xl text-navy-900 dark:text-white mb-2">Make a Payment</h3>
-            <p className="text-navy-500 dark:text-white/50 text-sm mb-6">
-              Payment gateway integration coming soon. Please contact your advisor to arrange payment via bank transfer.
-            </p>
-            <div className="bg-cream dark:bg-navy-700 rounded-xl p-4 mb-5 text-sm">
-              <p className="text-navy-700 dark:text-white/70 font-medium mb-1">Outstanding Balance</p>
-              <p className="font-display text-2xl text-navy-900 dark:text-white">₦{totalOwed.toLocaleString()}</p>
+        {/* ── DOCUMENTS ── */}
+        {activeTab === "documents" && (
+          <div className="space-y-5">
+            <h2 className="font-display text-2xl text-navy-900 dark:text-white">Documents</h2>
+
+            <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-6">
+              <h3 className="font-medium text-navy-900 dark:text-white mb-1">Upload a Document</h3>
+              <p className="text-navy-500 dark:text-white/50 text-xs mb-4">PDF, JPG, PNG — max 10MB</p>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <select
+                  value={docType}
+                  onChange={(e) => setDocType(e.target.value)}
+                  className="h-9 px-3 text-sm border border-border rounded-lg bg-navy-50 dark:bg-navy-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+                >
+                  {Object.entries(DOC_TYPE_LABELS).map(([v, l]) => (
+                    <option key={v} value={v}>{l}</option>
+                  ))}
+                </select>
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                  className="flex-1 text-sm text-navy-600 dark:text-white/70 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-navy-900 file:text-white hover:file:bg-navy-800"
+                />
+                <button
+                  onClick={handleDocUpload}
+                  disabled={uploadingDoc}
+                  className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg text-sm font-semibold hover:bg-gold-400 transition-colors disabled:opacity-60 whitespace-nowrap"
+                >
+                  {uploadingDoc ? "Uploading…" : "Upload"}
+                </button>
+              </div>
             </div>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setShowPayModal(false)}
-                className="flex-1 py-2.5 rounded-xl border border-border text-navy-600 dark:text-white/60 text-sm hover:bg-cream dark:hover:bg-navy-700 transition-colors"
-              >
-                Close
-              </button>
-              <a
-                href="mailto:j.oarowolo@gmail.com?subject=Payment%20for%20MakeoverArena%20Services"
-                className="flex-1 py-2.5 rounded-xl bg-gold-500 text-navy-900 text-sm font-semibold text-center hover:bg-gold-400 transition-colors"
-              >
-                Contact Advisor
-              </a>
-            </div>
+
+            {docList.length === 0 ? (
+              <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-10 text-center">
+                <div className="text-4xl mb-3">📄</div>
+                <p className="text-navy-500 dark:text-white/50 text-sm">No documents uploaded yet. Upload your transcripts, certificates, and other required documents above.</p>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card overflow-hidden">
+                <div className="px-5 py-4 border-b border-border">
+                  <h3 className="font-medium text-navy-900 dark:text-white">Uploaded Documents</h3>
+                </div>
+                <div className="divide-y divide-border">
+                  {docList.map((doc) => (
+                    <div key={doc.id} className="px-5 py-4 flex items-center gap-4">
+                      <div className="w-9 h-9 rounded-lg bg-navy-100 dark:bg-navy-700 flex items-center justify-center shrink-0">
+                        <svg className="w-4 h-4 text-navy-500 dark:text-white/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-navy-900 dark:text-white text-sm font-medium truncate">{doc.file_name}</p>
+                        <p className="text-navy-400 dark:text-white/30 text-xs">
+                          {DOC_TYPE_LABELS[doc.document_type] ?? doc.document_type}
+                          {doc.file_size && ` · ${(doc.file_size / 1024).toFixed(0)} KB`}
+                          {" · "}{formatDate(doc.created_at)}
+                        </p>
+                        {doc.review_notes && (
+                          <p className="text-xs text-orange-600 mt-0.5">{doc.review_notes}</p>
+                        )}
+                      </div>
+                      <span className={cn("text-xs px-2.5 py-0.5 rounded-full font-medium shrink-0", STATUS_BADGE[doc.status] ?? "bg-gray-100 text-gray-600")}>
+                        {doc.status.replace(/_/g, " ")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
+        )}
+      </main>
     </div>
   );
 }

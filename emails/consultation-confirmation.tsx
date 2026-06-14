@@ -19,6 +19,7 @@ interface ConsultationConfirmationProps {
   timezone: string;
   meetingLink?: string;
   consultant?: string;
+  cancelled?: boolean;
 }
 
 export default function ConsultationConfirmation({
@@ -28,7 +29,39 @@ export default function ConsultationConfirmation({
   timezone = "Africa/Lagos (WAT)",
   meetingLink = "https://meet.google.com/abc-defg-hij",
   consultant = "Sarah",
+  cancelled = false,
 }: ConsultationConfirmationProps) {
+  if (cancelled) {
+    return (
+      <Html>
+        <Head />
+        <Preview>Your consultation on {date} has been cancelled</Preview>
+        <Body style={main}>
+          <Container style={container}>
+            <Section style={header}>
+              <Text style={logoText}>MakeoverArena</Text>
+            </Section>
+            <Section style={{ padding: "32px 24px 24px" }}>
+              <Heading style={h1}>Consultation Cancelled</Heading>
+              <Text style={subText}>
+                Hi {studentName}, your consultation scheduled for {date} at {time} ({timezone}) has been cancelled.
+              </Text>
+              <Text style={{ color: "#6B7280", fontSize: "14px", lineHeight: "1.6", marginTop: "16px" }}>
+                To rebook, please visit{" "}
+                <a href="https://makeoverarena.com/book" style={footerLink}>makeoverarena.com/book</a>
+                {" "}or reply to this email and we will find a new time for you.
+              </Text>
+            </Section>
+            <Hr style={hr} />
+            <Section style={footer}>
+              <Text style={footerText}>© {new Date().getFullYear()} MakeoverArena · Lagos, Nigeria</Text>
+            </Section>
+          </Container>
+        </Body>
+      </Html>
+    );
+  }
+
   return (
     <Html>
       <Head />

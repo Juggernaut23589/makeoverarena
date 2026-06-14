@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   description: "Book your free 30-minute consultation with a MakeoverArena study abroad expert.",
 };
 
+const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348000000000";
+
 const contactMethods = [
   {
     icon: (
@@ -25,7 +27,7 @@ const contactMethods = [
     ),
     label: "WhatsApp",
     value: "Chat with us on WhatsApp",
-    href: "https://wa.me/2348000000000",
+    href: `https://wa.me/${WHATSAPP}`,
   },
 ];
 
@@ -67,26 +69,36 @@ export default function BookPage() {
                   All times shown in your local timezone. The consultation takes 30 minutes.
                 </p>
 
-                {/* Cal.com embed placeholder */}
-                <div className="bg-navy-50 rounded-xl border border-border p-8 text-center">
-                  <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <svg className="w-8 h-8 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
+                {/* Cal.com embed */}
+                {process.env.NEXT_PUBLIC_CALCOM_URL ? (
+                  <iframe
+                    src={`${process.env.NEXT_PUBLIC_CALCOM_URL}?embed=true&hideEventTypeDetails=false&layout=month_view`}
+                    className="w-full rounded-xl border border-border"
+                    style={{ height: "min(600px, 80vh)", minHeight: "500px" }}
+                    frameBorder="0"
+                    title="Book a consultation"
+                  />
+                ) : (
+                  <div className="bg-navy-50 rounded-xl border border-border p-8 text-center">
+                    <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-navy-700 font-medium mb-2">Calendar Booking</p>
+                    <p className="text-navy-500 text-sm mb-4">
+                      Set <code className="bg-navy-100 px-1 rounded text-xs">NEXT_PUBLIC_CALCOM_URL</code> in your environment variables to enable live booking (e.g. <code className="bg-navy-100 px-1 rounded text-xs">https://cal.com/your-username/30min</code>).
+                    </p>
+                    <a
+                      href="https://cal.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center px-5 py-2.5 bg-navy-900 text-white rounded-lg text-sm font-medium hover:bg-navy-800 transition-colors"
+                    >
+                      Set Up Cal.com →
+                    </a>
                   </div>
-                  <p className="text-navy-700 font-medium mb-2">Calendar Booking</p>
-                  <p className="text-navy-500 text-sm mb-4">
-                    Booking is powered by Cal.com. Configure your Cal.com link in the admin settings to enable live scheduling.
-                  </p>
-                  <a
-                    href="https://cal.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center px-5 py-2.5 bg-navy-900 text-white rounded-lg text-sm font-medium hover:bg-navy-800 transition-colors"
-                  >
-                    Open Booking →
-                  </a>
-                </div>
+                )}
 
                 {/* Alternatively apply */}
                 <div className="mt-6 pt-6 border-t border-border">

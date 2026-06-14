@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Script from "next/script";
-import { CookieBanner } from "@/components/ui/cookie-banner";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
@@ -86,7 +85,6 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
           <Toaster richColors position="top-right" />
-          <CookieBanner />
         </ThemeProvider>
       </body>
     </html>

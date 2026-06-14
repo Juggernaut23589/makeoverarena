@@ -123,22 +123,19 @@ export function MultiStepForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(finalData),
       });
-      if (!res.ok) throw new Error("Submission failed");
-      const { id: inquiryId } = await res.json();
+      const json = await res.json() as { id?: string; error?: string };
+      if (!res.ok) {
+        toast.error(json.error ?? "Submission failed. Please try again.");
+        return;
+      }
       localStorage.removeItem(STORAGE_KEY);
       trackEvent("form_submit", {
         form_name: "inquiry",
         service_type: finalData.service_type ?? "",
       });
-      // Redirect to signup with prefilled email and inquiry reference
-      const params = new URLSearchParams({
-        email: finalData.email,
-        inquiry: inquiryId,
-      });
-      router.push(`/login?${params.toString()}`);
       setIsSuccess(true);
     } catch {
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Network error. Please check your connection and try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -708,9 +705,15 @@ function SuccessScreen({ name, email }: { name: string; email: string }) {
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <a
           href="/book"
+          className="inline-flex items-center justify-center px-6 py-3 bg-gold-500 text-navy-900 rounded-xl text-sm font-semibold hover:bg-gold-400 transition-colors"
+        >
+          Book Free Consultation →
+        </a>
+        <a
+          href={`/signup?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`}
           className="inline-flex items-center justify-center px-6 py-3 bg-navy-900 text-white rounded-xl text-sm font-medium hover:bg-navy-800 transition-colors"
         >
-          Book Consultation Now
+          Create Your Account
         </a>
         <a
           href="/"

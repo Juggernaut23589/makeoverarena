@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
@@ -119,12 +118,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
     { id: "team", label: "Team", show: canManageTeam },
   ];
 
-  const handleSignOut = async () => {
-    const supabase = createClient();
-    await supabase.auth.signOut();
-    router.push("/staff/login");
-  };
-
   const handleInviteStaff = async (e: React.FormEvent) => {
     e.preventDefault();
     setInviting(true);
@@ -146,7 +139,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
 
   return (
     <div className="min-h-screen bg-navy-950">
-      {/* Header */}
       <header className="border-b border-white/10 bg-navy-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -160,17 +152,10 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden sm:block text-sm text-white/60">{staff.full_name}</span>
-            <button
-              onClick={handleSignOut}
-              className="text-sm text-white/40 hover:text-white/70 transition-colors"
-            >
-              Sign out
-            </button>
           </div>
         </div>
       </header>
 
-      {/* Tabs */}
       <div className="border-b border-white/10 bg-navy-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex gap-1 overflow-x-auto scrollbar-hide">
@@ -192,9 +177,7 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
         </div>
       </div>
 
-      {/* Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* OVERVIEW */}
         {activeTab === "overview" && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl text-white">Overview</h2>
@@ -214,7 +197,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
               ))}
             </div>
 
-            {/* Recent Inquiries */}
             <div className="bg-navy-800 rounded-xl border border-white/10 overflow-hidden">
               <div className="px-5 py-4 border-b border-white/10">
                 <h3 className="text-white font-medium">Recent Inquiries</h3>
@@ -241,7 +223,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
           </div>
         )}
 
-        {/* CLIENTS */}
         {activeTab === "clients" && (
           <div className="space-y-4">
             <h2 className="font-display text-2xl text-white">Clients</h2>
@@ -282,7 +263,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
           </div>
         )}
 
-        {/* CONSULTATIONS */}
         {activeTab === "consultations" && (
           <div className="space-y-4">
             <h2 className="font-display text-2xl text-white">Consultations</h2>
@@ -327,12 +307,10 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
           </div>
         )}
 
-        {/* ANALYTICS — business_admin + site_admin */}
         {activeTab === "analytics" && canAccessAnalytics && analyticsData && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl text-white">Analytics</h2>
 
-            {/* Finance summary */}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 {
@@ -361,7 +339,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
               ))}
             </div>
 
-            {/* Service breakdown */}
             <div className="bg-navy-800 rounded-xl border border-white/10 p-5">
               <h3 className="text-white font-medium mb-4">Inquiries by Service Type</h3>
               {["undergraduate", "graduate", "scholarship", "visa", "phd"].map((service) => {
@@ -381,7 +358,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
               })}
             </div>
 
-            {/* Payment trend */}
             <div className="bg-navy-800 rounded-xl border border-white/10 p-5">
               <h3 className="text-white font-medium mb-4">Recent Payments</h3>
               <div className="divide-y divide-white/5">
@@ -406,12 +382,10 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
           </div>
         )}
 
-        {/* TEAM — site_admin only */}
         {activeTab === "team" && canManageTeam && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl text-white">Team Management</h2>
 
-            {/* Invite staff */}
             <div className="bg-navy-800 rounded-xl border border-white/10 p-5">
               <h3 className="text-white font-medium mb-4">Invite Staff Member</h3>
               <form onSubmit={handleInviteStaff} className="flex flex-col sm:flex-row gap-3">
@@ -442,7 +416,6 @@ export function StaffDashboard({ staff, clients, consultations, inquiries, analy
               </form>
             </div>
 
-            {/* Staff list */}
             <div className="bg-navy-800 rounded-xl border border-white/10 overflow-hidden">
               <div className="px-5 py-4 border-b border-white/10">
                 <h3 className="text-white font-medium">Staff Members ({staffList?.length ?? 0})</h3>

@@ -1,24 +1,14 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { verifyToken } from "@/lib/admin-auth";
+
+const COOKIE_NAME = "admin_session";
 
 export default async function StaffLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/staff/login");
+  const cookieStore = await cookies();
+  const token = cookieStore.get(COOKIE_NAME)?.value;
+  if (!token || !verifyToken(token)) {
+    redirect("/admin/login");
   }
-
-  // Verify staff membership
-  const { data: staffProfile } = await supabase
-    .from("staff_profiles")
-    .select("id, role, full_name")
-    .eq("id", user.id)
-    .single();
-
-  if (!staffProfile) {
-    redirect("/staff/login?error=unauthorized");
-  }
-
   return <>{children}</>;
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase";
 import { fullInquirySchema } from "@/lib/validations/inquiry-schema";
 import { sendEmail, ADMIN_EMAIL } from "@/lib/emails/send-email";
 import { checkInquiryLimit, getIp } from "@/lib/rate-limit";
@@ -9,7 +9,6 @@ import * as React from "react";
 
 export async function POST(request: NextRequest) {
   try {
-    // Rate limiting
     const ip = getIp(request);
     const { allowed, remaining } = await checkInquiryLimit(ip);
     if (!allowed) {
@@ -24,7 +23,6 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    // Server-side validation
     const parsed = fullInquirySchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
@@ -35,14 +33,15 @@ export async function POST(request: NextRequest) {
 
     const data = parsed.data;
 
-    // Capture UTM params
     const utm_source = request.nextUrl.searchParams.get("utm_source") ?? undefined;
     const utm_medium = request.nextUrl.searchParams.get("utm_medium") ?? undefined;
     const utm_campaign = request.nextUrl.searchParams.get("utm_campaign") ?? undefined;
 
-    const supabase = await createAdminClient();
+    if (!supabaseAdmin) {
+      return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+    }
 
-    const { data: inquiry, error } = await supabase
+    const { data: inquiry, error } = await supabaseAdmin
       .from("inquiries")
       .insert({
         full_name: data.full_name,
@@ -70,8 +69,7 @@ export async function POST(request: NextRequest) {
         utm_source: utm_source || null,
         utm_medium: utm_medium || null,
         utm_campaign: utm_campaign || null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any)
+      } as Record<string, unknown>)
       .select("id")
       .single<{ id: string }>();
 
@@ -83,9 +81,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Send emails in parallel (non-blocking — don't fail the response if email fails)
     void Promise.allSettled([
-      // Confirmation to student
       sendEmail({
         to: data.email,
         subject: "Application received — MakeoverArena",
@@ -98,7 +94,6 @@ export async function POST(request: NextRequest) {
         inquiryId: inquiry.id,
         templateName: "inquiry-confirmation",
       }),
-      // Admin notification
       sendEmail({
         to: ADMIN_EMAIL,
         subject: `New inquiry: ${data.full_name} — ${data.service_type}`,

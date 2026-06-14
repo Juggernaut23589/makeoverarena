@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { createAdminClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase";
 import { sendEmail, ADMIN_EMAIL } from "@/lib/emails/send-email";
 import ConsultationConfirmation from "@/emails/consultation-confirmation";
 import ConsultationReminder from "@/emails/consultation-reminder";
@@ -9,7 +9,7 @@ import * as React from "react";
 const CALCOM_WEBHOOK_SECRET = process.env.CALCOM_WEBHOOK_SECRET ?? "";
 
 function verifySignature(body: string, signature: string): boolean {
-  if (!CALCOM_WEBHOOK_SECRET) return true; // skip verification in dev if not configured
+  if (!CALCOM_WEBHOOK_SECRET) return true;
   const expected = crypto
     .createHmac("sha256", CALCOM_WEBHOOK_SECRET)
     .update(body)
@@ -38,7 +38,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true });
   }
 
-  const supabase = await createAdminClient();
+  if (!supabaseAdmin) {
+    return NextResponse.json({ error: "Database not configured" }, { status: 500 });
+  }
 
   const attendee = data.attendees?.[0];
   const studentName = attendee?.name ?? "Unknown";
@@ -49,24 +51,21 @@ export async function POST(request: NextRequest) {
   const duration = data.length ?? 30;
 
   if (triggerEvent === "BOOKING_CREATED") {
-    // Check if an inquiry exists for this email
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: inquiry } = await (supabase as any)
+    const { data: inquiry } = await supabaseAdmin
       .from("inquiries")
       .select("id, service_type")
       .eq("email", studentEmail)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single() as { data: { id: string; service_type: string } | null };
+      .single<{ id: string; service_type: string }>();
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: consultation, error } = await (supabase as any)
+    const { data: consultation, error } = await supabaseAdmin
       .from("consultations")
       .insert({
         calcom_uid: data.uid,
         student_name: studentName,
         student_email: studentEmail,
-        student_phone: attendee?.timeZone ? null : null,
+        student_phone: null,
         inquiry_id: inquiry?.id ?? null,
         scheduled_date: scheduledDate,
         scheduled_time: scheduledTime,
@@ -75,7 +74,7 @@ export async function POST(request: NextRequest) {
         status: "scheduled",
         reminder_24h_sent: false,
         reminder_1h_sent: false,
-      } as any)
+      } as Record<string, unknown>)
       .select("id")
       .single();
 
@@ -84,16 +83,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "DB error" }, { status: 500 });
     }
 
-    // Update inquiry status if matched
     if (inquiry?.id) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      await (supabase as any)
+      await supabaseAdmin
         .from("inquiries")
-        .update({ status: "consultation_booked" })
+        .update({ status: "consultation_booked" } as Record<string, unknown>)
         .eq("id", inquiry.id);
     }
 
-    // Send confirmation email (non-blocking)
     if (studentEmail && scheduledDate && scheduledTime) {
       const dateLabel = new Date(data.startTime).toLocaleDateString("en-NG", {
         weekday: "long", year: "numeric", month: "long", day: "numeric",
@@ -137,8 +133,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (triggerEvent === "BOOKING_RESCHEDULED") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any)
+    await supabaseAdmin
       .from("consultations")
       .update({
         scheduled_date: scheduledDate,
@@ -147,27 +142,41 @@ export async function POST(request: NextRequest) {
         status: "rescheduled",
         reminder_24h_sent: false,
         reminder_1h_sent: false,
-      })
+      } as Record<string, unknown>)
       .eq("calcom_uid", data.uid);
 
     return NextResponse.json({ received: true });
   }
 
   if (triggerEvent === "BOOKING_CANCELLED") {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await (supabase as any)
+    await supabaseAdmin
       .from("consultations")
-      .update({ status: "cancelled" })
+      .update({ status: "cancelled" } as Record<string, unknown>)
       .eq("calcom_uid", data.uid);
+
+    // Notify student of cancellation
+    if (studentEmail) {
+      void sendEmail({
+        to: studentEmail,
+        subject: "Your consultation has been cancelled — MakeoverArena",
+        react: React.createElement(ConsultationConfirmation, {
+          studentName: studentName.split(" ")[0],
+          date: scheduledDate ?? "",
+          time: scheduledTime ?? "",
+          timezone: attendee?.timeZone ?? "Africa/Lagos",
+          meetingLink: undefined,
+          cancelled: true,
+        }),
+        templateName: "consultation-cancelled",
+      }).catch((err) => console.error("[calcom] cancellation email failed:", err));
+    }
 
     return NextResponse.json({ received: true });
   }
 
-  // Unknown event — acknowledge and ignore
   return NextResponse.json({ received: true });
 }
 
-// Cal.com webhook payload shape (partial — only fields we use)
 interface CalcomPayload {
   triggerEvent: string;
   payload?: {

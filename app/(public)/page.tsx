@@ -156,7 +156,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-white/70 text-base sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-10 max-w-xl">
-              We guide ambitious Nigerian students through every step — from choosing the right program to holding that admission letter. 92% success rate across 200+ partner universities.
+              We guide ambitious African students through every step — from choosing the right program to holding that admission letter. 92% success rate across 200+ partner universities.
             </p>
 
             {/* CTAs */}

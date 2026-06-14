@@ -1,9 +1,9 @@
 import { Resend } from "resend";
-import { createAdminClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_ADDRESS = "MakeoverArena <onboarding@resend.dev>";
+const FROM_ADDRESS = process.env.EMAIL_FROM ?? "MakeoverArena <onboarding@resend.dev>";
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "admin@makeoverarena.com";
 
 export interface SendEmailOptions {
@@ -67,9 +67,9 @@ async function logEmail(params: {
   errorMessage?: string;
 }) {
   try {
-    const supabase = await createAdminClient();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    await supabase.from("email_logs").insert({
+    if (!supabaseAdmin) return;
+    
+    await supabaseAdmin.from("email_logs").insert({
       recipient_email: params.recipients[0],
       subject: params.subject,
       template_name: params.templateName,
@@ -78,9 +78,8 @@ async function logEmail(params: {
       inquiry_id: params.inquiryId ?? null,
       consultation_id: params.consultationId ?? null,
       error_message: params.errorMessage ?? null,
-    } as any);
+    } as Record<string, unknown>);
   } catch (err) {
-    // Non-fatal — don't block email send because of logging failure
     console.error("[sendEmail] Failed to log email:", err);
   }
 }

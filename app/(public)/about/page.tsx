@@ -5,11 +5,11 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: "About Us | MakeoverArena",
   description:
-    "Nigeria's #1 study-abroad consultancy. Our story, our mission, and the team that has helped 2,400+ students reach top universities worldwide.",
+    "Africa's leading study-abroad consultancy. Our story, our mission, and the team that has helped 2,400+ students reach top universities worldwide.",
   openGraph: {
     title: "About MakeoverArena",
     description:
-      "Nigeria's #1 study-abroad consultancy — 2,400+ students, 92% success rate.",
+      "Africa's leading study-abroad consultancy — 2,400+ students, 92% success rate.",
   },
 };
 
