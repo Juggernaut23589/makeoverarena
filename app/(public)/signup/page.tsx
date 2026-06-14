@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { Suspense } from "react";
 
 function SignupForm() {
@@ -37,12 +37,7 @@ function SignupForm() {
 
     setLoading(true);
 
-    if (!supabase) {
-      setError("Service not configured. Please try again later.");
-      setLoading(false);
-      return;
-    }
-
+    const supabase = createSupabaseBrowserClient();
     const { error: authError } = await supabase.auth.signUp({
       email: form.email,
       password: form.password,

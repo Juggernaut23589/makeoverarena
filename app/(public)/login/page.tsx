@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { supabase } from "@/lib/supabase";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function LoginForm() {
   const router = useRouter();
@@ -27,12 +27,7 @@ function LoginForm() {
     setError("");
     setLoading(true);
 
-    if (!supabase) {
-      setError("Service not configured. Please try again later.");
-      setLoading(false);
-      return;
-    }
-
+    const supabase = createSupabaseBrowserClient();
     const { error: authError } = await supabase.auth.signInWithPassword({ email, password });
     if (authError) {
       setError(authError.message === "Invalid login credentials"
@@ -43,6 +38,7 @@ function LoginForm() {
     }
 
     router.push(redirectTo);
+    router.refresh();
   };
 
   const handleReset = async (e: React.FormEvent) => {
@@ -50,15 +46,10 @@ function LoginForm() {
     setError("");
     setLoading(true);
 
-    if (!supabase) {
-      setError("Service not configured.");
-      setLoading(false);
-      return;
-    }
-
+    const supabase = createSupabaseBrowserClient();
     const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${appUrl}/reset-password`,
+      redirectTo: `${appUrl}/api/auth/callback?next=/reset-password`,
     });
 
     if (resetError) {

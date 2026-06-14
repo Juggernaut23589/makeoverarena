@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
 import crypto from "crypto";
 
 const COOKIE_NAME = "admin_session";
 
-function verifyToken(token: string): boolean {
+function verifyAdminToken(token: string): boolean {
   const secret = process.env.ADMIN_PASSWORD ?? "";
   const email = process.env.ADMIN_EMAIL ?? "";
   const password = process.env.ADMIN_PASSWORD ?? "";
@@ -19,19 +20,42 @@ function verifyToken(token: string): boolean {
   }
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Pass pathname to layouts via header (used to conditionally render sidebar)
-  const response = NextResponse.next();
+  // Refresh Supabase session cookies on every request
+  let response = NextResponse.next({ request });
   response.headers.set("x-pathname", pathname);
 
-  if (!pathname.startsWith("/admin")) return response;
-  if (pathname === "/admin/login") return response;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const token = request.cookies.get(COOKIE_NAME)?.value;
-  if (!token || !verifyToken(token)) {
-    return NextResponse.redirect(new URL("/admin/login", request.url));
+  if (supabaseUrl && supabaseAnonKey) {
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          response.headers.set("x-pathname", pathname);
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    });
+    // Refresh session — keeps auth cookies up to date
+    await supabase.auth.getUser();
+  }
+
+  // Admin route protection
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    const token = request.cookies.get(COOKIE_NAME)?.value;
+    if (!token || !verifyAdminToken(token)) {
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
   }
 
   return response;
