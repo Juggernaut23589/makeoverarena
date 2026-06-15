@@ -1,24 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import crypto from "crypto";
-
-const COOKIE_NAME = "admin_session";
-
-function verifyAdminToken(token: string): boolean {
-  const secret = process.env.ADMIN_PASSWORD ?? "";
-  const email = process.env.ADMIN_EMAIL ?? "";
-  const password = process.env.ADMIN_PASSWORD ?? "";
-  if (!password) return false;
-  const expected = crypto
-    .createHmac("sha256", secret)
-    .update(email + password)
-    .digest("hex");
-  try {
-    return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
-  } catch {
-    return false;
-  }
-}
+import { decodeSession, canAccess, COOKIE_NAME } from "@/lib/admin-auth";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -46,16 +28,26 @@ export async function proxy(request: NextRequest) {
         },
       },
     });
-    // Refresh session — keeps auth cookies up to date
     await supabase.auth.getUser();
   }
 
   // Admin route protection
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
     const token = request.cookies.get(COOKIE_NAME)?.value;
-    if (!token || !verifyAdminToken(token)) {
+    const session = token ? decodeSession(token) : null;
+
+    if (!session) {
       return NextResponse.redirect(new URL("/admin/login", request.url));
     }
+
+    if (!canAccess(session, pathname)) {
+      // Redirect to overview with an error param instead of a blank 403
+      return NextResponse.redirect(new URL("/admin?error=forbidden", request.url));
+    }
+
+    // Pass role to layouts via header
+    response.headers.set("x-admin-role", session.role);
+    response.headers.set("x-admin-name", session.fullName);
   }
 
   return response;

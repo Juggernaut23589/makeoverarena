@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
+import { decodeSession, COOKIE_NAME } from "@/lib/admin-auth";
 import { supabaseAdmin } from "@/lib/supabase";
 
-const COOKIE_NAME = "admin_session";
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token || !verifyToken(token)) {
+  if (!token || !decodeSession(token)) {
     return NextResponse.redirect(new URL("/admin/login", request.url));
   }
 

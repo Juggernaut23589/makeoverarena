@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
+import { decodeSession, COOKIE_NAME } from "@/lib/admin-auth";
 import { supabaseAdmin } from "@/lib/supabase";
 
-const COOKIE_NAME = "admin_session";
 
 // GET /api/whatsapp/conversations/[id] — fetch messages for a conversation
 export async function GET(
@@ -12,7 +11,7 @@ export async function GET(
 ) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token || !verifyToken(token)) {
+  if (!token || !decodeSession(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -43,7 +42,7 @@ export async function PATCH(
 ) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token || !verifyToken(token)) {
+  if (!token || !decodeSession(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

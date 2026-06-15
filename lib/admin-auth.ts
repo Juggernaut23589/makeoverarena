@@ -1,40 +1,53 @@
 import crypto from "crypto";
 
-const SECRET = process.env.ADMIN_PASSWORD ?? "dev-secret-change-me";
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL ?? "";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "";
-
 export const COOKIE_NAME = "admin_session";
 export const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-export function generateToken(): string {
-  return crypto
-    .createHmac("sha256", SECRET)
-    .update(ADMIN_EMAIL + ADMIN_PASSWORD)
-    .digest("hex");
+export type AdminRole = "super_admin" | "admin";
+
+export interface AdminSession {
+  userId: string;
+  email: string;
+  fullName: string;
+  role: AdminRole;
 }
 
-export function verifyToken(token: string): boolean {
-  if (!ADMIN_PASSWORD) return false;
-  const expected = generateToken();
+const SECRET = process.env.ADMIN_SESSION_SECRET ?? process.env.ADMIN_PASSWORD ?? "dev-secret";
+
+function sign(payload: string): string {
+  return crypto.createHmac("sha256", SECRET).update(payload).digest("hex");
+}
+
+export function encodeSession(session: AdminSession): string {
+  const payload = JSON.stringify(session);
+  const b64 = Buffer.from(payload).toString("base64url");
+  const sig = sign(b64);
+  return `${b64}.${sig}`;
+}
+
+export function decodeSession(token: string): AdminSession | null {
   try {
-    return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+    const [b64, sig] = token.split(".");
+    if (!b64 || !sig) return null;
+    const expected = sign(b64);
+    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+    return JSON.parse(Buffer.from(b64, "base64url").toString()) as AdminSession;
   } catch {
-    return false;
+    return null;
   }
 }
 
-export function checkCredentials(email: string, password: string): boolean {
-  if (!ADMIN_EMAIL || !ADMIN_PASSWORD) return false;
-  const emailOk = email.trim().toLowerCase() === ADMIN_EMAIL.trim().toLowerCase();
-  let passOk = false;
-  try {
-    passOk = crypto.timingSafeEqual(
-      Buffer.from(password),
-      Buffer.from(ADMIN_PASSWORD)
-    );
-  } catch {
-    return false;
+export function isSuperAdmin(session: AdminSession | null): boolean {
+  return session?.role === "super_admin";
+}
+
+// Routes only super_admin can access
+export const SUPER_ADMIN_ROUTES = ["/admin/settings", "/admin/team"];
+
+export function canAccess(session: AdminSession | null, pathname: string): boolean {
+  if (!session) return false;
+  if (SUPER_ADMIN_ROUTES.some((r) => pathname.startsWith(r))) {
+    return session.role === "super_admin";
   }
-  return emailOk && passOk;
+  return true;
 }

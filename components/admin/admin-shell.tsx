@@ -2,39 +2,26 @@
 
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { AdminSidebar, AdminMobileDrawer, adminNavItems } from "./sidebar";
+import { AdminSidebar, AdminMobileDrawer, getNavItems } from "./sidebar";
+import type { AdminRole } from "@/lib/admin-auth";
 
-/**
- * Responsive chrome for the admin area.
- * - lg+ : static collapsible sidebar (left) + scrollable main.
- * - <lg : sticky top bar with hamburger that opens a slide-out drawer.
- */
-export function AdminShell({ children }: { children: React.ReactNode }) {
+export function AdminShell({ children, role, adminName }: { children: React.ReactNode; role: AdminRole; adminName: string }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Close the drawer on navigation.
+  useEffect(() => { setOpen(false); }, [pathname]);
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  // Close on Escape.
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   const isInbox = pathname === "/admin/inbox";
-  const current = adminNavItems.find((i) =>
-    i.href === "/admin" ? pathname === "/admin" : pathname.startsWith(i.href)
-  );
+  const items = getNavItems(role);
+  const current = items.find((i) => i.href === "/admin" ? pathname === "/admin" : pathname.startsWith(i.href));
 
   return (
     <div className="flex flex-col lg:flex-row h-dvh bg-navy-50 overflow-hidden">
-      {/* Mobile top bar */}
       <header className="lg:hidden flex items-center gap-3 h-14 px-4 bg-navy-900 border-b border-white/10 shrink-0">
         <button
           onClick={() => setOpen(true)}
@@ -46,18 +33,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <span className="font-display text-white font-semibold text-sm">
-          Makeover<span className="text-gold-400">Arena</span>
-        </span>
-        {current && (
-          <span className="ml-auto text-white/50 text-xs font-medium uppercase tracking-wide truncate">
-            {current.label}
-          </span>
-        )}
+        <span className="font-display text-white font-semibold text-sm">Makeover<span className="text-gold-400">Arena</span></span>
+        {current && <span className="ml-auto text-white/50 text-xs font-medium uppercase tracking-wide truncate">{current.label}</span>}
       </header>
 
-      <AdminSidebar />
-      <AdminMobileDrawer open={open} onClose={() => setOpen(false)} />
+      <AdminSidebar role={role} adminName={adminName} />
+      <AdminMobileDrawer open={open} onClose={() => setOpen(false)} role={role} adminName={adminName} />
 
       <main className={isInbox ? "flex-1 min-h-0 overflow-hidden flex flex-col" : "flex-1 overflow-y-auto"}>
         {children}

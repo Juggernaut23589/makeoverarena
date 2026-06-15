@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { verifyToken } from "@/lib/admin-auth";
+import { decodeSession, COOKIE_NAME } from "@/lib/admin-auth";
 import { createClient } from "@supabase/supabase-js";
 
-const COOKIE_NAME        = "admin_session";
 const WA_TOKEN           = process.env.WHATSAPP_ACCESS_TOKEN ?? "";
 const WA_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID ?? "";
 const SUPABASE_URL       = process.env.NEXT_PUBLIC_SUPABASE_URL!;
@@ -14,7 +13,7 @@ export async function POST(request: NextRequest) {
   // Auth
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token || !verifyToken(token)) {
+  if (!token || !decodeSession(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
