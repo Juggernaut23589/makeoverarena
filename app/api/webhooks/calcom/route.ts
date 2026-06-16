@@ -90,6 +90,13 @@ export async function POST(request: NextRequest) {
         .eq("id", inquiry.id);
     }
 
+    if (studentEmail) {
+      await supabaseAdmin
+        .from("client_profiles")
+        .update({ consultation_booked: true } as Record<string, unknown>)
+        .eq("email", studentEmail);
+    }
+
     if (studentEmail && scheduledDate && scheduledTime) {
       const dateLabel = new Date(data.startTime).toLocaleDateString("en-NG", {
         weekday: "long", year: "numeric", month: "long", day: "numeric",

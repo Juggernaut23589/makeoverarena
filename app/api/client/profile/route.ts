@@ -5,7 +5,11 @@ import { supabaseAdmin } from "@/lib/supabase";
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-const EDITABLE_FIELDS = ["phone", "city", "graduation_year", "field_of_study"] as const;
+const EDITABLE_FIELDS = [
+  "phone", "city", "country", "graduation_year", "field_of_study",
+  "education_level", "preferred_countries", "service_type", "budget_range",
+  "gpa", "gpa_scale", "is_pass_fail",
+] as const;
 
 export async function PATCH(request: NextRequest) {
   const authHeader = request.headers.get("authorization");

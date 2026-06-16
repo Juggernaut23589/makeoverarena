@@ -63,6 +63,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Failed to save document record" }, { status: 500 });
     }
 
+    await supabaseAdmin
+      .from("client_profiles")
+      .update({ documents_completed: true } as Record<string, unknown>)
+      .eq("id", clientId);
+
     return NextResponse.json({ id: doc.id, file_name: doc.file_name }, { status: 201 });
   } catch (err) {
     console.error("Upload error:", err);

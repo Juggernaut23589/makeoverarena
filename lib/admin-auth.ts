@@ -42,7 +42,7 @@ export function isSuperAdmin(session: AdminSession | null): boolean {
 }
 
 // Routes only super_admin can access
-export const SUPER_ADMIN_ROUTES = ["/admin/settings", "/admin/team"];
+export const SUPER_ADMIN_ROUTES = ["/admin/settings", "/admin/team", "/admin/clients"];
 
 export function canAccess(session: AdminSession | null, pathname: string): boolean {
   if (!session) return false;
