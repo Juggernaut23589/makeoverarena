@@ -402,6 +402,8 @@ function Step3({
 
   const isPassFail = watch("is_pass_fail");
   const gpaScale = watch("gpa_scale");
+  const educationLevel = watch("education_level");
+  const showPassFail = educationLevel === "bachelors";
 
   return (
     <form onSubmit={handleSubmit(onNext)}>
@@ -423,15 +425,17 @@ function Step3({
           {...register("field_of_study")}
         />
 
-        {/* Pass/Fail toggle */}
-        <label className="flex items-center gap-3 cursor-pointer select-none">
-          <input
-            type="checkbox"
-            {...register("is_pass_fail")}
-            className="w-4 h-4 rounded border-navy-300 text-gold-500 focus:ring-gold-400"
-          />
-          <span className="text-sm text-navy-700">My course uses Pass/Fail grading (no GPA)</span>
-        </label>
+        {/* Pass/Fail — only for bachelor's graduates (medical/pharmacy) */}
+        {showPassFail && (
+          <label className="flex items-center gap-3 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              {...register("is_pass_fail")}
+              className="w-4 h-4 rounded border-navy-300 text-gold-500 focus:ring-gold-400"
+            />
+            <span className="text-sm text-navy-700">My course uses Pass/Fail grading (e.g. Medicine, Pharmacy)</span>
+          </label>
+        )}
 
         {/* GPA fields — hidden when pass/fail */}
         {!isPassFail && (
