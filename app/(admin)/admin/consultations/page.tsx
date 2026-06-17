@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { supabaseAdmin } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import { ConfirmConsultationButton } from "@/components/admin/confirm-consultation-button";
 
 export const metadata: Metadata = {
   title: "Consultations | Admin",
@@ -11,7 +12,8 @@ const PAGE_SIZE = 20;
 
 const statusColors: Record<string, string> = {
   scheduled: "bg-blue-100 text-blue-700",
-  completed: "bg-green-100 text-green-700",
+  confirmed: "bg-green-100 text-green-700",
+  completed: "bg-emerald-100 text-emerald-700",
   cancelled: "bg-gray-100 text-gray-600",
   no_show: "bg-red-100 text-red-700",
   rescheduled: "bg-yellow-100 text-yellow-700",
@@ -19,6 +21,7 @@ const statusColors: Record<string, string> = {
 
 const statusLabels: Record<string, string> = {
   scheduled: "Scheduled",
+  confirmed: "Confirmed",
   completed: "Completed",
   cancelled: "Cancelled",
   no_show: "No Show",
@@ -217,7 +220,13 @@ export default async function ConsultationsPage({
                 </td>
                 <td className="px-4 py-4">
                   <div className="flex items-center gap-1">
-                    {c.meeting_link && c.status === "scheduled" && (
+                    {c.status === "scheduled" && (
+                      <ConfirmConsultationButton consultationId={c.id} />
+                    )}
+                    {c.status === "confirmed" && (
+                      <span className="text-xs px-2 py-1 bg-green-50 text-green-600 rounded font-medium">Confirmed</span>
+                    )}
+                    {c.meeting_link && (c.status === "scheduled" || c.status === "confirmed") && (
                       <a
                         href={c.meeting_link}
                         target="_blank"
@@ -227,11 +236,6 @@ export default async function ConsultationsPage({
                         Join
                       </a>
                     )}
-                    <button className="text-navy-400 hover:text-navy-700 p-1 rounded-lg hover:bg-navy-100 transition-colors">
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
-                      </svg>
-                    </button>
                   </div>
                 </td>
               </tr>
