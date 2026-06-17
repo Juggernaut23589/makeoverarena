@@ -2,7 +2,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { ClientDashboard } from "@/components/client/client-dashboard";
-import { OnboardingGate } from "@/components/client/onboarding-gate";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -63,16 +62,6 @@ export default async function ClientDashboardPage() {
     await adminClient.from("client_profiles").update({ user_id: userId }).eq("id", clientId);
   }
 
-  if (!profile.documents_completed || !profile.consultation_booked) {
-    return (
-      <OnboardingGate
-        clientId={clientId}
-        documentsCompleted={Boolean(profile.documents_completed)}
-        consultationBooked={Boolean(profile.consultation_booked)}
-      />
-    );
-  }
-
   let agent: Record<string, unknown> | null = null;
   if (profile.assigned_staff_id) {
     const { data } = await adminClient
@@ -92,6 +81,8 @@ export default async function ClientDashboardPage() {
       documents={(documentsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["documents"]}
       clientId={clientId}
       agent={agent as unknown as Parameters<typeof ClientDashboard>[0]["agent"]}
+      documentsCompleted={Boolean(profile.documents_completed)}
+      consultationBooked={Boolean(profile.consultation_booked)}
     />
   );
 }

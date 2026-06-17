@@ -84,6 +84,8 @@ interface Props {
   documents: Document[];
   clientId: string;
   agent?: Agent | null;
+  documentsCompleted?: boolean;
+  consultationBooked?: boolean;
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -130,7 +132,7 @@ interface ScholarshipMatch {
   application_url: string | null;
 }
 
-export function ClientDashboard({ profile, applications, payments, consultations, documents, clientId, agent }: Props) {
+export function ClientDashboard({ profile, applications, payments, consultations, documents, clientId, agent, documentsCompleted = false, consultationBooked = false }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<ClientProfile>>(profile);
@@ -323,6 +325,43 @@ export function ClientDashboard({ profile, applications, payments, consultations
             <h2 className="font-display text-2xl text-navy-900 dark:text-white">
               Welcome back, {profile.full_name.split(" ")[0]}
             </h2>
+
+            {/* Next steps banner — shown until both are done */}
+            {(!documentsCompleted || !consultationBooked) && (
+              <div className="bg-navy-900 rounded-xl p-5 border border-gold-500/20">
+                <p className="text-xs font-semibold text-gold-400 uppercase tracking-wider mb-3">Next Steps</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold", documentsCompleted ? "bg-green-500 text-white" : "bg-white/10 text-white/50")}>
+                      {documentsCompleted ? "✓" : "1"}
+                    </div>
+                    <div className="flex-1">
+                      <p className={cn("text-sm font-medium", documentsCompleted ? "text-white/50 line-through" : "text-white")}>Upload your documents</p>
+                      {!documentsCompleted && <p className="text-white/40 text-xs">Transcripts, passport, certificates etc.</p>}
+                    </div>
+                    {!documentsCompleted && (
+                      <button onClick={() => setActiveTab("documents")} className="text-xs px-3 py-1.5 bg-gold-500 text-navy-900 rounded-lg font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap">
+                        Upload →
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold", consultationBooked ? "bg-green-500 text-white" : "bg-white/10 text-white/50")}>
+                      {consultationBooked ? "✓" : "2"}
+                    </div>
+                    <div className="flex-1">
+                      <p className={cn("text-sm font-medium", consultationBooked ? "text-white/50 line-through" : "text-white")}>Book your free consultation</p>
+                      {!consultationBooked && <p className="text-white/40 text-xs">15-minute call with one of our advisors</p>}
+                    </div>
+                    {!consultationBooked && (
+                      <a href="/book" className="text-xs px-3 py-1.5 bg-gold-500 text-navy-900 rounded-lg font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap">
+                        Book →
+                      </a>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
