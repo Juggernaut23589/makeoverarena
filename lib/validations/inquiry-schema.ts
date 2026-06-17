@@ -25,12 +25,9 @@ export const step3Schema = z.object({
     "Please select your education level"
   ),
   field_of_study: z.string().optional(),
-  gpa_percentage: z
-    .number()
-    .min(0)
-    .max(100)
-    .optional()
-    .nullable(),
+  is_pass_fail: z.boolean().optional(),
+  gpa_scale: z.enum(["4.0", "5.0"]).optional().nullable(),
+  gpa: z.number().min(0).max(5).optional().nullable(),
   graduation_year: z
     .number()
     .int()

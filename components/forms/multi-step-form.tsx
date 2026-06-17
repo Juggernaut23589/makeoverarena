@@ -201,7 +201,9 @@ export function MultiStepForm() {
             defaultValues={{
               education_level: formData.education_level,
               field_of_study: formData.field_of_study,
-              gpa_percentage: formData.gpa_percentage ?? undefined,
+              is_pass_fail: formData.is_pass_fail ?? false,
+              gpa_scale: formData.gpa_scale ?? "4.0",
+              gpa: formData.gpa ?? undefined,
               graduation_year: formData.graduation_year ?? undefined,
             }}
             onNext={handleStepComplete}
@@ -393,10 +395,13 @@ function Step3({
   onNext: (data: Step3Data) => void;
   onBack: () => void;
 }) {
-  const { register, handleSubmit, formState: { errors } } = useForm<Step3Data>({
+  const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<Step3Data>({
     resolver: zodResolver(step3Schema),
-    defaultValues,
+    defaultValues: { is_pass_fail: false, gpa_scale: "4.0", ...defaultValues },
   });
+
+  const isPassFail = watch("is_pass_fail");
+  const gpaScale = watch("gpa_scale");
 
   return (
     <form onSubmit={handleSubmit(onNext)}>
@@ -417,18 +422,66 @@ function Step3({
           placeholder="e.g. Computer Science, Medicine, Finance"
           {...register("field_of_study")}
         />
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            label="Current GPA / Percentage"
-            type="number"
-            placeholder="e.g. 3.8 or 78"
-            step="0.01"
-            min="0"
-            max="100"
-            {...register("gpa_percentage", { valueAsNumber: true })}
-            error={errors.gpa_percentage?.message}
-            hint="Enter as a number (GPA out of 4.0 or percentage)"
+
+        {/* Pass/Fail toggle */}
+        <label className="flex items-center gap-3 cursor-pointer select-none">
+          <input
+            type="checkbox"
+            {...register("is_pass_fail")}
+            className="w-4 h-4 rounded border-navy-300 text-gold-500 focus:ring-gold-400"
           />
+          <span className="text-sm text-navy-700">My course uses Pass/Fail grading (no GPA)</span>
+        </label>
+
+        {/* GPA fields — hidden when pass/fail */}
+        {!isPassFail && (
+          <div className="space-y-3">
+            {/* GPA scale toggle */}
+            <div>
+              <label className="block text-sm font-medium text-navy-700 mb-2">GPA Scale</label>
+              <div className="flex gap-2">
+                {(["4.0", "5.0"] as const).map((scale) => (
+                  <button
+                    key={scale}
+                    type="button"
+                    onClick={() => setValue("gpa_scale", scale)}
+                    className={`px-5 py-2 rounded-lg border text-sm font-semibold transition-colors ${
+                      gpaScale === scale
+                        ? "bg-navy-900 text-white border-navy-900"
+                        : "bg-white text-navy-600 border-navy-200 hover:border-navy-400"
+                    }`}
+                  >
+                    {scale} Scale
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Input
+                label={`Current GPA (out of ${gpaScale ?? "4.0"})`}
+                type="number"
+                placeholder={gpaScale === "5.0" ? "e.g. 4.2" : "e.g. 3.8"}
+                step="0.01"
+                min="0"
+                max={gpaScale === "5.0" ? "5" : "4"}
+                {...register("gpa", { valueAsNumber: true })}
+                error={errors.gpa?.message}
+              />
+              <Input
+                label="Graduation Year"
+                type="number"
+                placeholder="e.g. 2025"
+                min="1990"
+                max="2030"
+                {...register("graduation_year", { valueAsNumber: true })}
+                error={errors.graduation_year?.message}
+              />
+            </div>
+          </div>
+        )}
+
+        {isPassFail && (
           <Input
             label="Graduation Year"
             type="number"
@@ -438,7 +491,7 @@ function Step3({
             {...register("graduation_year", { valueAsNumber: true })}
             error={errors.graduation_year?.message}
           />
-        </div>
+        )}
       </div>
 
       <div className="flex gap-3 mt-8">
