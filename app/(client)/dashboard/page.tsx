@@ -23,14 +23,31 @@ export default async function ClientDashboardPage() {
 
   const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
 
-  const { data: profile } = await adminClient
+  let { data: profile } = await adminClient
     .from("client_profiles")
     .select("*")
     .or(`user_id.eq.${userId},email.eq.${userEmail}`)
     .single<Record<string, unknown>>();
 
+  // Auto-create profile for new signups so they land directly on the dashboard
   if (!profile) {
-    return <NoProfileState email={userEmail} />;
+    const fullName = (user.user_metadata?.full_name as string | undefined) ?? userEmail.split("@")[0];
+    const { data: created } = await adminClient
+      .from("client_profiles")
+      .insert({
+        user_id: userId,
+        email: userEmail,
+        full_name: fullName,
+        status: "active",
+        is_active: true,
+      })
+      .select("*")
+      .single<Record<string, unknown>>();
+    profile = created;
+  }
+
+  if (!profile) {
+    return <UnconfiguredState />;
   }
 
   const clientId = profile.id as string;
@@ -97,26 +114,3 @@ function UnconfiguredState() {
   );
 }
 
-function NoProfileState({ email }: { email: string }) {
-  return (
-    <div className="min-h-screen bg-cream flex items-center justify-center p-6">
-      <div className="max-w-md w-full text-center">
-        <div className="w-14 h-14 bg-gold-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <span className="font-display text-navy-900 font-bold text-2xl leading-none">M</span>
-        </div>
-        <h1 className="font-display text-2xl text-navy-900 mb-3">Setting Up Your Dashboard</h1>
-        <p className="text-navy-500 mb-3">
-          We&apos;re finishing setup for your account ({email}). This usually takes a few seconds — try refreshing the page.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <a
-            href="mailto:info@makeoverarena.com"
-            className="px-6 py-3 border border-navy-200 text-navy-700 rounded-xl font-semibold text-sm hover:bg-navy-50 transition-colors"
-          >
-            Contact Support
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
