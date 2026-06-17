@@ -133,7 +133,12 @@ export function MultiStepForm() {
         form_name: "inquiry",
         service_type: finalData.service_type ?? "",
       });
-      setIsSuccess(true);
+      const params = new URLSearchParams({
+        email: finalData.email ?? "",
+        name: finalData.full_name ?? "",
+        applied: "1",
+      });
+      router.push(`/signup?${params.toString()}`);
     } catch {
       toast.error("Network error. Please check your connection and try again.");
     } finally {
