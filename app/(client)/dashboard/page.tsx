@@ -38,8 +38,6 @@ export default async function ClientDashboardPage() {
         user_id: userId,
         email: userEmail,
         full_name: fullName,
-        status: "active",
-        is_active: true,
       })
       .select("*")
       .single<Record<string, unknown>>();
