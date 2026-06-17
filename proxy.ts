@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { decodeSession, canAccess, COOKIE_NAME } from "@/lib/admin-auth";
+import { decodeSession, canAccess, COOKIE_NAME, STAFF_COOKIE_NAME, decodeStaffSession } from "@/lib/admin-auth";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -48,6 +48,17 @@ export async function proxy(request: NextRequest) {
     // Pass role to layouts via header
     response.headers.set("x-admin-role", session.role);
     response.headers.set("x-admin-name", session.fullName);
+  }
+
+  // Staff route protection
+  if (pathname.startsWith("/staff") && pathname !== "/staff/login") {
+    const token = request.cookies.get(STAFF_COOKIE_NAME)?.value;
+    const session = token ? decodeStaffSession(token) : null;
+    if (!session) {
+      return NextResponse.redirect(new URL("/staff/login", request.url));
+    }
+    response.headers.set("x-staff-role", session.role);
+    response.headers.set("x-staff-name", session.fullName);
   }
 
   return response;

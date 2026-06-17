@@ -3,13 +3,30 @@ import crypto from "crypto";
 export const COOKIE_NAME = "admin_session";
 export const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
-export type AdminRole = "super_admin" | "admin";
+export type AdminRole = "super_admin" | "admin" | "staff";
+
+export type StaffAbility =
+  | "view_clients"
+  | "assign_agents"
+  | "manage_scholarships"
+  | "view_payments"
+  | "view_analytics";
 
 export interface AdminSession {
   userId: string;
   email: string;
   fullName: string;
   role: AdminRole;
+  abilities?: Partial<Record<StaffAbility, boolean>>;
+  isPending?: boolean;
+}
+
+export const STAFF_COOKIE_NAME = "staff_session";
+
+export function hasAbility(session: AdminSession | null, ability: StaffAbility): boolean {
+  if (!session) return false;
+  if (session.role === "super_admin") return true;
+  return Boolean(session.abilities?.[ability]);
 }
 
 const SECRET = process.env.ADMIN_SESSION_SECRET ?? process.env.ADMIN_PASSWORD ?? "dev-secret";
@@ -39,6 +56,14 @@ export function decodeSession(token: string): AdminSession | null {
 
 export function isSuperAdmin(session: AdminSession | null): boolean {
   return session?.role === "super_admin";
+}
+
+export function encodeStaffSession(session: AdminSession): string {
+  return encodeSession(session);
+}
+
+export function decodeStaffSession(token: string): AdminSession | null {
+  return decodeSession(token);
 }
 
 // Routes only super_admin can access

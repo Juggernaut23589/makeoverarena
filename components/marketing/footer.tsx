@@ -190,9 +190,17 @@ export function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-white/40 text-xs">
-            © {new Date().getFullYear()} MakeoverArena. All rights reserved.
-          </p>
+          <div className="flex items-center gap-4">
+            <p className="text-white/40 text-xs">
+              © {new Date().getFullYear()} MakeoverArena. All rights reserved.
+            </p>
+            <Link
+              href="/staff/login"
+              className="text-xs text-white/20 hover:text-white/40 transition-colors"
+            >
+              Staff Login
+            </Link>
+          </div>
           <div className="flex gap-6">
             {legal.map((item) => (
               <Link
