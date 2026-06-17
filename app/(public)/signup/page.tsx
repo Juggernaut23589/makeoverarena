@@ -44,6 +44,7 @@ function SignupForm() {
       password: form.password,
       options: {
         data: { full_name: form.fullName },
+        emailRedirectTo: `${window.location.origin}/dashboard`,
       },
     });
 

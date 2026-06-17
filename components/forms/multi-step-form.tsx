@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -133,12 +134,19 @@ export function MultiStepForm() {
         form_name: "inquiry",
         service_type: finalData.service_type ?? "",
       });
-      const params = new URLSearchParams({
-        email: finalData.email ?? "",
-        name: finalData.full_name ?? "",
-        applied: "1",
-      });
-      router.push(`/signup?${params.toString()}`);
+      // If already logged in, go straight to dashboard
+      const supabase = createSupabaseBrowserClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push("/dashboard");
+      } else {
+        const params = new URLSearchParams({
+          email: finalData.email ?? "",
+          name: finalData.full_name ?? "",
+          applied: "1",
+        });
+        router.push(`/signup?${params.toString()}`);
+      }
     } catch {
       toast.error("Network error. Please check your connection and try again.");
     } finally {
