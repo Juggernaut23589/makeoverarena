@@ -177,7 +177,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
     const res = await fetch(`/api/client/profile`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: editData.phone, city: editData.city, graduation_year: editData.graduation_year, field_of_study: editData.field_of_study }),
+      body: JSON.stringify({ phone: editData.phone, city: editData.city, country: editData.country, education_level: editData.education_level, graduation_year: editData.graduation_year, field_of_study: editData.field_of_study }),
     });
     if (res.ok) {
       toast.success("Profile updated");
@@ -501,10 +501,10 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 { label: "Email", key: "email", value: profile.email, readonly: true },
                 { label: "Phone", key: "phone", value: profile.phone },
                 { label: "City", key: "city", value: profile.city },
-                { label: "Country", key: "country", value: profile.country, readonly: true },
-                { label: "Education Level", key: "education_level", value: profile.education_level, readonly: true },
+                { label: "Country", key: "country", value: profile.country },
+                { label: "Education Level", key: "education_level", value: profile.education_level },
                 { label: "Field of Study", key: "field_of_study", value: profile.field_of_study },
-                { label: "GPA / Percentage", key: "gpa_percentage", value: profile.gpa_percentage, readonly: true },
+                { label: "GPA", key: "gpa", value: profile.gpa != null ? `${profile.gpa} / ${profile.gpa_scale ?? ""}` : (profile.is_pass_fail ? "Pass/Fail" : null), readonly: true },
                 { label: "Graduation Year", key: "graduation_year", value: profile.graduation_year },
                 { label: "Service Type", key: "service_type", value: profile.service_type, readonly: true },
                 { label: "Budget Range", key: "budget_range", value: profile.budget_range, readonly: true },
