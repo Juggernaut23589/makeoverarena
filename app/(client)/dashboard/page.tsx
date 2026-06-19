@@ -26,25 +26,26 @@ export default async function ClientDashboardPage() {
   let { data: profile } = await adminClient
     .from("client_profiles")
     .select("*")
-    .or(`user_id.eq.${userId},email.eq.${userEmail}`)
+    .or(`user_id.eq.${userId},email.ilike.${userEmail}`)
     .maybeSingle<Record<string, unknown>>();
 
-  // Auto-create profile for new signups so they land directly on the dashboard
-  if (!profile) {
-    const fullName = (user.user_metadata?.full_name as string | undefined) ?? userEmail.split("@")[0];
+  const normalizedEmail = userEmail.toLowerCase();
+  const fullName = (user.user_metadata?.full_name as string | undefined) ?? normalizedEmail.split("@")[0];
 
-    const { data: inquiry } = await adminClient
-      .from("inquiries")
-      .select("*")
-      .eq("email", userEmail)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle<Record<string, unknown>>();
+  const { data: inquiry } = await adminClient
+    .from("inquiries")
+    .select("*")
+    .ilike("email", normalizedEmail)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<Record<string, unknown>>();
 
-    const insertPayload: Record<string, unknown> = {
+  const buildProfileData = (extra: Record<string, unknown> = {}) => {
+    const data: Record<string, unknown> = {
       user_id: userId,
       full_name: fullName,
-      email: userEmail,
+      email: normalizedEmail,
+      ...extra,
     };
 
     if (inquiry) {
@@ -66,19 +67,30 @@ export default async function ClientDashboardPage() {
 
       for (const [inquiryField, profileField] of Object.entries(fieldMapping)) {
         if (inquiry[inquiryField] !== undefined && inquiry[inquiryField] !== null) {
-          insertPayload[profileField] = inquiry[inquiryField];
+          data[profileField] = inquiry[inquiryField];
         }
       }
 
-      insertPayload.inquiry_id = inquiry.id;
+      data.inquiry_id = inquiry.id;
     }
 
+    return data;
+  };
+
+  // Auto-create profile for new signups so they land directly on the dashboard
+  if (!profile) {
     const { data: created } = await adminClient
       .from("client_profiles")
-      .insert(insertPayload)
+      .insert(buildProfileData())
       .select("*")
       .single<Record<string, unknown>>();
     profile = created;
+  } else if (inquiry && !profile.inquiry_id) {
+    // Backfill inquiry data for existing profiles that were created before bridging
+    const updates = buildProfileData();
+    delete updates.id;
+    await adminClient.from("client_profiles").update(updates).eq("id", profile.id as string);
+    profile = { ...profile, ...updates };
   }
 
   if (!profile) {

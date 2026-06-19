@@ -47,28 +47,22 @@ async function provisionClientProfile(
 ) {
   if (!supabaseAdmin || !user.email) return;
 
-  const { data: existing } = await supabaseAdmin
-    .from("client_profiles")
-    .select("id")
-    .eq("user_id", user.id)
-    .maybeSingle();
-
-  if (existing) return;
-
-  const fullName = (user.user_metadata?.full_name as string | undefined) ?? user.email;
+  const userEmail = user.email.toLowerCase();
 
   const { data: inquiry } = await supabaseAdmin
     .from("inquiries")
     .select("*")
-    .eq("email", user.email)
+    .ilike("email", userEmail)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle<Record<string, unknown>>();
 
-  const insertPayload: Record<string, unknown> = {
+  const fullName = (user.user_metadata?.full_name as string | undefined) ?? userEmail;
+
+  const profileData: Record<string, unknown> = {
     user_id: user.id,
     full_name: fullName,
-    email: user.email,
+    email: userEmail,
   };
 
   if (inquiry) {
@@ -90,14 +84,27 @@ async function provisionClientProfile(
 
     for (const [inquiryField, profileField] of Object.entries(fieldMapping)) {
       if (inquiry[inquiryField] !== undefined && inquiry[inquiryField] !== null) {
-        insertPayload[profileField] = inquiry[inquiryField];
+        profileData[profileField] = inquiry[inquiryField];
       }
     }
 
-    insertPayload.inquiry_id = inquiry.id;
+    profileData.inquiry_id = inquiry.id;
   }
 
-  const { error: insertError } = await supabaseAdmin.from("client_profiles").insert(insertPayload);
+  const { data: existing } = await supabaseAdmin
+    .from("client_profiles")
+    .select("id, inquiry_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existing) {
+    if (inquiry && !existing.inquiry_id) {
+      await supabaseAdmin.from("client_profiles").update(profileData).eq("id", existing.id);
+    }
+    return;
+  }
+
+  const { error: insertError } = await supabaseAdmin.from("client_profiles").insert(profileData);
 
   if (insertError) {
     console.error("[auth/callback] Failed to create client_profiles row:", insertError);
@@ -106,7 +113,7 @@ async function provisionClientProfile(
 
   try {
     await sendEmail({
-      to: user.email,
+      to: userEmail,
       subject: "Your MakeoverArena dashboard is ready",
       templateName: "signup-confirmation",
       react: SignupConfirmation({

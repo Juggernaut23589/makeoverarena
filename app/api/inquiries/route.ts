@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         subject: `New inquiry: ${data.full_name} — ${data.service_type}`,
         react: React.createElement(AdminNotification, {
           studentName: data.full_name,
-          email: data.email,
+        email: data.email.toLowerCase(),
           phone: data.phone,
           serviceType: data.service_type,
           preferredCountries: data.preferred_countries,
