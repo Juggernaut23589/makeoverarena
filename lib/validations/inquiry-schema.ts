@@ -112,6 +112,15 @@ export const TEST_OPTIONS = [
   { id: "none", label: "None yet" },
 ];
 
+export const SERVICE_TYPES = [
+  { value: "undergraduate", label: "Undergraduate" },
+  { value: "graduate", label: "Graduate" },
+  { value: "phd", label: "PhD" },
+  { value: "scholarship", label: "Scholarship" },
+  { value: "visa", label: "Visa" },
+  { value: "unsure", label: "Not sure yet" },
+];
+
 export const REFERRAL_SOURCES = [
   "Instagram",
   "Google Search",

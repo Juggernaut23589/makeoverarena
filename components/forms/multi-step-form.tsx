@@ -140,12 +140,7 @@ export function MultiStepForm() {
       if (session) {
         router.push("/dashboard");
       } else {
-        const params = new URLSearchParams({
-          email: finalData.email ?? "",
-          name: finalData.full_name ?? "",
-          applied: "1",
-        });
-        router.push(`/signup?${params.toString()}`);
+        setIsSuccess(true);
       }
     } catch {
       toast.error("Network error. Please check your connection and try again.");

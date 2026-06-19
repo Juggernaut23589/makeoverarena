@@ -4,6 +4,13 @@ import { useState, useRef, useEffect } from "react";
 import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import {
+  COUNTRIES,
+  EDUCATION_LEVELS,
+  INTAKE_PERIODS,
+  BUDGET_RANGES,
+  SERVICE_TYPES,
+} from "@/lib/validations/inquiry-schema";
 
 interface ClientProfile {
   id: string;
@@ -120,6 +127,17 @@ const DOC_TYPE_LABELS: Record<string, string> = {
   other: "Other",
 };
 
+const EDUCATION_LABEL: Record<string, string> = Object.fromEntries(
+  EDUCATION_LEVELS.map((e) => [e.value, e.label])
+);
+const SERVICE_LABEL: Record<string, string> = Object.fromEntries(
+  SERVICE_TYPES.map((s) => [s.value, s.label])
+);
+const GPA_SCALE_OPTIONS = [
+  { value: "4.0", label: "4.0 Scale" },
+  { value: "5.0", label: "5.0 Scale" },
+];
+
 type Tab = "overview" | "profile" | "applications" | "consultations" | "payments" | "documents" | "scholarships";
 
 interface ScholarshipMatch {
@@ -174,16 +192,31 @@ export function ClientDashboard({ profile, applications, payments, consultations
 
   const handleSaveProfile = async () => {
     setSaving(true);
+    const payload: Record<string, unknown> = {
+      phone: editData.phone,
+      city: editData.city,
+      country: editData.country,
+      education_level: editData.education_level,
+      field_of_study: editData.field_of_study,
+      graduation_year: editData.graduation_year,
+      preferred_countries: editData.preferred_countries,
+      service_type: editData.service_type,
+      budget_range: editData.budget_range,
+      gpa: editData.gpa,
+      gpa_scale: editData.gpa_scale,
+      is_pass_fail: editData.is_pass_fail,
+    };
     const res = await fetch(`/api/client/profile`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ phone: editData.phone, city: editData.city, country: editData.country, education_level: editData.education_level, graduation_year: editData.graduation_year, field_of_study: editData.field_of_study }),
+      body: JSON.stringify(payload),
     });
     if (res.ok) {
       toast.success("Profile updated");
       setEditMode(false);
     } else {
-      toast.error("Failed to save profile");
+      const err = (await res.json()) as { error?: string };
+      toast.error(err.error ?? "Failed to save profile");
     }
     setSaving(false);
   };
@@ -253,6 +286,14 @@ export function ClientDashboard({ profile, applications, payments, consultations
     } finally {
       setUploadingDoc(false);
     }
+  };
+
+  const toggleCountry = (country: string) => {
+    const current = editData.preferred_countries ?? [];
+    const next = current.includes(country)
+      ? current.filter((c) => c !== country)
+      : [...current, country];
+    setEditData({ ...editData, preferred_countries: next });
   };
 
   const handleLogout = async () => {
@@ -488,7 +529,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 <button onClick={() => setEditMode(true)} className="text-sm text-gold-600 hover:text-gold-500 font-medium">Edit</button>
               ) : (
                 <div className="flex gap-3">
-                  <button onClick={() => setEditMode(false)} className="text-sm text-navy-400 dark:text-white/40 hover:text-navy-600">Cancel</button>
+                  <button onClick={() => { setEditMode(false); setEditData(profile); }} className="text-sm text-navy-400 dark:text-white/40 hover:text-navy-600">Cancel</button>
                   <button onClick={handleSaveProfile} disabled={saving} className="text-sm text-gold-600 hover:text-gold-500 font-medium disabled:opacity-50">
                     {saving ? "Saving…" : "Save"}
                   </button>
@@ -496,34 +537,162 @@ export function ClientDashboard({ profile, applications, payments, consultations
               )}
             </div>
             <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {[
-                { label: "Full Name", key: "full_name", value: profile.full_name, readonly: true },
-                { label: "Email", key: "email", value: profile.email, readonly: true },
-                { label: "Phone", key: "phone", value: profile.phone },
-                { label: "City", key: "city", value: profile.city },
-                { label: "Country", key: "country", value: profile.country },
-                { label: "Education Level", key: "education_level", value: profile.education_level },
-                { label: "Field of Study", key: "field_of_study", value: profile.field_of_study },
-                { label: "GPA", key: "gpa", value: profile.gpa != null ? `${profile.gpa} / ${profile.gpa_scale ?? ""}` : (profile.is_pass_fail ? "Pass/Fail" : null), readonly: true },
-                { label: "Graduation Year", key: "graduation_year", value: profile.graduation_year },
-                { label: "Service Type", key: "service_type", value: profile.service_type, readonly: true },
-                { label: "Budget Range", key: "budget_range", value: profile.budget_range, readonly: true },
-                { label: "Preferred Countries", key: "preferred_countries", value: profile.preferred_countries?.join(", "), readonly: true },
-              ].map((field) => (
-                <div key={field.key}>
-                  <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">{field.label}</label>
-                  {editMode && !field.readonly ? (
-                    <input
-                      type="text"
-                      value={(editData[field.key as keyof ClientProfile] as string) ?? ""}
-                      onChange={(e) => setEditData({ ...editData, [field.key]: e.target.value })}
-                      className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
-                    />
-                  ) : (
-                    <p className="text-navy-800 dark:text-white/80 text-sm">{String(field.value ?? "") || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
-                  )}
-                </div>
-              ))}
+              {/* Full Name — readonly */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Full Name</label>
+                <p className="text-navy-800 dark:text-white/80 text-sm">{profile.full_name}</p>
+              </div>
+
+              {/* Email — readonly */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Email</label>
+                <p className="text-navy-800 dark:text-white/80 text-sm">{profile.email}</p>
+              </div>
+
+              {/* Phone */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Phone</label>
+                {editMode ? (
+                  <input type="text" value={editData.phone ?? ""} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{profile.phone || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* City */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">City</label>
+                {editMode ? (
+                  <input type="text" value={editData.city ?? ""} onChange={(e) => setEditData({ ...editData, city: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{profile.city || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* Country */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Country</label>
+                {editMode ? (
+                  <input type="text" value={editData.country ?? ""} onChange={(e) => setEditData({ ...editData, country: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{profile.country || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* Education Level */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Education Level</label>
+                {editMode ? (
+                  <select value={editData.education_level ?? ""} onChange={(e) => setEditData({ ...editData, education_level: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <option value="">Select...</option>
+                    {EDUCATION_LEVELS.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}
+                  </select>
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{EDUCATION_LABEL[profile.education_level ?? ""] || profile.education_level || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* Field of Study */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Field of Study</label>
+                {editMode ? (
+                  <input type="text" value={editData.field_of_study ?? ""} onChange={(e) => setEditData({ ...editData, field_of_study: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{profile.field_of_study || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* GPA Section */}
+              <div className="sm:col-span-2 border border-border rounded-xl p-4 space-y-4">
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50">Grade Info</label>
+                {editMode ? (
+                  <>
+                    <label className="flex items-center gap-2 text-sm text-navy-800 dark:text-white/80">
+                      <input type="checkbox" checked={editData.is_pass_fail ?? false} onChange={(e) => setEditData({ ...editData, is_pass_fail: e.target.checked, gpa: null, gpa_scale: null })} className="rounded border-border" />
+                      Pass / Fail grading system
+                    </label>
+                    {!editData.is_pass_fail && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">GPA Scale</label>
+                          <select value={editData.gpa_scale ?? ""} onChange={(e) => setEditData({ ...editData, gpa_scale: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                            <option value="">Select scale...</option>
+                            {GPA_SCALE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">GPA</label>
+                          <input type="number" step="0.01" min="0" max={editData.gpa_scale === "5.0" ? 5 : 4} value={editData.gpa ?? ""} onChange={(e) => setEditData({ ...editData, gpa: e.target.value ? parseFloat(e.target.value) : null })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">
+                    {profile.is_pass_fail
+                      ? "Pass / Fail"
+                      : profile.gpa != null && profile.gpa_scale
+                        ? `${profile.gpa} / ${profile.gpa_scale}`
+                        : <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}
+                  </p>
+                )}
+              </div>
+
+              {/* Graduation Year */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Graduation Year</label>
+                {editMode ? (
+                  <input type="number" min="1990" max="2030" value={editData.graduation_year ?? ""} onChange={(e) => setEditData({ ...editData, graduation_year: e.target.value ? parseInt(e.target.value) : null })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{profile.graduation_year ?? <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* Service Type */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Service Type</label>
+                {editMode ? (
+                  <select value={editData.service_type ?? ""} onChange={(e) => setEditData({ ...editData, service_type: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <option value="">Select...</option>
+                    {SERVICE_TYPES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
+                  </select>
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{SERVICE_LABEL[profile.service_type ?? ""] || profile.service_type || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* Budget Range */}
+              <div>
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Budget Range</label>
+                {editMode ? (
+                  <select value={editData.budget_range ?? ""} onChange={(e) => setEditData({ ...editData, budget_range: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                    <option value="">Select...</option>
+                    {BUDGET_RANGES.map((b) => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{profile.budget_range || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
+
+              {/* Preferred Countries */}
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Preferred Countries</label>
+                {editMode ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {COUNTRIES.map((country) => {
+                      const selected = editData.preferred_countries?.includes(country) ?? false;
+                      return (
+                        <label key={country} className={cn("flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-colors", selected ? "border-gold-500 bg-gold-50 dark:bg-gold-900/20 text-navy-900 dark:text-white" : "border-border text-navy-600 dark:text-white/60 hover:border-navy-300")}>
+                          <input type="checkbox" checked={selected} onChange={() => toggleCountry(country)} className="sr-only" />
+                          {selected ? "✓" : ""} {country}
+                        </label>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-navy-800 dark:text-white/80 text-sm">{profile.preferred_countries?.join(", ") || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
+                )}
+              </div>
             </div>
           </div>
         )}

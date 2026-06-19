@@ -57,11 +57,47 @@ async function provisionClientProfile(
 
   const fullName = (user.user_metadata?.full_name as string | undefined) ?? user.email;
 
-  const { error: insertError } = await supabaseAdmin.from("client_profiles").insert({
+  const { data: inquiry } = await supabaseAdmin
+    .from("inquiries")
+    .select("*")
+    .eq("email", user.email)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle<Record<string, unknown>>();
+
+  const insertPayload: Record<string, unknown> = {
     user_id: user.id,
     full_name: fullName,
     email: user.email,
-  } as Record<string, unknown>);
+  };
+
+  if (inquiry) {
+    const fieldMapping: Record<string, string> = {
+      phone: "phone",
+      city: "city",
+      country: "country",
+      service_type: "service_type",
+      education_level: "education_level",
+      field_of_study: "field_of_study",
+      gpa: "gpa",
+      gpa_scale: "gpa_scale",
+      is_pass_fail: "is_pass_fail",
+      gpa_percentage: "gpa_percentage",
+      graduation_year: "graduation_year",
+      preferred_countries: "preferred_countries",
+      budget_range: "budget_range",
+    };
+
+    for (const [inquiryField, profileField] of Object.entries(fieldMapping)) {
+      if (inquiry[inquiryField] !== undefined && inquiry[inquiryField] !== null) {
+        insertPayload[profileField] = inquiry[inquiryField];
+      }
+    }
+
+    insertPayload.inquiry_id = inquiry.id;
+  }
+
+  const { error: insertError } = await supabaseAdmin.from("client_profiles").insert(insertPayload);
 
   if (insertError) {
     console.error("[auth/callback] Failed to create client_profiles row:", insertError);
