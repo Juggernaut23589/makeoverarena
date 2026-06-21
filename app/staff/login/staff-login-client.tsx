@@ -2,8 +2,13 @@
 
 import { useState, useActionState } from "react";
 import { registerStaffAction, loginStaffAction } from "./actions";
+import { loginAction as adminLoginAction } from "@/app/(admin)/admin/login/actions";
 
-type Tab = "login" | "register";
+async function handleAdminLogin(formData: FormData) {
+  await adminLoginAction(undefined, formData);
+}
+
+type Tab = "login" | "register" | "admin";
 
 export function StaffLoginClient() {
   const [tab, setTab] = useState<Tab>("login");
@@ -29,7 +34,7 @@ export function StaffLoginClient() {
         <div className="bg-white rounded-2xl shadow-sm border border-navy-100 overflow-hidden">
           {/* Tabs */}
           <div className="flex border-b border-navy-100">
-            {(["login", "register"] as Tab[]).map((t) => (
+            {(["login", "register", "admin"] as Tab[]).map((t) => (
               <button
                 key={t}
                 onClick={() => setTab(t)}
@@ -39,13 +44,52 @@ export function StaffLoginClient() {
                     : "text-navy-400 hover:text-navy-700"
                 }`}
               >
-                {t === "login" ? "Sign In" : "Register"}
+                {t === "login" ? "Sign In" : t === "register" ? "Register" : "Admin"}
               </button>
             ))}
           </div>
 
           <div className="p-6">
-            {tab === "login" ? (
+            {tab === "admin" ? (
+              <form action={handleAdminLogin} className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-2 h-2 bg-gold-500 rounded-full" />
+                  <span className="text-xs font-semibold text-gold-600 uppercase tracking-wide">Admin Portal</span>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
+                    Email
+                  </label>
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                    placeholder="admin@makeoverarena.com"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
+                    Password
+                  </label>
+                  <input
+                    name="password"
+                    type="password"
+                    required
+                    autoComplete="current-password"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                    placeholder="••••••••"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full py-2.5 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors"
+                >
+                  Admin Sign In →
+                </button>
+              </form>
+            ) : tab === "login" ? (
               <form action={loginAction} className="space-y-4">
                 <div>
                   <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
