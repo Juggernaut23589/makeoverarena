@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { decodeSession, canAccess, COOKIE_NAME, STAFF_COOKIE_NAME, decodeStaffSession } from "@/lib/admin-auth";
 
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Refresh Supabase session cookies on every request
