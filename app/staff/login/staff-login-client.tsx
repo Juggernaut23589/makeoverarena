@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useActionState } from "react";
+import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { registerStaffAction, loginStaffAction } from "./actions";
 import { loginAction as adminLoginAction } from "@/app/(admin)/admin/login/actions";
 
@@ -15,12 +16,19 @@ async function handleAdminLogin(formData: FormData) {
 type Tab = "login" | "register" | "admin";
 
 export function StaffLoginClient() {
+  const router = useRouter();
   const [tab, setTab] = useState<Tab>("login");
   const [loginState, loginAction, loginPending] = useActionState(loginStaffAction, undefined);
   const [registerState, registerAction, registerPending] = useActionState(
     registerStaffAction,
     undefined
   );
+
+  useEffect(() => {
+    if (loginState?.success) {
+      router.push("/staff/dashboard");
+    }
+  }, [loginState, router]);
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-6">

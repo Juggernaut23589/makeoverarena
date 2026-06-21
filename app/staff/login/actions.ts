@@ -80,9 +80,9 @@ export async function registerStaffAction(
 }
 
 export async function loginStaffAction(
-  _prev: { error?: string } | undefined,
+  _prev: { error?: string; success?: boolean } | undefined,
   formData: FormData
-): Promise<{ error: string }> {
+): Promise<{ error?: string; success?: boolean }> {
   const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
   const password = (formData.get("password") as string) ?? "";
 
@@ -127,7 +127,7 @@ export async function loginStaffAction(
     path: "/",
   });
 
-  redirect("/staff/dashboard");
+  return { success: true };
 }
 
 export async function logoutStaffAction() {
