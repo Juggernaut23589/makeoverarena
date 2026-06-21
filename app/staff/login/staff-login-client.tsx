@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useActionState } from "react";
+import Link from "next/link";
 import { registerStaffAction, loginStaffAction } from "./actions";
 import { loginAction as adminLoginAction } from "@/app/(admin)/admin/login/actions";
 
@@ -22,14 +23,14 @@ export function StaffLoginClient() {
     <div className="min-h-screen bg-cream flex items-center justify-center p-6">
       <div className="w-full max-w-md">
         {/* Logo */}
-        <div className="flex items-center gap-2.5 mb-8 justify-center">
+        <Link href="/" className="flex items-center gap-2.5 mb-8 justify-center">
           <div className="w-9 h-9 bg-gold-500 rounded-lg flex items-center justify-center">
             <span className="font-display text-navy-900 font-bold text-lg leading-none">M</span>
           </div>
           <span className="font-display font-semibold text-xl text-navy-900">
             Makeover<span className="text-gold-500">Arena</span>
           </span>
-        </div>
+        </Link>
 
         <div className="bg-white rounded-2xl shadow-sm border border-navy-100 overflow-hidden">
           {/* Tabs */}

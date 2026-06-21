@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -162,7 +163,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
     <div className="min-h-screen bg-navy-950">
       <header className="border-b border-white/10 bg-navy-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center">
               <span className="font-display text-navy-900 font-bold text-base">M</span>
             </div>
@@ -170,7 +171,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
             <span className="hidden sm:block px-2 py-0.5 bg-gold-500/10 text-gold-400 text-xs rounded-full border border-gold-500/20">
               {isSuperAdmin ? "Super Admin" : "Staff"}
             </span>
-          </div>
+          </Link>
           <div className="flex items-center gap-4">
             <span className="hidden sm:block text-sm text-white/60">{staff.full_name}</span>
             <form action={logoutStaffAction}>

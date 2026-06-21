@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -129,7 +130,7 @@ export function ChatbotWidget() {
         style={{ maxHeight: "min(520px, calc(100vh - 100px))" }}
       >
         {/* Header */}
-        <div className="bg-navy-900 px-5 py-4 flex items-center gap-3">
+        <Link href="/" className="bg-navy-900 px-5 py-4 flex items-center gap-3">
           <div className="w-9 h-9 bg-gold-500 rounded-full flex items-center justify-center shrink-0">
             <span className="text-navy-900 font-bold text-sm font-display">M</span>
           </div>
@@ -149,7 +150,7 @@ export function ChatbotWidget() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
-        </div>
+        </Link>
 
         {/* Messages */}
         <div className="overflow-y-auto p-4 space-y-3" style={{ height: "320px" }}>

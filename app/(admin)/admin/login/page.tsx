@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import Link from "next/link";
 import { loginAction } from "./actions";
 import type { Metadata } from "next";
 
@@ -11,12 +12,14 @@ export default function AdminLoginPage() {
     <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gold-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <span className="font-display text-navy-900 font-bold text-2xl leading-none">M</span>
-          </div>
-          <h1 className="font-display text-2xl text-white font-light">
-            Makeover<span className="text-gold-400">Arena</span>
-          </h1>
+          <Link href="/" className="inline-block">
+            <div className="w-14 h-14 bg-gold-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span className="font-display text-navy-900 font-bold text-2xl leading-none">M</span>
+            </div>
+            <h1 className="font-display text-2xl text-white font-light">
+              Makeover<span className="text-gold-400">Arena</span>
+            </h1>
+          </Link>
           <p className="text-white/40 text-sm mt-1">Admin Portal</p>
         </div>
 

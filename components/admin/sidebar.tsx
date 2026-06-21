@@ -148,7 +148,10 @@ function SidebarFooter({ collapsed, role, adminName, onToggleCollapse }: {
 
 function Brand({ collapsed }: { collapsed: boolean }) {
   return (
-    <div className={cn("flex items-center h-16 px-4 border-b border-white/5 shrink-0", collapsed ? "justify-center" : "gap-3")}>
+    <Link
+      href="/"
+      className={cn("flex items-center h-16 px-4 border-b border-white/5 shrink-0", collapsed ? "justify-center" : "gap-3")}
+    >
       <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center shrink-0">
         <span className="font-display text-navy-900 font-bold text-sm leading-none">M</span>
       </div>
@@ -157,7 +160,7 @@ function Brand({ collapsed }: { collapsed: boolean }) {
           Makeover<span className="text-gold-400">Arena</span>
         </span>
       )}
-    </div>
+    </Link>
   );
 }
 
@@ -186,12 +189,12 @@ export function AdminMobileDrawer({ open, onClose, role, adminName }: { open: bo
         aria-label="Admin navigation"
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-white/5 shrink-0">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center shrink-0">
               <span className="font-display text-navy-900 font-bold text-sm leading-none">M</span>
             </div>
             <span className="font-display text-white font-semibold">Makeover<span className="text-gold-400">Arena</span></span>
-          </div>
+          </Link>
           <button onClick={onClose} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close menu">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 18L18 6M6 6l12 12" />

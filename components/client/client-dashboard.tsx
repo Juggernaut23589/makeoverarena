@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -315,12 +316,12 @@ export function ClientDashboard({ profile, applications, payments, consultations
     <div className="min-h-screen bg-cream dark:bg-navy-950">
       <header className="bg-white dark:bg-navy-900 border-b border-border shadow-sm">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center">
               <span className="font-display text-navy-900 font-bold text-base leading-none">M</span>
             </div>
             <span className="font-display text-navy-900 dark:text-white font-medium">My Dashboard</span>
-          </div>
+          </Link>
           <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-2">
               <div className="w-7 h-7 rounded-full bg-navy-100 dark:bg-navy-700 flex items-center justify-center text-xs font-semibold text-navy-700 dark:text-white">
