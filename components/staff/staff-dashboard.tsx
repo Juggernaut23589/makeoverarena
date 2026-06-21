@@ -162,16 +162,20 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
   return (
     <div className="min-h-screen bg-navy-950">
       <header className="border-b border-white/10 bg-navy-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center">
-              <span className="font-display text-navy-900 font-bold text-base">M</span>
-            </div>
-            <span className="font-display text-white font-medium">Staff Portal</span>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <a
+              href="https://www.makeoverarena.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-white/60 hover:text-white font-medium transition-colors"
+            >
+              Blog
+            </a>
             <span className="hidden sm:block px-2 py-0.5 bg-gold-500/10 text-gold-400 text-xs rounded-full border border-gold-500/20">
               {isSuperAdmin ? "Super Admin" : "Staff"}
             </span>
-          </Link>
+          </div>
           <div className="flex items-center gap-4">
             <span className="hidden sm:block text-sm text-white/60">{staff.full_name}</span>
             <form action={logoutStaffAction}>

@@ -18,6 +18,7 @@ const navLinks = [
   { href: "/success-stories", label: "Success Stories" },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ" },
+  { href: "https://www.makeoverarena.com/", label: "Blog", external: true },
 ];
 
 export function Navbar() {
@@ -142,24 +143,41 @@ export function Navbar() {
               )}
             </div>
 
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 whitespace-nowrap",
-                  pathname === link.href
-                    ? isDark
-                      ? "bg-white/15 text-white"
-                      : "bg-navy-50 text-navy-900"
-                    : isDark
-                    ? "text-white/80 hover:text-white hover:bg-white/10"
-                    : "text-navy-600 hover:text-navy-900 hover:bg-navy-50"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.map((link) =>
+              link.external ? (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 whitespace-nowrap",
+                    isDark
+                      ? "text-white/80 hover:text-white hover:bg-white/10"
+                      : "text-navy-600 hover:text-navy-900 hover:bg-navy-50"
+                  )}
+                >
+                  {link.label}
+                </a>
+              ) : (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "px-3 py-2 rounded-lg text-sm font-medium transition-all duration-150 whitespace-nowrap",
+                    pathname === link.href
+                      ? isDark
+                        ? "bg-white/15 text-white"
+                        : "bg-navy-50 text-navy-900"
+                      : isDark
+                      ? "text-white/80 hover:text-white hover:bg-white/10"
+                      : "text-navy-600 hover:text-navy-900 hover:bg-navy-50"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
           </nav>
 
           {/* CTA Buttons + Profile */}
@@ -275,20 +293,32 @@ export function Navbar() {
             </div>
           )}
 
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "block px-4 py-3 rounded-lg text-sm font-medium transition-colors",
-                pathname === link.href
-                  ? "bg-navy-50 text-navy-900"
-                  : "text-navy-600 hover:text-navy-900 hover:bg-navy-50"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((link) =>
+            link.external ? (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block px-4 py-3 rounded-lg text-sm font-medium transition-colors text-navy-600 hover:text-navy-900 hover:bg-navy-50"
+              >
+                {link.label}
+              </a>
+            ) : (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "block px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                  pathname === link.href
+                    ? "bg-navy-50 text-navy-900"
+                    : "text-navy-600 hover:text-navy-900 hover:bg-navy-50"
+                )}
+              >
+                {link.label}
+              </Link>
+            )
+          )}
 
           <div className="pt-3 flex flex-col gap-2 border-t border-border mt-2">
             <Link

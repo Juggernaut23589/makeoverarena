@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { NavbarWrapper } from "@/components/navbar-wrapper";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -83,7 +84,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-cream dark:bg-navy-950">
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          {children}
+          <NavbarWrapper>{children}</NavbarWrapper>
           <Toaster richColors position="top-right" />
         </ThemeProvider>
       </body>
