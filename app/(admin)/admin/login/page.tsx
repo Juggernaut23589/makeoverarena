@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { loginAction } from "./actions";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -12,7 +14,11 @@ export default function AdminLoginPage() {
     setPending(true);
     setError(null);
     const result = await loginAction(undefined, formData);
-    if (result?.error) setError(result.error);
+    if (result?.error) {
+      setError(result.error);
+    } else if (result?.success) {
+      router.push("/admin");
+    }
     setPending(false);
   }
 

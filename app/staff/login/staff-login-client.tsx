@@ -6,7 +6,10 @@ import { registerStaffAction, loginStaffAction } from "./actions";
 import { loginAction as adminLoginAction } from "@/app/(admin)/admin/login/actions";
 
 async function handleAdminLogin(formData: FormData) {
-  await adminLoginAction(undefined, formData);
+  const result = await adminLoginAction(undefined, formData);
+  if (result?.success) {
+    window.location.href = "/admin";
+  }
 }
 
 type Tab = "login" | "register" | "admin";

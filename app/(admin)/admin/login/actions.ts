@@ -10,9 +10,9 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function loginAction(
-  _prevState: { error?: string } | undefined,
+  _prevState: { error?: string; success?: boolean } | undefined,
   formData: FormData
-): Promise<{ error: string }> {
+): Promise<{ error?: string; success?: boolean }> {
   const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
   const password = (formData.get("password") as string) ?? "";
 
@@ -60,7 +60,7 @@ export async function loginAction(
     path: "/",
   });
 
-  redirect("/admin");
+  return { success: true };
 }
 
 export async function logoutAction() {
