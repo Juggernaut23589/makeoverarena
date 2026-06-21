@@ -28,7 +28,7 @@ const services = [
     description: "Masters and postgraduate admissions — personalized strategy for every applicant.",
     icon: "📚",
     href: "/services/graduate",
-    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80",
+    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80",
   },
   {
     title: "Scholarships",
@@ -483,7 +483,7 @@ export default function HomePage() {
       <section className="py-24 bg-navy-900 relative overflow-hidden">
         <div className="absolute inset-0">
           <Image
-            src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=1800&q=80"
+            src="https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=1800&q=80"
             alt="Graduation"
             fill
             className="object-cover object-center opacity-20"
