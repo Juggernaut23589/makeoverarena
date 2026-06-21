@@ -1,12 +1,20 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { loginAction } from "./actions";
-import type { Metadata } from "next";
 
 export default function AdminLoginPage() {
-  const [state, action, pending] = useActionState(loginAction, undefined);
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  async function handleSubmit(formData: FormData) {
+    setPending(true);
+    setError(null);
+    const result = await loginAction(undefined, formData);
+    if (result?.error) setError(result.error);
+    setPending(false);
+  }
 
   return (
     <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
@@ -24,12 +32,12 @@ export default function AdminLoginPage() {
         </div>
 
         <form
-          action={action}
+          action={handleSubmit}
           className="bg-navy-900 rounded-2xl border border-white/10 p-6 space-y-4"
         >
-          {state?.error && (
+          {error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
-              <p className="text-red-400 text-sm">{state.error}</p>
+              <p className="text-red-400 text-sm">{error}</p>
             </div>
           )}
 
