@@ -1,26 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useActionState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { loginAction } from "./actions";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
+  const [state, action, pending] = useActionState(loginAction, undefined);
 
-  async function handleSubmit(formData: FormData) {
-    setPending(true);
-    setError(null);
-    const result = await loginAction(undefined, formData);
-    if (result?.error) {
-      setError(result.error);
-    } else if (result?.success) {
-      router.push("/admin");
+  useEffect(() => {
+    if (state?.success) {
+      window.location.href = "/admin";
     }
-    setPending(false);
-  }
+  }, [state]);
 
   return (
     <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
@@ -38,12 +29,12 @@ export default function AdminLoginPage() {
         </div>
 
         <form
-          action={handleSubmit}
+          action={action}
           className="bg-navy-900 rounded-2xl border border-white/10 p-6 space-y-4"
         >
-          {error && (
+          {state?.error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
-              <p className="text-red-400 text-sm">{error}</p>
+              <p className="text-red-400 text-sm">{state.error}</p>
             </div>
           )}
 
