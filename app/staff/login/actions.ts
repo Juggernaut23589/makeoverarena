@@ -21,113 +21,123 @@ export async function registerStaffAction(
   _prev: { error?: string; success?: boolean } | undefined,
   formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
-  const fullName = ((formData.get("full_name") as string) ?? "").trim();
-  const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
-  const password = (formData.get("password") as string) ?? "";
-  const phone = ((formData.get("phone") as string) ?? "").trim();
-  const jobTitle = ((formData.get("job_title") as string) ?? "").trim();
+  try {
+    const fullName = ((formData.get("full_name") as string) ?? "").trim();
+    const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
+    const password = (formData.get("password") as string) ?? "";
+    const phone = ((formData.get("phone") as string) ?? "").trim();
+    const jobTitle = ((formData.get("job_title") as string) ?? "").trim();
 
-  if (!fullName || !email || !password || !jobTitle) {
-    return { error: "All fields are required." };
+    if (!fullName || !email || !password || !jobTitle) {
+      return { error: "All fields are required." };
+    }
+    if (password.length < 8) {
+      return { error: "Password must be at least 8 characters." };
+    }
+
+    const anonClient = createClient(URL, ANON);
+    const adminClient = createClient(URL, SERVICE);
+
+    // Check if already registered
+    const { data: existing } = await adminClient
+      .from("staff_profiles")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+    if (existing) return { error: "An account with this email already exists." };
+
+    // Create Supabase auth user
+    const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: { full_name: fullName },
+    });
+
+    if (authError || !authData.user) {
+      return { error: authError?.message ?? "Failed to create account." };
+    }
+
+    // Insert pending staff profile
+    const { error: insertError } = await adminClient.from("staff_profiles").insert({
+      id: authData.user.id,
+      full_name: fullName,
+      email,
+      phone: phone || null,
+      job_title: jobTitle,
+      role: "staff",
+      is_active: false,
+      is_pending: true,
+      abilities: {},
+    });
+
+    if (insertError) {
+      // Rollback auth user
+      await adminClient.auth.admin.deleteUser(authData.user.id);
+      return { error: "Failed to create staff profile. Please try again." };
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("Staff register error:", err);
+    return { error: "An unexpected error occurred. Please try again." };
   }
-  if (password.length < 8) {
-    return { error: "Password must be at least 8 characters." };
-  }
-
-  const anonClient = createClient(URL, ANON);
-  const adminClient = createClient(URL, SERVICE);
-
-  // Check if already registered
-  const { data: existing } = await adminClient
-    .from("staff_profiles")
-    .select("id")
-    .eq("email", email)
-    .maybeSingle();
-  if (existing) return { error: "An account with this email already exists." };
-
-  // Create Supabase auth user
-  const { data: authData, error: authError } = await adminClient.auth.admin.createUser({
-    email,
-    password,
-    email_confirm: true,
-    user_metadata: { full_name: fullName },
-  });
-
-  if (authError || !authData.user) {
-    return { error: authError?.message ?? "Failed to create account." };
-  }
-
-  // Insert pending staff profile
-  const { error: insertError } = await adminClient.from("staff_profiles").insert({
-    id: authData.user.id,
-    full_name: fullName,
-    email,
-    phone: phone || null,
-    job_title: jobTitle,
-    role: "staff",
-    is_active: false,
-    is_pending: true,
-    abilities: {},
-  });
-
-  if (insertError) {
-    // Rollback auth user
-    await adminClient.auth.admin.deleteUser(authData.user.id);
-    return { error: "Failed to create staff profile. Please try again." };
-  }
-
-  return { success: true };
 }
 
 export async function loginStaffAction(
   _prev: { error?: string; success?: boolean } | undefined,
   formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
-  const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
-  const password = (formData.get("password") as string) ?? "";
+  try {
+    const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
+    const password = (formData.get("password") as string) ?? "";
 
-  if (!email || !password) return { error: "Email and password are required." };
+    if (!email || !password) return { error: "Email and password are required." };
 
-  const anonClient = createClient(URL, ANON);
-  const { data: authData, error: authError } = await anonClient.auth.signInWithPassword({
-    email,
-    password,
-  });
+    const anonClient = createClient(URL, ANON);
+    const { data: authData, error: authError } = await anonClient.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-  if (authError || !authData.user) {
-    return { error: "Invalid email or password." };
+    if (authError || !authData.user) {
+      return { error: "Invalid email or password." };
+    }
+
+    const adminClient = createClient(URL, SERVICE);
+    const { data: staff } = await adminClient
+      .from("staff_profiles")
+      .select("id, full_name, email, role, is_active, is_pending, abilities")
+      .eq("id", authData.user.id)
+      .maybeSingle();
+
+    if (!staff) {
+      return { error: "No staff account found for this email." };
+    }
+
+    const token = encodeSession({
+      userId: staff.id,
+      email: staff.email,
+      fullName: staff.full_name,
+      role: staff.role as AdminRole,
+      abilities: staff.abilities ?? {},
+      isPending: staff.is_pending || !staff.is_active,
+    });
+
+    const cookieStore = await cookies();
+    cookieStore.set(STAFF_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: COOKIE_MAX_AGE,
+      path: "/",
+    });
+
+    return { success: true };
+  } catch (err) {
+    console.error("Staff login error:", err);
+    return { error: "An unexpected error occurred. Please try again." };
   }
-
-  const adminClient = createClient(URL, SERVICE);
-  const { data: staff } = await adminClient
-    .from("staff_profiles")
-    .select("id, full_name, email, role, is_active, is_pending, abilities")
-    .eq("id", authData.user.id)
-    .maybeSingle();
-
-  if (!staff) {
-    return { error: "No staff account found for this email." };
-  }
-
-  const token = encodeSession({
-    userId: staff.id,
-    email: staff.email,
-    fullName: staff.full_name,
-    role: staff.role as AdminRole,
-    abilities: staff.abilities ?? {},
-    isPending: staff.is_pending || !staff.is_active,
-  });
-
-  const cookieStore = await cookies();
-  cookieStore.set(STAFF_COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: COOKIE_MAX_AGE,
-    path: "/",
-  });
-
-  return { success: true };
 }
 
 export async function logoutStaffAction() {

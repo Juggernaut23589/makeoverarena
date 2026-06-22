@@ -5,17 +5,26 @@ import Link from "next/link";
 import { registerStaffAction, loginStaffAction } from "./actions";
 import { loginAction as adminLoginAction } from "@/app/(admin)/admin/login/actions";
 
-async function handleAdminLogin(formData: FormData) {
-  const result = await adminLoginAction(undefined, formData);
-  if (result?.success) {
-    window.location.href = "/admin";
-  }
-}
-
 type Tab = "login" | "register" | "admin";
 
 export function StaffLoginClient() {
   const [tab, setTab] = useState<Tab>("login");
+  const [adminError, setAdminError] = useState<string | null>(null);
+
+  async function handleAdminLogin(formData: FormData) {
+    setAdminError(null);
+    try {
+      const result = await adminLoginAction(undefined, formData);
+      if (result?.error) {
+        setAdminError(result.error);
+      } else if (result?.success) {
+        window.location.href = "/admin";
+      }
+    } catch (e) {
+      console.error("Admin login error:", e);
+      setAdminError("Connection error. Please try again.");
+    }
+  }
   const [loginState, loginAction, loginPending] = useActionState(loginStaffAction, undefined);
   const [registerState, registerAction, registerPending] = useActionState(
     registerStaffAction,
@@ -66,6 +75,11 @@ export function StaffLoginClient() {
                   <div className="w-2 h-2 bg-gold-500 rounded-full" />
                   <span className="text-xs font-semibold text-gold-600 uppercase tracking-wide">Admin Portal</span>
                 </div>
+                {adminError && (
+                  <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">
+                    {adminError}
+                  </p>
+                )}
                 <div>
                   <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
                     Email
