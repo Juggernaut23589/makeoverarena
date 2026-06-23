@@ -44,10 +44,16 @@ export function encodeSession(session: AdminSession): string {
 
 export function decodeSession(token: string): AdminSession | null {
   try {
-    const [b64, sig] = token.split(".");
+    const lastDot = token.lastIndexOf(".");
+    if (lastDot === -1) return null;
+    const b64 = token.slice(0, lastDot);
+    const sig = token.slice(lastDot + 1);
     if (!b64 || !sig) return null;
     const expected = sign(b64);
-    if (!crypto.timingSafeEqual(Buffer.from(sig), Buffer.from(expected))) return null;
+    const sigBuf = Buffer.from(sig, "hex");
+    const expBuf = Buffer.from(expected, "hex");
+    if (sigBuf.length !== expBuf.length) return null;
+    if (!crypto.timingSafeEqual(sigBuf, expBuf)) return null;
     return JSON.parse(Buffer.from(b64, "base64url").toString()) as AdminSession;
   } catch {
     return null;

@@ -13,6 +13,7 @@ export async function loginAction(
   _prevState: { error?: string; success?: boolean } | undefined,
   formData: FormData
 ): Promise<{ error?: string; success?: boolean }> {
+  console.log("[loginAction] Called with formData:", Object.fromEntries(formData.entries()));
   const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
   const password = (formData.get("password") as string) ?? "";
 
@@ -37,8 +38,8 @@ export async function loginAction(
     const { data: s } = await adminClient
       .from("staff_profiles")
       .select("id, full_name, email, role, is_active")
-      .eq("id", authData.user.id)
-      .single();
+      .or(`id.eq.${authData.user.id},email.eq.${email}`)
+      .maybeSingle();
     staff = s;
   } catch {
     return { error: "Failed to verify admin privileges." };
@@ -77,12 +78,14 @@ export async function loginAction(
       maxAge: COOKIE_MAX_AGE,
       path: "/",
     });
+    console.log("[loginAction] Cookie set successfully");
   } catch (err) {
     console.error("Admin login cookie error:", err);
     return { error: "Failed to set session cookie." };
   }
 
-  redirect("/admin");
+  console.log("[loginAction] Returning success");
+  return { success: true };
 }
 
 export async function logoutAction() {
