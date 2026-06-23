@@ -1,17 +1,11 @@
 "use client";
 
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import Link from "next/link";
 import { loginAction } from "./actions";
 
 export default function AdminLoginPage() {
   const [state, action, pending] = useActionState(loginAction, undefined);
-
-  useEffect(() => {
-    if (state?.success) {
-      window.location.href = "/admin";
-    }
-  }, [state]);
 
   return (
     <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">

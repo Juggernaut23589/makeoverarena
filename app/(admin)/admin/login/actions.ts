@@ -10,82 +10,49 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 export async function loginAction(
-  _prevState: { error?: string; success?: boolean } | undefined,
+  _prevState: { error?: string } | undefined,
   formData: FormData
-): Promise<{ error?: string; success?: boolean }> {
-  console.log("[loginAction] Called with formData:", Object.fromEntries(formData.entries()));
+): Promise<{ error?: string }> {
   const email = ((formData.get("email") as string) ?? "").trim().toLowerCase();
   const password = (formData.get("password") as string) ?? "";
 
   if (!email || !password) return { error: "Email and password are required." };
 
-  let anonClient;
-  try {
-    anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  } catch {
-    return { error: "Failed to initialise auth client." };
-  }
-
+  const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   const { data: authData, error: authError } = await anonClient.auth.signInWithPassword({ email, password });
 
   if (authError || !authData.user) {
     return { error: "Invalid email or password." };
   }
 
-  let staff;
-  try {
-    const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-    const { data: s } = await adminClient
-      .from("staff_profiles")
-      .select("id, full_name, email, role, is_active")
-      .or(`id.eq.${authData.user.id},email.eq.${email}`)
-      .maybeSingle();
-    staff = s;
-  } catch {
-    return { error: "Failed to verify admin privileges." };
-  }
+  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const { data: staff } = await adminClient
+    .from("staff_profiles")
+    .select("id, full_name, email, role, is_active")
+    .or(`id.eq.${authData.user.id},email.eq.${email}`)
+    .maybeSingle();
 
-  if (!staff) {
-    return { error: "Access denied. This account is not authorised as an admin." };
-  }
+  if (!staff) return { error: "Access denied. This account is not authorised as an admin." };
+  if (!staff.is_active) return { error: "Your admin account has been deactivated." };
+  if (!["super_admin", "admin"].includes(staff.role)) return { error: "Access denied. Insufficient permissions." };
 
-  if (!staff.is_active) {
-    return { error: "Your admin account has been deactivated. Contact the super admin." };
-  }
+  const token = encodeSession({
+    userId: staff.id,
+    email: staff.email,
+    fullName: staff.full_name,
+    role: staff.role as AdminRole,
+  });
 
-  if (!["super_admin", "admin"].includes(staff.role)) {
-    return { error: "Access denied. Insufficient permissions." };
-  }
+  const cookieStore = await cookies();
+  cookieStore.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: COOKIE_MAX_AGE,
+    path: "/",
+  });
 
-  let token;
-  try {
-    token = encodeSession({
-      userId: staff.id,
-      email: staff.email,
-      fullName: staff.full_name,
-      role: staff.role as AdminRole,
-    });
-  } catch {
-    return { error: "Failed to create session." };
-  }
-
-  try {
-    const cookieStore = await cookies();
-    cookieStore.set(COOKIE_NAME, token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: COOKIE_MAX_AGE,
-      path: "/",
-    });
-    console.log("[loginAction] Cookie set successfully");
-  } catch (err) {
-    console.error("Admin login cookie error:", err);
-    return { error: "Failed to set session cookie." };
-  }
-
-  console.log("[loginAction] Returning success");
-  return { success: true };
+  redirect("/admin");
 }
 
 export async function logoutAction() {
