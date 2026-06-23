@@ -73,7 +73,7 @@ export function decodeStaffSession(token: string): AdminSession | null {
 }
 
 // Routes only super_admin can access
-export const SUPER_ADMIN_ROUTES = ["/admin/settings", "/admin/team", "/admin/clients"];
+export const SUPER_ADMIN_ROUTES = ["/admin/settings", "/admin/team"];
 
 export function canAccess(session: AdminSession | null, pathname: string): boolean {
   if (!session) return false;

@@ -33,8 +33,12 @@ export async function middleware(request: NextRequest) {
 
   // Admin route protection
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    const allCookies = request.cookies.getAll();
+    console.log("[middleware] Cookies on admin request:", allCookies.map(c => c.name));
     const token = request.cookies.get(COOKIE_NAME)?.value;
+    console.log("[middleware] admin_session token:", token ? "present" : "missing");
     const session = token ? decodeSession(token) : null;
+    console.log("[middleware] decoded session:", session ? "valid" : "invalid/none");
 
     if (!session) {
       return NextResponse.redirect(new URL("/admin/login", request.url));

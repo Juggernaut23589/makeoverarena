@@ -1,11 +1,36 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { loginAction } from "./actions";
 
 export default function AdminLoginPage() {
-  const [state, action, pending] = useActionState(loginAction, undefined);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [pending, setPending] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setPending(true);
+    try {
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json() as { error?: string; success?: boolean };
+      if (!res.ok) {
+        setError(data.error ?? "Login failed.");
+      } else {
+        window.location.href = "/admin";
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setPending(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
@@ -23,26 +48,24 @@ export default function AdminLoginPage() {
         </div>
 
         <form
-          action={action}
+          onSubmit={handleSubmit}
           className="bg-navy-900 rounded-2xl border border-white/10 p-6 space-y-4"
         >
-          {state?.error && (
+          {error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
-              <p className="text-red-400 text-sm">{state.error}</p>
+              <p className="text-red-400 text-sm">{error}</p>
             </div>
           )}
 
           <div>
-            <label
-              htmlFor="email"
-              className="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wide"
-            >
+            <label htmlFor="email" className="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wide">
               Email
             </label>
             <input
               id="email"
               type="email"
-              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
               className="w-full px-3 py-2.5 bg-navy-800 border border-white/10 rounded-lg text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all"
@@ -51,16 +74,14 @@ export default function AdminLoginPage() {
           </div>
 
           <div>
-            <label
-              htmlFor="password"
-              className="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wide"
-            >
+            <label htmlFor="password" className="block text-xs font-medium text-white/50 mb-1.5 uppercase tracking-wide">
               Password
             </label>
             <input
               id="password"
               type="password"
-              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
               className="w-full px-3 py-2.5 bg-navy-800 border border-white/10 rounded-lg text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all"
