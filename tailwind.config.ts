@@ -80,6 +80,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-cormorant)", "Georgia", "serif"],
+        brand: ["Playfair Display", "Georgia", "serif"],
         sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
         mono: ["var(--font-dm-mono)", "monospace"],
       },

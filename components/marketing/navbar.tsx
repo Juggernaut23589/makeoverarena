@@ -88,7 +88,7 @@ export function Navbar() {
               priority
             />
             <span className={cn(
-              "font-display font-bold text-xl leading-none transition-colors duration-300",
+              "font-brand font-black text-2xl leading-none tracking-tight transition-colors duration-300",
               isDark ? "text-gold-400" : "text-gold-600"
             )}>
               MakeoverArena
