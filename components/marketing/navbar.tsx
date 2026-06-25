@@ -67,7 +67,7 @@ export function Navbar() {
   return (
     <header
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
+        "fixed top-0 left-0 right-0 z-[60] transition-all duration-300",
         scrolled || menuOpen
           ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-border"
           : isHomePage
@@ -257,7 +257,7 @@ export function Navbar() {
           menuOpen ? "max-h-[calc(100dvh-4rem)] opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <div className="bg-white border-t border-border px-4 py-4 space-y-1 overflow-y-auto max-h-[calc(100dvh-4rem)]">
+        <div className="bg-white border-t border-border px-4 py-4 pb-24 space-y-1 overflow-y-auto max-h-[calc(100dvh-4rem)]">
           {/* Services collapsible */}
           <button
             onClick={() => setMobileServicesOpen((o) => !o)}
