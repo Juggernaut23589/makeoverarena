@@ -39,17 +39,20 @@ export default function AdminLoginPage() {
     <div className="min-h-dvh bg-navy-950 flex flex-col items-center justify-center p-4 overflow-y-auto">
       <div className="w-full max-w-sm py-8">
         <div className="text-center mb-6">
-          <Link href="/" className="inline-block">
+          <Link href="/" className="inline-flex flex-col items-center gap-1">
             <Image
-              src="/makeover-logo-dark.png"
+              src="/makeover-logo-icon.png"
               alt="MakeoverArena"
-              width={200}
-              height={50}
-              className="h-10 w-auto mx-auto mb-2"
+              width={72}
+              height={72}
+              className="w-16 h-16 object-contain drop-shadow-lg"
               priority
             />
+            <span className="font-display font-bold text-xl text-white leading-none mt-1">
+              Makeover<span className="text-crimson-400">Arena</span>
+            </span>
           </Link>
-          <p className="text-white/40 text-sm mt-1">Admin Portal</p>
+          <p className="text-white/40 text-sm mt-2">Admin Portal</p>
         </div>
 
         <form

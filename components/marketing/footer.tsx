@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const PHONE = process.env.NEXT_PUBLIC_PHONE ?? "+234 800 000 0000";
 const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348000000000";
@@ -77,10 +78,14 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-5">
-              <div className="w-9 h-9 bg-crimson-500 rounded-lg flex items-center justify-center shrink-0">
-                <span className="font-display text-white font-bold text-lg leading-none">M</span>
-              </div>
-              <span className="font-display font-semibold text-xl text-white">
+              <Image
+                src="/makeover-logo-icon.png"
+                alt="MakeoverArena"
+                width={40}
+                height={40}
+                className="w-10 h-10 object-contain shrink-0"
+              />
+              <span className="font-display font-bold text-xl text-white">
                 Makeover<span className="text-crimson-400">Arena</span>
               </span>
             </Link>

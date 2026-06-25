@@ -35,14 +35,17 @@ export function AdminShell({ children, role, adminName }: { children: React.Reac
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <Link href="/" className="flex items-center">
+        <Link href="/" className="flex items-center gap-2">
           <Image
-            src="/makeover-logo-dark.png"
+            src="/makeover-logo-icon.png"
             alt="MakeoverArena"
-            width={140}
-            height={36}
-            className="h-7 w-auto"
+            width={32}
+            height={32}
+            className="w-7 h-7 object-contain"
           />
+          <span className="font-display font-bold text-sm text-white leading-none">
+            Makeover<span className="text-crimson-400">Arena</span>
+          </span>
         </Link>
         {current && <span className="ml-auto text-white/50 text-xs font-medium uppercase tracking-wide truncate">{current.label}</span>}
       </header>

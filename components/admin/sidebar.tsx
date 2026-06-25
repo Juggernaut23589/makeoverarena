@@ -173,20 +173,19 @@ function Brand({ collapsed }: { collapsed: boolean }) {
   return (
     <Link
       href="/"
-      className={cn("flex items-center h-16 px-4 border-b border-white/5 shrink-0", collapsed ? "justify-center" : "")}
+      className={cn("flex items-center h-16 px-3 border-b border-white/5 shrink-0 gap-2", collapsed ? "justify-center" : "")}
     >
-      {collapsed ? (
-        <div className="w-8 h-8 bg-crimson-500 rounded-lg flex items-center justify-center shrink-0">
-          <span className="font-display text-white font-bold text-sm leading-none">M</span>
-        </div>
-      ) : (
-        <Image
-          src="/makeover-logo-dark.png"
-          alt="MakeoverArena"
-          width={150}
-          height={36}
-          className="h-7 w-auto"
-        />
+      <Image
+        src="/makeover-logo-icon.png"
+        alt="MakeoverArena"
+        width={36}
+        height={36}
+        className="w-8 h-8 object-contain shrink-0"
+      />
+      {!collapsed && (
+        <span className="font-display font-bold text-sm text-white leading-none">
+          Makeover<span className="text-crimson-400">Arena</span>
+        </span>
       )}
     </Link>
   );
@@ -216,15 +215,18 @@ export function AdminMobileDrawer({ open, onClose, role, adminName }: { open: bo
         aria-modal="true"
         aria-label="Admin navigation"
       >
-        <div className="flex items-center justify-between h-16 px-4 border-b border-white/5 shrink-0">
-          <Link href="/" className="flex items-center">
+        <div className="flex items-center justify-between h-16 px-3 border-b border-white/5 shrink-0">
+          <Link href="/" className="flex items-center gap-2">
             <Image
-              src="/makeover-logo-dark.png"
+              src="/makeover-logo-icon.png"
               alt="MakeoverArena"
-              width={150}
+              width={36}
               height={36}
-              className="h-7 w-auto"
+              className="w-8 h-8 object-contain"
             />
+            <span className="font-display font-bold text-sm text-white leading-none">
+              Makeover<span className="text-crimson-400">Arena</span>
+            </span>
           </Link>
           <button onClick={onClose} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close menu">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -2,6 +2,7 @@
 
 import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { registerStaffAction, loginStaffAction } from "./actions";
 
 type Tab = "login" | "register";
@@ -25,10 +26,14 @@ export function StaffLoginClient() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 mb-8 justify-center">
-          <div className="w-9 h-9 bg-crimson-500 rounded-lg flex items-center justify-center">
-            <span className="font-display text-white font-bold text-lg leading-none">M</span>
-          </div>
-          <span className="font-display font-semibold text-xl text-navy-900">
+          <Image
+            src="/makeover-logo-icon.png"
+            alt="MakeoverArena"
+            width={40}
+            height={40}
+            className="w-10 h-10 object-contain"
+          />
+          <span className="font-display font-bold text-xl text-navy-900">
             Makeover<span className="text-crimson-500">Arena</span>
           </span>
         </Link>

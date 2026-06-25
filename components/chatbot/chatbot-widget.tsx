@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -131,8 +132,14 @@ export function ChatbotWidget() {
       >
         {/* Header */}
         <Link href="/" className="bg-navy-900 px-5 py-4 flex items-center gap-3">
-          <div className="w-9 h-9 bg-crimson-500 rounded-full flex items-center justify-center shrink-0">
-            <span className="text-white font-bold text-sm font-display">M</span>
+          <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-navy-800">
+            <Image
+              src="/makeover-logo-icon.png"
+              alt="MakeoverArena"
+              width={36}
+              height={36}
+              className="w-full h-full object-contain"
+            />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-white font-semibold text-sm">MakeoverArena</div>
