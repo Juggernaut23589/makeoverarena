@@ -335,7 +335,13 @@ export function Navbar() {
               href="/login"
               className="block px-4 py-3 rounded-lg text-sm font-medium text-center border border-navy-200 text-navy-700 hover:bg-navy-50 transition-colors"
             >
-              My Account
+              Student Login
+            </Link>
+            <Link
+              href="/portal"
+              className="block px-4 py-3 rounded-lg text-sm font-medium text-center border border-navy-800 text-navy-900 bg-navy-50 hover:bg-navy-100 transition-colors"
+            >
+              Staff / Admin Login
             </Link>
           </div>
         </div>
