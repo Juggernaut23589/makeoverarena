@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -36,6 +37,7 @@ function getSessionId() {
 }
 
 export function ChatbotWidget() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE]);
   const [input, setInput] = useState("");
@@ -117,6 +119,8 @@ export function ChatbotWidget() {
     e.preventDefault();
     sendMessage(input);
   };
+
+  if (pathname.startsWith("/admin") || pathname.startsWith("/staff")) return null;
 
   return (
     <div className="fixed bottom-5 right-5 z-50">
