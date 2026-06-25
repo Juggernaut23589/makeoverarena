@@ -31,7 +31,7 @@ export function ThemeToggle({ className }: ThemeToggleProps) {
       aria-label="Toggle dark mode"
     >
       {isDark ? (
-        <Sun className="w-4.5 h-4.5 text-gold-400" />
+        <Sun className="w-4.5 h-4.5 text-crimson-400" />
       ) : (
         <Moon className="w-4.5 h-4.5 text-navy-700" />
       )}

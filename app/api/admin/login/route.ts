@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Insufficient permissions." }, { status: 403 });
   }
 
-  const token = encodeSession({
+  const token = await encodeSession({
     userId: staff.id,
     email: staff.email,
     fullName: staff.full_name,

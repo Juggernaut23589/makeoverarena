@@ -352,7 +352,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 className={cn(
                   "shrink-0 px-3 sm:px-4 py-3.5 text-xs sm:text-sm font-medium whitespace-nowrap border-b-2 transition-all",
                   activeTab === tab.id
-                    ? "border-gold-500 text-navy-900 dark:text-white"
+                    ? "border-crimson-500 text-navy-900 dark:text-white"
                     : "border-transparent text-navy-500 dark:text-white/50 hover:text-navy-700 dark:hover:text-white/70"
                 )}
               >
@@ -373,8 +373,8 @@ export function ClientDashboard({ profile, applications, payments, consultations
 
             {/* Next steps banner — shown until both are done */}
             {(!documentsCompleted || !consultationBooked) && (
-              <div className="bg-navy-900 rounded-xl p-5 border border-gold-500/20">
-                <p className="text-xs font-semibold text-gold-400 uppercase tracking-wider mb-3">Next Steps</p>
+              <div className="bg-navy-900 rounded-xl p-5 border border-crimson-500/20">
+                <p className="text-xs font-semibold text-crimson-400 uppercase tracking-wider mb-3">Next Steps</p>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className={cn("w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs font-bold", documentsCompleted ? "bg-green-500 text-white" : "bg-white/10 text-white/50")}>
@@ -385,7 +385,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       {!documentsCompleted && <p className="text-white/40 text-xs">Transcripts, passport, certificates etc.</p>}
                     </div>
                     {!documentsCompleted && (
-                      <button onClick={() => setActiveTab("documents")} className="text-xs px-3 py-1.5 bg-gold-500 text-navy-900 rounded-lg font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap">
+                      <button onClick={() => setActiveTab("documents")} className="text-xs px-3 py-1.5 bg-crimson-500 text-white rounded-lg font-semibold hover:bg-crimson-400 transition-colors whitespace-nowrap">
                         Upload →
                       </button>
                     )}
@@ -399,7 +399,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       {!consultationBooked && <p className="text-white/40 text-xs">15-minute call with one of our advisors</p>}
                     </div>
                     {!consultationBooked && (
-                      <a href="/book" className="text-xs px-3 py-1.5 bg-gold-500 text-navy-900 rounded-lg font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap">
+                      <a href="/book" className="text-xs px-3 py-1.5 bg-crimson-500 text-white rounded-lg font-semibold hover:bg-crimson-400 transition-colors whitespace-nowrap">
                         Book →
                       </a>
                     )}
@@ -426,7 +426,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
             {upcomingConsultation && (
               <div className="bg-navy-900 rounded-xl p-6 border border-white/10">
                 <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs font-semibold text-gold-400 uppercase tracking-wider">Next Consultation</span>
+                  <span className="text-xs font-semibold text-crimson-400 uppercase tracking-wider">Next Consultation</span>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
@@ -438,7 +438,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       href={upcomingConsultation.meeting_link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg text-sm font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap"
+                      className="px-4 py-2 bg-crimson-500 text-white rounded-lg text-sm font-semibold hover:bg-crimson-400 transition-colors whitespace-nowrap"
                     >
                       Join Meeting →
                     </a>
@@ -449,7 +449,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
 
             {agent && (
               <div className="bg-white dark:bg-navy-800 rounded-xl p-6 border border-border shadow-card">
-                <span className="text-xs font-semibold text-gold-600 dark:text-gold-400 uppercase tracking-wider">Your Agent</span>
+                <span className="text-xs font-semibold text-crimson-600 dark:text-crimson-400 uppercase tracking-wider">Your Agent</span>
                 <p className="font-display text-lg text-navy-900 dark:text-white mt-1 mb-4">{agent.full_name}</p>
                 <div className="flex flex-wrap gap-3">
                   <a
@@ -530,11 +530,11 @@ export function ClientDashboard({ profile, applications, payments, consultations
             <div className="px-6 py-5 border-b border-border flex items-center justify-between">
               <h3 className="font-display text-lg text-navy-900 dark:text-white">Personal & Academic Details</h3>
               {!editMode ? (
-                <button onClick={() => setEditMode(true)} className="text-sm text-gold-600 hover:text-gold-500 font-medium">Edit</button>
+                <button onClick={() => setEditMode(true)} className="text-sm text-crimson-600 hover:text-crimson-500 font-medium">Edit</button>
               ) : (
                 <div className="flex gap-3">
                   <button onClick={() => { setEditMode(false); setEditData(profile); }} className="text-sm text-navy-400 dark:text-white/40 hover:text-navy-600">Cancel</button>
-                  <button onClick={handleSaveProfile} disabled={saving} className="text-sm text-gold-600 hover:text-gold-500 font-medium disabled:opacity-50">
+                  <button onClick={handleSaveProfile} disabled={saving} className="text-sm text-crimson-600 hover:text-crimson-500 font-medium disabled:opacity-50">
                     {saving ? "Saving…" : "Save"}
                   </button>
                 </div>
@@ -557,7 +557,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Phone</label>
                 {editMode ? (
-                  <input type="text" value={editData.phone ?? ""} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                  <input type="text" value={editData.phone ?? ""} onChange={(e) => setEditData({ ...editData, phone: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400" />
                 ) : (
                   <p className="text-navy-800 dark:text-white/80 text-sm">{profile.phone || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
                 )}
@@ -567,7 +567,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">City</label>
                 {editMode ? (
-                  <input type="text" value={editData.city ?? ""} onChange={(e) => setEditData({ ...editData, city: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                  <input type="text" value={editData.city ?? ""} onChange={(e) => setEditData({ ...editData, city: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400" />
                 ) : (
                   <p className="text-navy-800 dark:text-white/80 text-sm">{profile.city || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
                 )}
@@ -577,7 +577,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Country</label>
                 {editMode ? (
-                  <input type="text" value={editData.country ?? ""} onChange={(e) => setEditData({ ...editData, country: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                  <input type="text" value={editData.country ?? ""} onChange={(e) => setEditData({ ...editData, country: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400" />
                 ) : (
                   <p className="text-navy-800 dark:text-white/80 text-sm">{profile.country || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
                 )}
@@ -587,7 +587,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Education Level</label>
                 {editMode ? (
-                  <select value={editData.education_level ?? ""} onChange={(e) => setEditData({ ...editData, education_level: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                  <select value={editData.education_level ?? ""} onChange={(e) => setEditData({ ...editData, education_level: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400">
                     <option value="">Select...</option>
                     {EDUCATION_LEVELS.map((e) => <option key={e.value} value={e.value}>{e.label}</option>)}
                   </select>
@@ -600,7 +600,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Field of Study</label>
                 {editMode ? (
-                  <input type="text" value={editData.field_of_study ?? ""} onChange={(e) => setEditData({ ...editData, field_of_study: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                  <input type="text" value={editData.field_of_study ?? ""} onChange={(e) => setEditData({ ...editData, field_of_study: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400" />
                 ) : (
                   <p className="text-navy-800 dark:text-white/80 text-sm">{profile.field_of_study || <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
                 )}
@@ -619,14 +619,14 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">GPA Scale</label>
-                          <select value={editData.gpa_scale ?? ""} onChange={(e) => setEditData({ ...editData, gpa_scale: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                          <select value={editData.gpa_scale ?? ""} onChange={(e) => setEditData({ ...editData, gpa_scale: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400">
                             <option value="">Select scale...</option>
                             {GPA_SCALE_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
                           </select>
                         </div>
                         <div>
                           <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">GPA</label>
-                          <input type="number" step="0.01" min="0" max={editData.gpa_scale === "5.0" ? 5 : 4} value={editData.gpa ?? ""} onChange={(e) => setEditData({ ...editData, gpa: e.target.value ? parseFloat(e.target.value) : null })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                          <input type="number" step="0.01" min="0" max={editData.gpa_scale === "5.0" ? 5 : 4} value={editData.gpa ?? ""} onChange={(e) => setEditData({ ...editData, gpa: e.target.value ? parseFloat(e.target.value) : null })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400" />
                         </div>
                       </div>
                     )}
@@ -646,7 +646,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Graduation Year</label>
                 {editMode ? (
-                  <input type="number" min="1990" max="2030" value={editData.graduation_year ?? ""} onChange={(e) => setEditData({ ...editData, graduation_year: e.target.value ? parseInt(e.target.value) : null })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400" />
+                  <input type="number" min="1990" max="2030" value={editData.graduation_year ?? ""} onChange={(e) => setEditData({ ...editData, graduation_year: e.target.value ? parseInt(e.target.value) : null })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400" />
                 ) : (
                   <p className="text-navy-800 dark:text-white/80 text-sm">{profile.graduation_year ?? <span className="text-navy-400 dark:text-white/30 italic">Not provided</span>}</p>
                 )}
@@ -656,7 +656,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Service Type</label>
                 {editMode ? (
-                  <select value={editData.service_type ?? ""} onChange={(e) => setEditData({ ...editData, service_type: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                  <select value={editData.service_type ?? ""} onChange={(e) => setEditData({ ...editData, service_type: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400">
                     <option value="">Select...</option>
                     {SERVICE_TYPES.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
                   </select>
@@ -669,7 +669,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div>
                 <label className="block text-xs font-medium text-navy-500 dark:text-white/50 mb-1.5">Budget Range</label>
                 {editMode ? (
-                  <select value={editData.budget_range ?? ""} onChange={(e) => setEditData({ ...editData, budget_range: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-gold-400">
+                  <select value={editData.budget_range ?? ""} onChange={(e) => setEditData({ ...editData, budget_range: e.target.value })} className="w-full px-3 py-2 rounded-lg border border-border bg-cream dark:bg-navy-700 text-navy-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400">
                     <option value="">Select...</option>
                     {BUDGET_RANGES.map((b) => <option key={b} value={b}>{b}</option>)}
                   </select>
@@ -686,7 +686,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                     {COUNTRIES.map((country) => {
                       const selected = editData.preferred_countries?.includes(country) ?? false;
                       return (
-                        <label key={country} className={cn("flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-colors", selected ? "border-gold-500 bg-gold-50 dark:bg-gold-900/20 text-navy-900 dark:text-white" : "border-border text-navy-600 dark:text-white/60 hover:border-navy-300")}>
+                        <label key={country} className={cn("flex items-center gap-2 px-3 py-2 rounded-lg border text-sm cursor-pointer transition-colors", selected ? "border-crimson-500 bg-crimson-50 dark:bg-crimson-900/20 text-navy-900 dark:text-white" : "border-border text-navy-600 dark:text-white/60 hover:border-navy-300")}>
                           <input type="checkbox" checked={selected} onChange={() => toggleCountry(country)} className="sr-only" />
                           {selected ? "✓" : ""} {country}
                         </label>
@@ -715,7 +715,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 <div key={app.id} className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card overflow-hidden">
                   <div className="px-5 py-4 flex items-start justify-between gap-4 border-b border-border">
                     <div>
-                      <span className="text-xs font-semibold uppercase tracking-wider text-gold-600 dark:text-gold-400 capitalize">{app.type}</span>
+                      <span className="text-xs font-semibold uppercase tracking-wider text-crimson-600 dark:text-crimson-400 capitalize">{app.type}</span>
                       <h4 className="font-display text-lg text-navy-900 dark:text-white">{app.title}</h4>
                       <p className="text-navy-500 dark:text-white/50 text-xs mt-0.5">
                         {[app.institution, app.destination_country].filter(Boolean).join(" · ")}
@@ -759,7 +759,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-12 text-center">
                 <div className="text-4xl mb-3">📅</div>
                 <p className="text-navy-500 dark:text-white/50 text-sm mb-4">No consultations scheduled yet.</p>
-                <a href="/book" className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500 text-navy-900 rounded-lg font-semibold text-sm hover:bg-gold-400 transition-colors">
+                <a href="/book" className="inline-flex items-center gap-2 px-5 py-2.5 bg-crimson-500 text-white rounded-lg font-semibold text-sm hover:bg-crimson-400 transition-colors">
                   Book a Consultation →
                 </a>
               </div>
@@ -775,7 +775,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                     <p className="text-navy-500 dark:text-white/40 text-sm">{c.scheduled_time} · {c.timezone}</p>
                   </div>
                   {c.meeting_link && c.status === "scheduled" && (
-                    <a href={c.meeting_link} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg text-sm font-semibold hover:bg-gold-400 transition-colors whitespace-nowrap">
+                    <a href={c.meeting_link} target="_blank" rel="noopener noreferrer" className="px-4 py-2 bg-crimson-500 text-white rounded-lg text-sm font-semibold hover:bg-crimson-400 transition-colors whitespace-nowrap">
                       Join Meeting →
                     </a>
                   )}
@@ -826,7 +826,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                           <button
                             onClick={() => handlePay(p)}
                             disabled={payingId === p.id}
-                            className="text-xs px-3 py-1.5 bg-gold-500 text-navy-900 rounded-lg font-semibold hover:bg-gold-400 transition-colors disabled:opacity-60"
+                            className="text-xs px-3 py-1.5 bg-crimson-500 text-white rounded-lg font-semibold hover:bg-crimson-400 transition-colors disabled:opacity-60"
                           >
                             {payingId === p.id ? "…" : "Pay"}
                           </button>
@@ -852,7 +852,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 <select
                   value={docType}
                   onChange={(e) => setDocType(e.target.value)}
-                  className="h-9 px-3 text-sm border border-border rounded-lg bg-navy-50 dark:bg-navy-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+                  className="h-9 px-3 text-sm border border-border rounded-lg bg-navy-50 dark:bg-navy-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
                 >
                   {Object.entries(DOC_TYPE_LABELS).map(([v, l]) => (
                     <option key={v} value={v}>{l}</option>
@@ -867,7 +867,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 <button
                   onClick={handleDocUpload}
                   disabled={uploadingDoc}
-                  className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg text-sm font-semibold hover:bg-gold-400 transition-colors disabled:opacity-60 whitespace-nowrap"
+                  className="px-4 py-2 bg-crimson-500 text-white rounded-lg text-sm font-semibold hover:bg-crimson-400 transition-colors disabled:opacity-60 whitespace-nowrap"
                 >
                   {uploadingDoc ? "Uploading…" : "Upload"}
                 </button>
@@ -940,7 +940,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       <p className="text-navy-500 dark:text-white/50 text-xs mt-0.5">{s.destination_country}</p>
                       {s.description && <p className="text-navy-600 dark:text-white/60 text-sm mt-2">{s.description}</p>}
                     </div>
-                    <span className="text-sm font-semibold text-gold-600 dark:text-gold-400 shrink-0">
+                    <span className="text-sm font-semibold text-crimson-600 dark:text-crimson-400 shrink-0">
                       {s.amount ?? s.tuition_range ?? ""}
                     </span>
                   </div>
@@ -949,7 +949,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                       href={s.application_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block mt-3 text-sm text-gold-600 hover:text-gold-700 font-medium"
+                      className="inline-block mt-3 text-sm text-crimson-600 hover:text-crimson-700 font-medium"
                     >
                       Learn more →
                     </a>

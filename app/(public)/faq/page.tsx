@@ -107,7 +107,7 @@ function highlight(text: string, query: string) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-gold-200 text-navy-900 rounded px-0.5">
+      <mark className="bg-crimson-200 text-navy-900 rounded px-0.5">
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -141,12 +141,12 @@ export default function FAQPage() {
       <section className="bg-navy-900 py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">Help Centre</span>
-            <div className="h-px w-8 bg-gold-400" />
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">Help Centre</span>
+            <div className="h-px w-8 bg-crimson-400" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-light text-white mb-4">
-            Frequently Asked <em className="text-gold-400 not-italic">Questions</em>
+            Frequently Asked <em className="text-crimson-400 not-italic">Questions</em>
           </h1>
           <p className="text-white/60 text-lg max-w-xl mx-auto mb-8">
             Everything you need to know about our services, process, and pricing.
@@ -164,7 +164,7 @@ export default function FAQPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search questions…"
-              className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-gold-400 text-sm"
+              className="w-full h-12 pl-12 pr-4 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-crimson-400 text-sm"
             />
             {query && (
               <button
@@ -198,7 +198,7 @@ export default function FAQPage() {
               <p className="text-navy-400 text-sm mb-4">No matching questions found.</p>
               <button
                 onClick={() => setQuery("")}
-                className="text-gold-600 hover:text-gold-700 text-sm underline underline-offset-2"
+                className="text-crimson-600 hover:text-crimson-700 text-sm underline underline-offset-2"
               >
                 Clear search
               </button>
@@ -232,7 +232,7 @@ export default function FAQPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/book"
-                className="inline-flex items-center justify-center px-6 py-3 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors"
+                className="inline-flex items-center justify-center px-6 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
               >
                 Book Free Consultation
               </Link>

@@ -131,7 +131,7 @@ export default async function AdminDashboard() {
       value: String(activeClients ?? 0),
       change: "All time",
       positive: true,
-      color: "text-gold-600 bg-gold-50",
+      color: "text-crimson-600 bg-crimson-50",
       icon: (
         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0M7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -149,18 +149,18 @@ export default async function AdminDashboard() {
   ];
 
   return (
-    <div className="p-6 lg:p-8 max-w-screen-xl">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-screen-xl">
+      <div className="flex items-start sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h1 className="font-display text-3xl text-navy-900">Dashboard</h1>
-          <p className="text-navy-500 text-sm mt-1">
+          <h1 className="font-display text-2xl sm:text-3xl text-navy-900">Dashboard</h1>
+          <p className="text-navy-500 text-xs sm:text-sm mt-1">
             {now.toLocaleDateString("en-NG", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
           </p>
         </div>
         <Link
           href="/apply"
           target="_blank"
-          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 rounded-lg text-sm hover:bg-navy-50 transition-colors"
+          className="hidden sm:inline-flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 rounded-lg text-sm hover:bg-navy-50 transition-colors shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -169,28 +169,28 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {stats.map((stat) => (
-          <div key={stat.label} className="bg-white rounded-xl shadow-card p-5">
-            <div className="flex items-start justify-between mb-3">
-              <div className={cn("p-2 rounded-lg", stat.color)}>
+          <div key={stat.label} className="bg-white rounded-xl shadow-card p-3 sm:p-5">
+            <div className="flex items-start justify-between mb-2 sm:mb-3">
+              <div className={cn("p-1.5 sm:p-2 rounded-lg", stat.color)}>
                 {stat.icon}
               </div>
-              <span className={cn("text-xs font-medium", stat.positive ? "text-green-600" : "text-red-500")}>
+              <span className={cn("text-xs font-medium hidden sm:block", stat.positive ? "text-green-600" : "text-red-500")}>
                 {stat.change}
               </span>
             </div>
-            <div className="font-display text-2xl text-navy-900 font-medium">{stat.value}</div>
-            <div className="text-navy-500 text-xs mt-0.5">{stat.label}</div>
+            <div className="font-display text-xl sm:text-2xl text-navy-900 font-medium">{stat.value}</div>
+            <div className="text-navy-500 text-xs mt-0.5 leading-tight">{stat.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <div className="lg:col-span-2 bg-white rounded-xl shadow-card">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <h2 className="font-semibold text-navy-900">Recent Inquiries</h2>
-            <Link href="/admin/inquiries" className="text-sm text-gold-600 hover:text-gold-700 font-medium">
+            <Link href="/admin/inquiries" className="text-sm text-crimson-600 hover:text-crimson-700 font-medium">
               View all →
             </Link>
           </div>
@@ -224,7 +224,7 @@ export default async function AdminDashboard() {
         <div className="bg-white rounded-xl shadow-card">
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <h2 className="font-semibold text-navy-900">Upcoming</h2>
-            <Link href="/admin/consultations" className="text-sm text-gold-600 hover:text-gold-700 font-medium">
+            <Link href="/admin/consultations" className="text-sm text-crimson-600 hover:text-crimson-700 font-medium">
               View all →
             </Link>
           </div>
@@ -238,7 +238,7 @@ export default async function AdminDashboard() {
                   <div className="w-2 h-2 rounded-full bg-green-400 mt-1.5 shrink-0" />
                   <div>
                     <div className="font-medium text-navy-900 text-sm">{c.student_name}</div>
-                    <div className="text-xs text-gold-600 font-medium">{formatDateLabel(c.scheduled_date)}, {formatTime(c.scheduled_time)}</div>
+                    <div className="text-xs text-crimson-600 font-medium">{formatDateLabel(c.scheduled_date)}, {formatTime(c.scheduled_time)}</div>
                   </div>
                 </div>
               </div>

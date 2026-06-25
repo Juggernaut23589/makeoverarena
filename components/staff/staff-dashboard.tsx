@@ -172,7 +172,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
             >
               Blog
             </a>
-            <span className="hidden sm:block px-2 py-0.5 bg-gold-500/10 text-gold-400 text-xs rounded-full border border-gold-500/20">
+            <span className="hidden sm:block px-2 py-0.5 bg-crimson-500/10 text-crimson-400 text-xs rounded-full border border-crimson-500/20">
               {isSuperAdmin ? "Super Admin" : "Staff"}
             </span>
           </div>
@@ -197,7 +197,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                 className={cn(
                   "px-4 py-3.5 text-sm font-medium whitespace-nowrap border-b-2 transition-all",
                   activeTab === tab.id
-                    ? "border-gold-400 text-gold-400"
+                    ? "border-crimson-400 text-crimson-400"
                     : "border-transparent text-white/50 hover:text-white/80"
                 )}
               >
@@ -224,7 +224,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                 { label: "Inquiries", value: inquiries.length, color: "text-blue-400" },
                 { label: "Consultations", value: consultations.length, color: "text-purple-400" },
                 ...(can(session, "view_clients") ? [{ label: "Clients", value: clients.length, color: "text-green-400" }] : []),
-                ...(can(session, "view_payments") ? [{ label: "Revenue", value: `₦${totalRevenue.toLocaleString()}`, color: "text-gold-400" }] : []),
+                ...(can(session, "view_payments") ? [{ label: "Revenue", value: `₦${totalRevenue.toLocaleString()}`, color: "text-crimson-400" }] : []),
               ].map((stat) => (
                 <div key={stat.label} className="bg-navy-800 rounded-xl p-5 border border-white/10">
                   <div className={cn("font-display text-2xl font-light mb-1", stat.color)}>{stat.value}</div>
@@ -357,7 +357,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                 { label: "Total Signups", value: analyticsData.clientSignups.length },
               ].map((stat) => (
                 <div key={stat.label} className="bg-navy-800 rounded-xl p-5 border border-white/10">
-                  <div className="font-display text-2xl font-light text-gold-400 mb-1">{stat.value}</div>
+                  <div className="font-display text-2xl font-light text-crimson-400 mb-1">{stat.value}</div>
                   <div className="text-white/50 text-sm">{stat.label}</div>
                 </div>
               ))}
@@ -380,7 +380,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                       <span className="text-white/40">{step.value} ({pct}%)</span>
                     </div>
                     <div className="h-1.5 bg-white/10 rounded-full">
-                      <div className="h-full bg-gold-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                      <div className="h-full bg-crimson-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
                     </div>
                   </div>
                 );
@@ -395,7 +395,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                   {analyticsData.agentStats.sort((a, b) => b.client_count - a.client_count).map((a) => (
                     <div key={a.staff_id} className="py-3 flex justify-between items-center">
                       <span className="text-white/70 text-sm">{a.full_name}</span>
-                      <span className="text-gold-400 font-medium text-sm">{a.client_count} clients</span>
+                      <span className="text-crimson-400 font-medium text-sm">{a.client_count} clients</span>
                     </div>
                   ))}
                 </div>
@@ -449,7 +449,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                       <button
                         onClick={() => approveMember(s.id)}
                         disabled={isPending}
-                        className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg font-semibold text-xs hover:bg-gold-400 transition-colors disabled:opacity-60 shrink-0"
+                        className="px-4 py-2 bg-crimson-500 text-white rounded-lg font-semibold text-xs hover:bg-crimson-400 transition-colors disabled:opacity-60 shrink-0"
                       >
                         Approve
                       </button>
@@ -481,7 +481,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
                           {isSA && (
-                            <span className="px-2 py-0.5 bg-gold-500/10 text-gold-400 text-xs rounded-full border border-gold-500/20">
+                            <span className="px-2 py-0.5 bg-crimson-500/10 text-crimson-400 text-xs rounded-full border border-crimson-500/20">
                               Super Admin
                             </span>
                           )}
@@ -506,7 +506,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                                   onClick={() => toggleAbility(s.id, key, Boolean(draft[key]))}
                                   className={cn(
                                     "w-9 h-5 rounded-full transition-colors relative flex-shrink-0 cursor-pointer",
-                                    draft[key] ? "bg-gold-500" : "bg-white/10"
+                                    draft[key] ? "bg-crimson-500" : "bg-white/10"
                                   )}
                                 >
                                   <span className={cn(
@@ -521,7 +521,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
                           <button
                             onClick={() => saveAbilities(s)}
                             disabled={isPending}
-                            className="px-4 py-2 bg-gold-500 text-navy-900 rounded-lg font-semibold text-xs hover:bg-gold-400 transition-colors disabled:opacity-60"
+                            className="px-4 py-2 bg-crimson-500 text-white rounded-lg font-semibold text-xs hover:bg-crimson-400 transition-colors disabled:opacity-60"
                           >
                             {isPending ? "Saving…" : "Save Abilities"}
                           </button>

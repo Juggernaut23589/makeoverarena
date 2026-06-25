@@ -44,13 +44,13 @@ export default function BookPage() {
       <section className="bg-navy-900 py-16">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">Free Consultation</span>
-            <div className="h-px w-8 bg-gold-400" />
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">Free Consultation</span>
+            <div className="h-px w-8 bg-crimson-400" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-light text-white mb-4">
             Book a Free{" "}
-            <em className="text-gold-400 not-italic">Consultation</em>
+            <em className="text-crimson-400 not-italic">Consultation</em>
           </h1>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
             30 minutes with an expert advisor. No obligations. Just honest, personalised guidance.
@@ -80,8 +80,8 @@ export default function BookPage() {
                   />
                 ) : (
                   <div className="bg-navy-50 rounded-xl border border-border p-8 text-center">
-                    <div className="w-16 h-16 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <svg className="w-8 h-8 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="w-16 h-16 bg-crimson-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg className="w-8 h-8 text-crimson-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                       </svg>
                     </div>
@@ -105,7 +105,7 @@ export default function BookPage() {
                   <p className="text-navy-500 text-sm mb-3">Not sure yet? Fill out our application form first — it takes 5 minutes and helps us prepare for your consultation.</p>
                   <Link
                     href="/apply"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-gold-600 hover:text-gold-700"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-crimson-600 hover:text-crimson-700"
                   >
                     Start Application →
                   </Link>
@@ -127,8 +127,8 @@ export default function BookPage() {
                     "No hard sell — just honest guidance",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
-                      <div className="w-4 h-4 rounded-full bg-gold-100 flex items-center justify-center shrink-0 mt-0.5">
-                        <svg className="w-2.5 h-2.5 text-gold-600" viewBox="0 0 20 20" fill="currentColor">
+                      <div className="w-4 h-4 rounded-full bg-crimson-100 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg className="w-2.5 h-2.5 text-crimson-600" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>

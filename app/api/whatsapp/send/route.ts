@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
   // Auth
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token || !decodeSession(token)) {
+  if (!token || !await decodeSession(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

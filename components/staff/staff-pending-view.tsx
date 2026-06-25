@@ -16,8 +16,8 @@ export function StaffPendingView({ staff }: Props) {
     <div className="min-h-screen bg-cream flex items-center justify-center p-6">
       <div className="w-full max-w-md text-center">
         <div className="bg-white rounded-2xl shadow-sm border border-navy-100 p-8">
-          <div className="w-14 h-14 bg-gold-100 rounded-full flex items-center justify-center mx-auto mb-5">
-            <svg className="w-7 h-7 text-gold-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-14 h-14 bg-crimson-100 rounded-full flex items-center justify-center mx-auto mb-5">
+            <svg className="w-7 h-7 text-crimson-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>

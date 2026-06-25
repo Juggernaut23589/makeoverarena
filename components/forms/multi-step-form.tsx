@@ -163,7 +163,7 @@ export function MultiStepForm() {
         </div>
         <div className="h-1.5 bg-navy-100 rounded-full overflow-hidden">
           <div
-            className="h-full bg-gold-500 rounded-full transition-all duration-500"
+            className="h-full bg-crimson-500 rounded-full transition-all duration-500"
             style={{ width: `${(currentStep / TOTAL_STEPS) * 100}%` }}
           />
         </div>
@@ -173,7 +173,7 @@ export function MultiStepForm() {
               key={label}
               className={cn(
                 "text-xs",
-                i + 1 <= currentStep ? "text-gold-600 font-medium" : "text-navy-400"
+                i + 1 <= currentStep ? "text-crimson-600 font-medium" : "text-navy-400"
               )}
             >
               {label}
@@ -277,7 +277,7 @@ function Step1({
             className={cn(
               "flex items-start gap-4 p-4 rounded-xl border-2 text-left transition-all duration-150",
               selected === opt.value
-                ? "border-gold-400 bg-gold-50"
+                ? "border-crimson-400 bg-crimson-50"
                 : "border-border hover:border-navy-200 bg-white"
             )}
           >
@@ -289,7 +289,7 @@ function Step1({
               <div className="text-navy-500 text-xs mt-0.5">{opt.description}</div>
             </div>
             {selected === opt.value && (
-              <div className="ml-auto shrink-0 w-5 h-5 bg-gold-400 rounded-full flex items-center justify-center">
+              <div className="ml-auto shrink-0 w-5 h-5 bg-crimson-400 rounded-full flex items-center justify-center">
                 <svg className="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
@@ -439,7 +439,7 @@ function Step3({
             <input
               type="checkbox"
               {...register("is_pass_fail")}
-              className="w-4 h-4 rounded border-navy-300 text-gold-500 focus:ring-gold-400"
+              className="w-4 h-4 rounded border-navy-300 text-crimson-500 focus:ring-crimson-400"
             />
             <span className="text-sm text-navy-700">My course uses Pass/Fail grading (e.g. Medicine, Pharmacy)</span>
           </label>
@@ -565,7 +565,7 @@ function Step4({
         {/* Countries */}
         <div>
           <label className="block text-sm font-medium text-navy-800 mb-2">
-            Preferred Countries <span className="text-gold-500">*</span>
+            Preferred Countries <span className="text-crimson-500">*</span>
           </label>
           <div className="flex flex-wrap gap-2">
             {COUNTRIES.map((c) => (
@@ -698,7 +698,7 @@ function Step5({
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
-            className="mt-0.5 h-4 w-4 rounded border-border text-gold-500 focus:ring-gold-400"
+            className="mt-0.5 h-4 w-4 rounded border-border text-crimson-500 focus:ring-crimson-400"
             {...register("opted_in_emails")}
           />
           <span className="text-sm text-navy-600">
@@ -733,8 +733,8 @@ function Step5({
 function SuccessScreen({ name, email }: { name: string; email: string }) {
   return (
     <div className="bg-white rounded-2xl shadow-card p-8 sm:p-12 text-center">
-      <div className="w-20 h-20 bg-gold-50 rounded-full flex items-center justify-center mx-auto mb-6">
-        <svg className="w-10 h-10 text-gold-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="w-20 h-20 bg-crimson-50 rounded-full flex items-center justify-center mx-auto mb-6">
+        <svg className="w-10 h-10 text-crimson-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
       </div>
@@ -748,7 +748,7 @@ function SuccessScreen({ name, email }: { name: string; email: string }) {
         Our advisor will review your profile and reach out within 24 hours to schedule your free consultation.
       </p>
 
-      <div className="bg-gold-50 border border-gold-200 rounded-xl p-5 text-left mb-8 max-w-sm mx-auto">
+      <div className="bg-crimson-50 border border-crimson-200 rounded-xl p-5 text-left mb-8 max-w-sm mx-auto">
         <p className="text-sm font-semibold text-navy-800 mb-3">What happens next:</p>
         <ul className="space-y-2 text-sm text-navy-600">
           {[
@@ -758,7 +758,7 @@ function SuccessScreen({ name, email }: { name: string; email: string }) {
             "We create your custom university strategy",
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="w-5 h-5 rounded-full bg-gold-200 text-gold-700 text-xs flex items-center justify-center shrink-0 mt-0.5 font-semibold">
+              <span className="w-5 h-5 rounded-full bg-crimson-200 text-crimson-700 text-xs flex items-center justify-center shrink-0 mt-0.5 font-semibold">
                 {i + 1}
               </span>
               {item}
@@ -770,7 +770,7 @@ function SuccessScreen({ name, email }: { name: string; email: string }) {
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <a
           href="/book"
-          className="inline-flex items-center justify-center px-6 py-3 bg-gold-500 text-navy-900 rounded-xl text-sm font-semibold hover:bg-gold-400 transition-colors"
+          className="inline-flex items-center justify-center px-6 py-3 bg-crimson-500 text-white rounded-xl text-sm font-semibold hover:bg-crimson-400 transition-colors"
         >
           Book Free Consultation →
         </a>

@@ -132,7 +132,7 @@ export default function HomePage() {
         </div>
 
         {/* Floating decorative orb */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-crimson-500/10 blur-3xl pointer-events-none" />
         <div className="absolute top-1/3 right-1/3 w-64 h-64 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
 
         {/* Content */}
@@ -140,8 +140,8 @@ export default function HomePage() {
           <div className="max-w-3xl">
             {/* Eyebrow */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="h-px w-10 bg-gold-400" />
-              <span className="text-gold-400 text-sm font-medium tracking-widest uppercase">
+              <div className="h-px w-10 bg-crimson-400" />
+              <span className="text-crimson-400 text-sm font-medium tracking-widest uppercase">
                 Study Abroad Experts
               </span>
             </div>
@@ -163,7 +163,7 @@ export default function HomePage() {
             <div className="flex flex-wrap gap-4">
               <Link
                 href="/apply"
-                className="inline-flex items-center gap-2 px-7 py-4 bg-gold-500 text-navy-900 rounded-xl font-semibold text-base hover:bg-gold-400 transition-all duration-200 shadow-glow-gold"
+                className="inline-flex items-center gap-2 px-7 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-all duration-200 shadow-glow-crimson"
               >
                 Start Your Application
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -189,7 +189,7 @@ export default function HomePage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x md:divide-white/10">
               {stats.map((stat) => (
                 <div key={stat.label} className="text-center md:px-8">
-                  <div className="font-display text-3xl font-light text-gold-400 mb-1">
+                  <div className="font-display text-3xl font-light text-crimson-400 mb-1">
                     {stat.number}
                   </div>
                   <div className="text-white/60 text-sm">{stat.label}</div>
@@ -206,14 +206,14 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-px w-8 bg-gold-500" />
-                <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+                <div className="h-px w-8 bg-crimson-500" />
+                <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                   What We Do
                 </span>
               </div>
               <h2 className="font-display text-4xl md:text-5xl font-light text-navy-900 leading-tight">
                 Services tailored to{" "}
-                <em className="not-italic text-gold-500">your ambitions</em>
+                <em className="not-italic text-crimson-500">your ambitions</em>
               </h2>
             </div>
             <Link
@@ -254,7 +254,7 @@ export default function HomePage() {
                   <p className="text-navy-600 text-sm leading-relaxed mb-4">
                     {service.description}
                   </p>
-                  <span className="inline-flex items-center gap-1 text-sm font-medium text-gold-600 group-hover:gap-2 transition-all">
+                  <span className="inline-flex items-center gap-1 text-sm font-medium text-crimson-600 group-hover:gap-2 transition-all">
                     Learn more
                     <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -277,15 +277,15 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-14">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-8 bg-gold-400" />
-              <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+              <div className="h-px w-8 bg-crimson-400" />
+              <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
                 The Process
               </span>
-              <div className="h-px w-8 bg-gold-400" />
+              <div className="h-px w-8 bg-crimson-400" />
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-light text-white">
               From inquiry to{" "}
-              <em className="text-gold-400 not-italic">admission offer</em>
+              <em className="text-crimson-400 not-italic">admission offer</em>
             </h2>
           </div>
 
@@ -297,7 +297,7 @@ export default function HomePage() {
                   <div className="hidden lg:block absolute top-8 left-full w-full h-px bg-white/10 z-0" />
                 )}
                 <div className="relative bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors">
-                  <div className="font-display text-5xl font-light text-gold-400/30 mb-4 leading-none">
+                  <div className="font-display text-5xl font-light text-crimson-400/30 mb-4 leading-none">
                     {step.step}
                   </div>
                   <h3 className="font-display text-xl text-white font-medium mb-3">
@@ -314,7 +314,7 @@ export default function HomePage() {
           <div className="text-center mt-12">
             <Link
               href="/apply"
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gold-500 text-navy-900 rounded-xl font-semibold text-base hover:bg-gold-400 transition-colors"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
             >
               Start Now — It&apos;s Free
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -330,14 +330,14 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-14">
             <div className="flex items-center gap-3 mb-4">
-              <div className="h-px w-8 bg-gold-500" />
-              <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+              <div className="h-px w-8 bg-crimson-500" />
+              <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                 Study Destinations
               </span>
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-light text-navy-900">
               Where will your story{" "}
-              <em className="not-italic text-gold-500">unfold?</em>
+              <em className="not-italic text-crimson-500">unfold?</em>
             </h2>
           </div>
 
@@ -373,15 +373,15 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-8 bg-gold-500" />
-              <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+              <div className="h-px w-8 bg-crimson-500" />
+              <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                 Success Stories
               </span>
-              <div className="h-px w-8 bg-gold-500" />
+              <div className="h-px w-8 bg-crimson-500" />
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-light text-navy-900">
               Real students.{" "}
-              <em className="not-italic text-gold-500">Real results.</em>
+              <em className="not-italic text-crimson-500">Real results.</em>
             </h2>
           </div>
 
@@ -394,7 +394,7 @@ export default function HomePage() {
                 {/* Stars */}
                 <div className="flex gap-0.5 mb-5">
                   {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-gold-400" viewBox="0 0 20 20" fill="currentColor">
+                    <svg key={i} className="w-4 h-4 text-crimson-400" viewBox="0 0 20 20" fill="currentColor">
                       <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
                   ))}
@@ -418,7 +418,7 @@ export default function HomePage() {
                   </div>
                   {t.scholarship && (
                     <div className="ml-auto shrink-0">
-                      <span className="bg-gold-100 text-gold-700 text-xs font-medium px-2.5 py-1 rounded-full">
+                      <span className="bg-crimson-100 text-crimson-700 text-xs font-medium px-2.5 py-1 rounded-full">
                         {t.scholarship}
                       </span>
                     </div>
@@ -447,11 +447,11 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-8 bg-gold-500" />
-              <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+              <div className="h-px w-8 bg-crimson-500" />
+              <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                 FAQs
               </span>
-              <div className="h-px w-8 bg-gold-500" />
+              <div className="h-px w-8 bg-crimson-500" />
             </div>
             <h2 className="font-display text-4xl font-light text-navy-900">
               Common questions
@@ -492,15 +492,15 @@ export default function HomePage() {
         </div>
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
               Get Started Today
             </span>
-            <div className="h-px w-8 bg-gold-400" />
+            <div className="h-px w-8 bg-crimson-400" />
           </div>
           <h2 className="font-display text-4xl md:text-5xl font-light text-white mb-5 leading-tight">
             Your dream university{" "}
-            <em className="text-gold-400 not-italic">is waiting</em>
+            <em className="text-crimson-400 not-italic">is waiting</em>
           </h2>
           <p className="text-white/60 text-lg mb-10">
             Take the first step today. Our application takes 5 minutes and our team responds within 24 hours.
@@ -508,7 +508,7 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gold-500 text-navy-900 rounded-xl font-semibold text-base hover:bg-gold-400 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
             >
               Start Application — Free
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

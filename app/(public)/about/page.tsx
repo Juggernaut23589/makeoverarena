@@ -94,17 +94,17 @@ export default function AboutPage() {
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-r from-navy-950/90 via-navy-900/70 to-navy-900/40" />
-        <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full bg-crimson-500/10 blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
               Our Story
             </span>
           </div>
           <h1 className="font-display text-4xl md:text-6xl font-light text-white leading-tight max-w-2xl">
             Built for Nigerian{" "}
-            <em className="text-gold-400 not-italic">ambition</em>
+            <em className="text-crimson-400 not-italic">ambition</em>
           </h1>
           <p className="text-white/60 mt-4 text-lg max-w-xl leading-relaxed">
             We started because we knew how hard it was for Nigerian students to
@@ -121,7 +121,7 @@ export default function AboutPage() {
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <div className="text-2xl mb-1">{s.icon}</div>
-                <div className="font-display text-2xl font-light text-gold-400 mb-0.5">
+                <div className="font-display text-2xl font-light text-crimson-400 mb-0.5">
                   {s.number}
                 </div>
                 <div className="text-white/50 text-xs leading-snug">{s.label}</div>
@@ -137,8 +137,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div>
               <div className="flex items-center gap-3 mb-5">
-                <div className="h-px w-6 bg-gold-500" />
-                <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+                <div className="h-px w-6 bg-crimson-500" />
+                <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                   Our Mission
                 </span>
               </div>
@@ -175,7 +175,7 @@ export default function AboutPage() {
               </div>
               {/* Floating badge */}
               <div className="absolute -bottom-5 left-4 sm:-left-5 bg-white rounded-2xl shadow-elevated p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gold-100 flex items-center justify-center text-xl shrink-0">
+                <div className="w-10 h-10 rounded-full bg-crimson-100 flex items-center justify-center text-xl shrink-0">
                   🏅
                 </div>
                 <div>
@@ -197,11 +197,11 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-8 bg-gold-500" />
-              <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+              <div className="h-px w-8 bg-crimson-500" />
+              <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                 What We Stand For
               </span>
-              <div className="h-px w-8 bg-gold-500" />
+              <div className="h-px w-8 bg-crimson-500" />
             </div>
             <h2 className="font-display text-4xl text-navy-900">Our Values</h2>
           </div>
@@ -227,11 +227,11 @@ export default function AboutPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-8 bg-gold-500" />
-              <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+              <div className="h-px w-8 bg-crimson-500" />
+              <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                 The Team
               </span>
-              <div className="h-px w-8 bg-gold-500" />
+              <div className="h-px w-8 bg-crimson-500" />
             </div>
             <h2 className="font-display text-4xl text-navy-900">
               Former students. Now your guides.
@@ -266,7 +266,7 @@ export default function AboutPage() {
                   <h3 className="font-display text-xl text-navy-900 mb-0.5">
                     {member.name}
                   </h3>
-                  <div className="text-gold-600 text-xs font-semibold uppercase tracking-wide mb-3">
+                  <div className="text-crimson-600 text-xs font-semibold uppercase tracking-wide mb-3">
                     {member.role}
                   </div>
                   <p className="text-navy-600 text-sm leading-relaxed">{member.bio}</p>
@@ -285,11 +285,11 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-8 bg-gold-400" />
-              <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+              <div className="h-px w-8 bg-crimson-400" />
+              <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
                 Our Journey
               </span>
-              <div className="h-px w-8 bg-gold-400" />
+              <div className="h-px w-8 bg-crimson-400" />
             </div>
             <h2 className="font-display text-4xl font-light text-white">
               Eight years of milestones
@@ -299,7 +299,7 @@ export default function AboutPage() {
             {milestones.map((m, i) => (
               <div key={m.year} className="flex gap-6">
                 <div className="flex flex-col items-center">
-                  <div className="w-12 h-8 rounded-lg bg-gold-500 text-navy-900 text-sm font-bold flex items-center justify-center shrink-0">
+                  <div className="w-12 h-8 rounded-lg bg-crimson-500 text-white text-sm font-bold flex items-center justify-center shrink-0">
                     {m.year}
                   </div>
                   {i < milestones.length - 1 && (
@@ -319,11 +319,11 @@ export default function AboutPage() {
       <section className="py-20 bg-cream">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="h-px w-8 bg-gold-500" />
-            <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-500" />
+            <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
               Get Started
             </span>
-            <div className="h-px w-8 bg-gold-500" />
+            <div className="h-px w-8 bg-crimson-500" />
           </div>
           <h2 className="font-display text-4xl text-navy-900 mb-4">
             Ready to be our next success story?
@@ -335,7 +335,7 @@ export default function AboutPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-gold-500 text-navy-900 rounded-xl font-semibold text-base hover:bg-gold-400 transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
             >
               Start Application — Free
               <svg

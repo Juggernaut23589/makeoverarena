@@ -99,16 +99,16 @@ export default function ScholarshipsPage() {
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-r from-navy-950/80 to-transparent" />
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-crimson-500/10 blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
               Service
             </span>
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-light text-white">
-            Scholarship <em className="text-gold-400 not-italic">Applications</em>
+            Scholarship <em className="text-crimson-400 not-italic">Applications</em>
           </h1>
           <p className="text-white/60 mt-3 text-lg max-w-xl">
             65% of our scholarship applicants received funding — from partial
@@ -128,7 +128,7 @@ export default function ScholarshipsPage() {
               { number: "3.2x", label: "more awards won vs. solo applicants" },
             ].map((o) => (
               <div key={o.label} className="text-center md:px-8">
-                <div className="font-display text-2xl font-light text-gold-400 mb-0.5">
+                <div className="font-display text-2xl font-light text-crimson-400 mb-0.5">
                   {o.number}
                 </div>
                 <div className="text-white/50 text-xs leading-snug">{o.label}</div>
@@ -147,8 +147,8 @@ export default function ScholarshipsPage() {
               {/* Scholarships we cover */}
               <div>
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="h-px w-6 bg-gold-500" />
-                  <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+                  <div className="h-px w-6 bg-crimson-500" />
+                  <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                     Scholarships We Target
                   </span>
                 </div>
@@ -165,7 +165,7 @@ export default function ScholarshipsPage() {
                         <h3 className="font-semibold text-navy-900 text-sm">
                           {s.name}
                         </h3>
-                        <span className="shrink-0 bg-gold-100 text-gold-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                        <span className="shrink-0 bg-crimson-100 text-crimson-700 text-xs font-medium px-2 py-0.5 rounded-full">
                           {s.coverage}
                         </span>
                       </div>
@@ -181,8 +181,8 @@ export default function ScholarshipsPage() {
               {/* What's included */}
               <div>
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="h-px w-6 bg-gold-500" />
-                  <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+                  <div className="h-px w-6 bg-crimson-500" />
+                  <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                     Full Service
                   </span>
                 </div>
@@ -192,9 +192,9 @@ export default function ScholarshipsPage() {
                 <ul className="space-y-3">
                   {included.map((item) => (
                     <li key={item} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-gold-100 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-5 h-5 rounded-full bg-crimson-100 flex items-center justify-center shrink-0 mt-0.5">
                         <svg
-                          className="w-3 h-3 text-gold-600"
+                          className="w-3 h-3 text-crimson-600"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -216,8 +216,8 @@ export default function ScholarshipsPage() {
               {/* Timeline */}
               <div>
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="h-px w-6 bg-gold-500" />
-                  <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+                  <div className="h-px w-6 bg-crimson-500" />
+                  <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                     Process
                   </span>
                 </div>
@@ -236,7 +236,7 @@ export default function ScholarshipsPage() {
                         )}
                       </div>
                       <div className="pb-6">
-                        <span className="text-xs text-gold-600 font-semibold uppercase tracking-wide">
+                        <span className="text-xs text-crimson-600 font-semibold uppercase tracking-wide">
                           {t.phase}
                         </span>
                         <h3 className="font-semibold text-navy-900 mt-0.5 mb-1">
@@ -264,7 +264,7 @@ export default function ScholarshipsPage() {
                 </p>
                 <Link
                   href="/apply"
-                  className="block w-full text-center px-5 py-3 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors mb-3"
+                  className="block w-full text-center px-5 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors mb-3"
                 >
                   Start Application →
                 </Link>
@@ -285,7 +285,7 @@ export default function ScholarshipsPage() {
               </div>
 
               <div className="bg-navy-900 rounded-2xl p-6 text-white">
-                <div className="text-gold-400 text-3xl mb-2">🏅</div>
+                <div className="text-crimson-400 text-3xl mb-2">🏅</div>
                 <div className="text-white font-display text-xl mb-2">
                   Success story
                 </div>

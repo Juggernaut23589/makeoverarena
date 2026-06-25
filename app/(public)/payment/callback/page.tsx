@@ -26,7 +26,7 @@ function CallbackInner() {
       <div className="max-w-md w-full text-center">
         {status === "loading" && (
           <>
-            <div className="w-16 h-16 border-4 border-gold-400 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
+            <div className="w-16 h-16 border-4 border-crimson-400 border-t-transparent rounded-full animate-spin mx-auto mb-6" />
             <h1 className="font-display text-2xl text-navy-900 mb-3">Verifying payment…</h1>
             <p className="text-navy-500 text-sm">Please wait while we confirm your payment.</p>
           </>
@@ -69,7 +69,7 @@ function CallbackInner() {
             <div className="flex flex-col gap-3">
               <Link
                 href="/dashboard"
-                className="px-6 py-3 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors"
+                className="px-6 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
               >
                 Try Again
               </Link>
@@ -88,7 +88,7 @@ export default function PaymentCallbackPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-gold-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-crimson-400 border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <CallbackInner />

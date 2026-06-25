@@ -68,16 +68,16 @@ export default function GraduatePage() {
           priority
         />
         <div className="absolute inset-0 bg-gradient-to-r from-navy-950/80 to-transparent" />
-        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-crimson-500/10 blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
               Service
             </span>
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-light text-white">
-            Graduate <em className="text-gold-400 not-italic">Admissions</em>
+            Graduate <em className="text-crimson-400 not-italic">Admissions</em>
           </h1>
           <p className="text-white/60 mt-3 text-lg max-w-xl">
             Masters and PhD applications handled with the precision and depth
@@ -92,7 +92,7 @@ export default function GraduatePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x md:divide-white/10">
             {outcomes.map((o) => (
               <div key={o.label} className="text-center md:px-8">
-                <div className="font-display text-2xl font-light text-gold-400 mb-0.5">
+                <div className="font-display text-2xl font-light text-crimson-400 mb-0.5">
                   {o.number}
                 </div>
                 <div className="text-white/50 text-xs leading-snug">{o.label}</div>
@@ -111,8 +111,8 @@ export default function GraduatePage() {
               {/* What's included */}
               <div>
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="h-px w-6 bg-gold-500" />
-                  <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+                  <div className="h-px w-6 bg-crimson-500" />
+                  <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                     Full Service
                   </span>
                 </div>
@@ -122,9 +122,9 @@ export default function GraduatePage() {
                 <ul className="space-y-3">
                   {included.map((item) => (
                     <li key={item} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-gold-100 flex items-center justify-center shrink-0 mt-0.5">
+                      <div className="w-5 h-5 rounded-full bg-crimson-100 flex items-center justify-center shrink-0 mt-0.5">
                         <svg
-                          className="w-3 h-3 text-gold-600"
+                          className="w-3 h-3 text-crimson-600"
                           viewBox="0 0 20 20"
                           fill="currentColor"
                         >
@@ -146,8 +146,8 @@ export default function GraduatePage() {
               {/* Timeline */}
               <div>
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="h-px w-6 bg-gold-500" />
-                  <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+                  <div className="h-px w-6 bg-crimson-500" />
+                  <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
                     Process
                   </span>
                 </div>
@@ -166,7 +166,7 @@ export default function GraduatePage() {
                         )}
                       </div>
                       <div className="pb-6">
-                        <span className="text-xs text-gold-600 font-semibold uppercase tracking-wide">
+                        <span className="text-xs text-crimson-600 font-semibold uppercase tracking-wide">
                           {t.phase}
                         </span>
                         <h3 className="font-semibold text-navy-900 mt-0.5 mb-1">
@@ -183,9 +183,9 @@ export default function GraduatePage() {
 
               {/* Scholarships callout */}
               <div className="rounded-2xl bg-navy-900 p-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-gold-500/10 blur-3xl pointer-events-none" />
+                <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-crimson-500/10 blur-3xl pointer-events-none" />
                 <div className="relative z-10">
-                  <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+                  <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
                     Funding Support
                   </span>
                   <h3 className="font-display text-2xl text-white mt-2 mb-3">
@@ -199,7 +199,7 @@ export default function GraduatePage() {
                   </p>
                   <Link
                     href="/services/scholarships"
-                    className="inline-flex items-center gap-2 text-gold-400 text-sm font-medium hover:text-gold-300 transition-colors"
+                    className="inline-flex items-center gap-2 text-crimson-400 text-sm font-medium hover:text-crimson-300 transition-colors"
                   >
                     Learn about our Scholarships service
                     <svg
@@ -232,7 +232,7 @@ export default function GraduatePage() {
                 </p>
                 <Link
                   href="/apply"
-                  className="block w-full text-center px-5 py-3 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors mb-3"
+                  className="block w-full text-center px-5 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors mb-3"
                 >
                   Start Application →
                 </Link>
@@ -246,7 +246,7 @@ export default function GraduatePage() {
                 <div className="mt-6 pt-6 border-t border-border space-y-3">
                   <div className="flex items-center gap-3 text-sm text-navy-600">
                     <svg
-                      className="w-4 h-4 text-gold-500 shrink-0"
+                      className="w-4 h-4 text-crimson-500 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -262,7 +262,7 @@ export default function GraduatePage() {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-navy-600">
                     <svg
-                      className="w-4 h-4 text-gold-500 shrink-0"
+                      className="w-4 h-4 text-crimson-500 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -278,7 +278,7 @@ export default function GraduatePage() {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-navy-600">
                     <svg
-                      className="w-4 h-4 text-gold-500 shrink-0"
+                      className="w-4 h-4 text-crimson-500 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -294,7 +294,7 @@ export default function GraduatePage() {
                   </div>
                   <div className="flex items-center gap-3 text-sm text-navy-600">
                     <svg
-                      className="w-4 h-4 text-gold-500 shrink-0"
+                      className="w-4 h-4 text-crimson-500 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -312,7 +312,7 @@ export default function GraduatePage() {
               </div>
 
               <div className="bg-navy-900 rounded-2xl p-6 text-white">
-                <div className="text-3xl font-display font-light text-gold-400 mb-1">
+                <div className="text-3xl font-display font-light text-crimson-400 mb-1">
                   ₦200k+
                 </div>
                 <div className="text-white/60 text-sm mb-4">

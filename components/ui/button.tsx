@@ -12,11 +12,11 @@ const buttonVariants = cva(
         default:
           "bg-navy-900 text-cream shadow-card hover:bg-navy-800 active:scale-[0.98]",
         gold:
-          "bg-gold-500 text-navy-900 font-semibold shadow-card hover:bg-gold-400 active:scale-[0.98]",
+          "bg-crimson-500 text-white font-semibold shadow-card hover:bg-crimson-600 active:scale-[0.98]",
         outline:
           "border border-navy-900 bg-transparent text-navy-900 hover:bg-navy-900 hover:text-cream active:scale-[0.98]",
         "outline-gold":
-          "border border-gold-500 bg-transparent text-gold-600 hover:bg-gold-500 hover:text-navy-900 active:scale-[0.98]",
+          "border border-crimson-500 bg-transparent text-crimson-600 hover:bg-crimson-500 hover:text-white active:scale-[0.98]",
         ghost:
           "bg-transparent hover:bg-navy-50 text-navy-900 active:scale-[0.98]",
         link: "text-navy-900 underline-offset-4 hover:underline p-0 h-auto",

@@ -20,7 +20,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           >
             {label}
             {props.required && (
-              <span className="text-gold-500 ml-1" aria-hidden="true">*</span>
+              <span className="text-crimson-500 ml-1" aria-hidden="true">*</span>
             )}
           </label>
         )}
@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           className={cn(
             "flex h-11 w-full rounded-lg border border-input bg-white px-4 py-2 text-sm text-navy-900 placeholder:text-muted-foreground transition-colors",
-            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold-400 focus-visible:border-gold-400",
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-crimson-400 focus-visible:border-crimson-400",
             "disabled:cursor-not-allowed disabled:opacity-50",
             error && "border-red-400 focus-visible:ring-red-400",
             className

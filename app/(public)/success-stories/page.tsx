@@ -88,13 +88,13 @@ export default function SuccessStoriesPage() {
         </div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">Success Stories</span>
-            <div className="h-px w-8 bg-gold-400" />
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">Success Stories</span>
+            <div className="h-px w-8 bg-crimson-400" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-light text-white mb-4">
             Real students.{" "}
-            <em className="text-gold-400 not-italic">Real results.</em>
+            <em className="text-crimson-400 not-italic">Real results.</em>
           </h1>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
             Over 2,400 students have trusted us with their study abroad journey. Here are just a few of their stories.
@@ -107,7 +107,7 @@ export default function SuccessStoriesPage() {
               { num: "200+", label: "Partner Universities" },
             ].map((s) => (
               <div key={s.label} className="text-center">
-                <div className="font-display text-3xl text-gold-400">{s.num}</div>
+                <div className="font-display text-3xl text-crimson-400">{s.num}</div>
                 <div className="text-white/50 text-sm">{s.label}</div>
               </div>
             ))}
@@ -148,7 +148,7 @@ export default function SuccessStoriesPage() {
                   {/* Stars */}
                   <div className="flex gap-0.5 mb-4">
                     {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 text-gold-400" viewBox="0 0 20 20" fill="currentColor">
+                      <svg key={i} className="w-4 h-4 text-crimson-400" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                       </svg>
                     ))}
@@ -180,10 +180,10 @@ export default function SuccessStoriesPage() {
                 </div>
 
                 {story.scholarship && (
-                  <div className="border-t border-gold-100 bg-gold-50 px-6 py-3">
+                  <div className="border-t border-crimson-100 bg-crimson-50 px-6 py-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-gold-600 text-sm">🏅</span>
-                      <span className="text-gold-700 text-xs font-medium">{story.scholarship}</span>
+                      <span className="text-crimson-600 text-sm">🏅</span>
+                      <span className="text-crimson-700 text-xs font-medium">{story.scholarship}</span>
                     </div>
                   </div>
                 )}
@@ -198,7 +198,7 @@ export default function SuccessStoriesPage() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="font-display text-3xl md:text-4xl text-navy-900 mb-4">
             Your success story{" "}
-            <em className="text-gold-500 not-italic">starts here</em>
+            <em className="text-crimson-500 not-italic">starts here</em>
           </h2>
           <p className="text-navy-600 mb-8">
             Join thousands of students who have achieved their dream with MakeoverArena&apos;s expert guidance.
@@ -206,7 +206,7 @@ export default function SuccessStoriesPage() {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/apply"
-              className="inline-flex items-center justify-center px-7 py-3.5 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors"
+              className="inline-flex items-center justify-center px-7 py-3.5 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
             >
               Start Your Application →
             </Link>

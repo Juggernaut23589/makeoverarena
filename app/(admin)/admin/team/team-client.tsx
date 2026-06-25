@@ -104,7 +104,7 @@ export function TeamClient({ members: initialMembers, currentUserId }: { members
                   onChange={(e) => setInviteName(e.target.value)}
                   required
                   placeholder="Jane Doe"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400"
                 />
               </div>
               <div>
@@ -115,7 +115,7 @@ export function TeamClient({ members: initialMembers, currentUserId }: { members
                   onChange={(e) => setInviteEmail(e.target.value)}
                   required
                   placeholder="jane@makeoverarena.com"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400"
                 />
               </div>
             </div>
@@ -124,7 +124,7 @@ export function TeamClient({ members: initialMembers, currentUserId }: { members
               <select
                 value={inviteRole}
                 onChange={(e) => setInviteRole(e.target.value as "admin" | "super_admin")}
-                className="h-10 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+                className="h-10 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
               >
                 <option value="admin">Admin — full access except Settings & Team</option>
                 <option value="super_admin">Super Admin — full access to everything</option>
@@ -186,7 +186,7 @@ export function TeamClient({ members: initialMembers, currentUserId }: { members
                     </td>
                     <td className="px-4 py-4">
                       {isSelf ? (
-                        <span className={cn("inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold", member.role === "super_admin" ? "bg-gold-100 text-gold-800" : "bg-navy-100 text-navy-700")}>
+                        <span className={cn("inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold", member.role === "super_admin" ? "bg-crimson-100 text-crimson-800" : "bg-navy-100 text-navy-700")}>
                           {member.role === "super_admin" ? "Super Admin" : "Admin"}
                         </span>
                       ) : (
@@ -194,7 +194,7 @@ export function TeamClient({ members: initialMembers, currentUserId }: { members
                           value={member.role}
                           onChange={(e) => handleRoleChange(member, e.target.value as "admin" | "super_admin")}
                           disabled={actionLoading === `role-${member.id}`}
-                          className="text-xs border border-border rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 disabled:opacity-50"
+                          className="text-xs border border-border rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-crimson-400 disabled:opacity-50"
                         >
                           <option value="admin">Admin</option>
                           <option value="super_admin">Super Admin</option>

@@ -78,30 +78,28 @@ export default async function InquiriesPage({
   const { count: newToday } = await (supabaseAdmin?.from("inquiries").select("*", { count: "exact", head: true }).eq("status", "new").gte("created_at", today) ?? Promise.resolve({ count: 0 }));
 
   return (
-    <div className="p-6 lg:p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex items-start sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-display text-3xl text-navy-900">Inquiries</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-navy-900">Inquiries</h1>
           <p className="text-navy-500 text-sm mt-1">
             {total} total · {newToday ?? 0} new today
           </p>
         </div>
-        <div className="flex gap-3">
-          <a
-            href="/api/admin/inquiries/export"
-            className="inline-flex items-center gap-2 px-4 py-2 border border-navy-200 text-navy-700 rounded-lg text-sm hover:bg-navy-50 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Export CSV
-          </a>
-        </div>
+        <a
+          href="/api/admin/inquiries/export"
+          className="inline-flex items-center gap-2 px-3 py-2 border border-navy-200 text-navy-700 rounded-lg text-sm hover:bg-navy-50 transition-colors shrink-0"
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <span className="hidden sm:inline">Export CSV</span>
+        </a>
       </div>
 
       <form method="GET" className="bg-white rounded-xl shadow-card p-4 mb-5">
-        <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center">
-          <div className="relative flex-1 min-w-0 sm:min-w-48">
+        <div className="flex flex-col gap-3">
+          <div className="relative">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -110,49 +108,51 @@ export default async function InquiriesPage({
               name="q"
               defaultValue={searchQuery}
               placeholder="Search by name, email, or phone..."
-              className="w-full h-9 pl-9 pr-4 text-sm border border-border rounded-lg bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gold-400"
+              className="w-full h-10 pl-9 pr-4 text-sm border border-border rounded-lg bg-navy-50 focus:outline-none focus:ring-2 focus:ring-crimson-400"
             />
           </div>
-          <select
-            name="status"
-            defaultValue={params.status ?? ""}
-            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
-          >
-            <option value="">All Status</option>
-            {Object.entries(statusLabels).map(([v, l]) => (
-              <option key={v} value={v}>{l}</option>
-            ))}
-          </select>
-          <select
-            name="service"
-            defaultValue={params.service ?? ""}
-            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
-          >
-            <option value="">All Services</option>
-            <option value="undergraduate">Undergraduate</option>
-            <option value="graduate">Graduate</option>
-            <option value="phd">PhD</option>
-            <option value="scholarship">Scholarship</option>
-            <option value="visa">Visa</option>
-          </select>
-          <select
-            name="priority"
-            defaultValue={params.priority ?? ""}
-            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
-          >
-            <option value="">All Priority</option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
-          </select>
-          <button type="submit" className="h-9 px-4 text-sm bg-navy-900 text-white rounded-lg hover:bg-navy-800 transition-colors">
-            Filter
-          </button>
-          {(params.status || params.service || params.priority || params.q) && (
-            <Link href="/admin/inquiries" className="h-9 px-3 text-sm text-navy-500 hover:text-navy-800 flex items-center">
-              Clear
-            </Link>
-          )}
+          <div className="flex flex-wrap gap-2">
+            <select
+              name="status"
+              defaultValue={params.status ?? ""}
+              className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-crimson-400 flex-1 min-w-[120px]"
+            >
+              <option value="">All Status</option>
+              {Object.entries(statusLabels).map(([v, l]) => (
+                <option key={v} value={v}>{l}</option>
+              ))}
+            </select>
+            <select
+              name="service"
+              defaultValue={params.service ?? ""}
+              className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-crimson-400 flex-1 min-w-[120px]"
+            >
+              <option value="">All Services</option>
+              <option value="undergraduate">Undergraduate</option>
+              <option value="graduate">Graduate</option>
+              <option value="phd">PhD</option>
+              <option value="scholarship">Scholarship</option>
+              <option value="visa">Visa</option>
+            </select>
+            <select
+              name="priority"
+              defaultValue={params.priority ?? ""}
+              className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-crimson-400 flex-1 min-w-[100px]"
+            >
+              <option value="">All Priority</option>
+              <option value="high">High</option>
+              <option value="medium">Medium</option>
+              <option value="low">Low</option>
+            </select>
+            <button type="submit" className="h-9 px-4 text-sm bg-navy-900 text-white rounded-lg hover:bg-navy-800 transition-colors">
+              Filter
+            </button>
+            {(params.status || params.service || params.priority || params.q) && (
+              <Link href="/admin/inquiries" className="h-9 px-3 text-sm text-navy-500 hover:text-navy-800 flex items-center">
+                Clear
+              </Link>
+            )}
+          </div>
         </div>
       </form>
 

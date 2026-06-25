@@ -132,7 +132,7 @@ export function OnboardingGate({ clientId, documentsCompleted, consultationBooke
       <div className="w-full max-w-lg bg-white rounded-2xl shadow-card border border-border p-8">
         <div className="flex items-center gap-2 mb-6">
           {[1, 2, 3].map((s) => (
-            <div key={s} className={`h-1.5 flex-1 rounded-full ${s <= step ? "bg-gold-500" : "bg-navy-100"}`} />
+            <div key={s} className={`h-1.5 flex-1 rounded-full ${s <= step ? "bg-crimson-500" : "bg-navy-100"}`} />
           ))}
         </div>
 
@@ -146,7 +146,7 @@ export function OnboardingGate({ clientId, documentsCompleted, consultationBooke
               <select
                 value={educationLevel}
                 onChange={(e) => setEducationLevel(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400"
               >
                 {EDUCATION_LEVELS.map((l) => (
                   <option key={l} value={l}>{l.replace(/_/g, " ")}</option>
@@ -166,7 +166,7 @@ export function OnboardingGate({ clientId, documentsCompleted, consultationBooke
                   <select
                     value={gpaScale}
                     onChange={(e) => setGpaScale(e.target.value as "4.0" | "5.0")}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400"
                   >
                     <option value="4.0">4.0 Scale</option>
                     <option value="5.0">5.0 Scale</option>
@@ -182,7 +182,7 @@ export function OnboardingGate({ clientId, documentsCompleted, consultationBooke
                     value={gpa}
                     onChange={(e) => setGpa(e.target.value)}
                     placeholder={`e.g. ${gpaScale === "5.0" ? "4.20" : "3.40"}`}
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400"
                   />
                 </div>
               </div>
@@ -222,7 +222,7 @@ export function OnboardingGate({ clientId, documentsCompleted, consultationBooke
             <select
               value={docType}
               onChange={(e) => setDocType(e.target.value)}
-              className="w-full h-10 px-3 text-sm border border-border rounded-lg bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gold-400"
+              className="w-full h-10 px-3 text-sm border border-border rounded-lg bg-navy-50 focus:outline-none focus:ring-2 focus:ring-crimson-400"
             >
               {Object.entries(DOC_TYPE_LABELS).map(([v, l]) => (
                 <option key={v} value={v}>{l}</option>
@@ -237,7 +237,7 @@ export function OnboardingGate({ clientId, documentsCompleted, consultationBooke
             <button
               onClick={handleUpload}
               disabled={uploading}
-              className="w-full py-2.5 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors disabled:opacity-60"
+              className="w-full py-2.5 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors disabled:opacity-60"
             >
               {uploading ? "Uploading…" : "Upload Document"}
             </button>
@@ -261,7 +261,7 @@ export function OnboardingGate({ clientId, documentsCompleted, consultationBooke
             </p>
             <a
               href="/book"
-              className="inline-block w-full py-2.5 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors"
+              className="inline-block w-full py-2.5 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
             >
               Book Free Consultation →
             </a>

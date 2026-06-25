@@ -8,7 +8,7 @@ import { StaffPendingView } from "@/components/staff/staff-pending-view";
 export default async function StaffDashboardPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get(STAFF_COOKIE_NAME)?.value;
-  const session = token ? decodeSession(token) : null;
+  const session = token ? await decodeSession(token) : null;
   if (!session) redirect("/staff/login");
 
   const db = supabaseAdmin;

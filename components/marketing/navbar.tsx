@@ -79,22 +79,14 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 lg:h-[72px]">
           {/* Logo */}
           <Link href="/" className="flex items-center shrink-0 group">
-            <div className={cn(
-              "relative transition-all duration-300",
-              isDark ? "bg-white/10 rounded-xl p-1" : ""
-            )}>
-              <Image
-                src="/makeover-logo.png"
-                alt="MakeoverArena"
-                width={120}
-                height={40}
-                className={cn(
-                  "h-10 w-auto object-contain transition-all duration-300",
-                  !isDark && "mix-blend-multiply"
-                )}
-                priority
-              />
-            </div>
+            <Image
+              src={isDark ? "/makeover-logo-dark.png" : "/makeover-logo-light.png"}
+              alt="MakeoverArena"
+              width={160}
+              height={40}
+              className="h-9 w-auto object-contain transition-all duration-300"
+              priority
+            />
           </Link>
 
           {/* Desktop Nav */}
@@ -195,7 +187,7 @@ export function Navbar() {
             </Link>
             <Link
               href="/apply"
-              className="px-4 py-2 rounded-lg text-sm font-semibold bg-gold-500 text-navy-900 hover:bg-gold-400 transition-all duration-150 shadow-sm whitespace-nowrap"
+              className="px-4 py-2 rounded-lg text-sm font-semibold bg-crimson-500 text-white hover:bg-crimson-400 transition-all duration-150 shadow-sm whitespace-nowrap"
             >
               Start Application →
             </Link>
@@ -256,10 +248,10 @@ export function Navbar() {
       <div
         className={cn(
           "lg:hidden overflow-hidden transition-all duration-300",
-          menuOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+          menuOpen ? "max-h-[calc(100dvh-4rem)] opacity-100" : "max-h-0 opacity-0"
         )}
       >
-        <div className="bg-white border-t border-border px-4 py-4 space-y-1">
+        <div className="bg-white border-t border-border px-4 py-4 space-y-1 overflow-y-auto max-h-[calc(100dvh-4rem)]">
           {/* Services collapsible */}
           <button
             onClick={() => setMobileServicesOpen((o) => !o)}
@@ -329,7 +321,7 @@ export function Navbar() {
             </Link>
             <Link
               href="/apply"
-              className="block px-4 py-3 rounded-lg text-sm font-semibold text-center bg-gold-500 text-navy-900 hover:bg-gold-400 transition-colors"
+              className="block px-4 py-3 rounded-lg text-sm font-semibold text-center bg-crimson-500 text-white hover:bg-crimson-400 transition-colors"
             >
               Start Application →
             </Link>

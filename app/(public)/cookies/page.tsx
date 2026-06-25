@@ -36,8 +36,8 @@ export default function CookiesPage() {
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-gold-500" />
-            <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-500" />
+            <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
               Legal
             </span>
           </div>
@@ -79,7 +79,7 @@ export default function CookiesPage() {
                     className={`shrink-0 text-xs px-2.5 py-1 rounded-full font-medium ${
                       type.required
                         ? "bg-navy-100 text-navy-700"
-                        : "bg-gold-100 text-gold-700"
+                        : "bg-crimson-100 text-crimson-700"
                     }`}
                   >
                     {type.required ? "Required" : "Optional"}
@@ -95,7 +95,7 @@ export default function CookiesPage() {
                   <ul className="space-y-1">
                     {type.examples.map((ex) => (
                       <li key={ex} className="flex items-center gap-2 text-xs text-navy-500">
-                        <div className="w-1 h-1 rounded-full bg-gold-400 shrink-0" />
+                        <div className="w-1 h-1 rounded-full bg-crimson-400 shrink-0" />
                         {ex}
                       </li>
                     ))}
@@ -116,7 +116,7 @@ export default function CookiesPage() {
           </p>
           <ul className="space-y-3 text-navy-600 text-sm leading-relaxed">
             <li className="flex items-start gap-2">
-              <span className="text-gold-500 font-bold shrink-0 mt-0.5">1.</span>
+              <span className="text-crimson-500 font-bold shrink-0 mt-0.5">1.</span>
               <span>
                 <strong>Cookie banner:</strong> When you first visit our site, a
                 cookie consent banner will appear. You can accept all cookies,
@@ -124,7 +124,7 @@ export default function CookiesPage() {
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-gold-500 font-bold shrink-0 mt-0.5">2.</span>
+              <span className="text-crimson-500 font-bold shrink-0 mt-0.5">2.</span>
               <span>
                 <strong>Browser settings:</strong> You can configure your
                 browser to block or delete cookies. Note that blocking
@@ -133,14 +133,14 @@ export default function CookiesPage() {
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-gold-500 font-bold shrink-0 mt-0.5">3.</span>
+              <span className="text-crimson-500 font-bold shrink-0 mt-0.5">3.</span>
               <span>
                 <strong>Google Analytics opt-out:</strong> You can install the{" "}
                 <a
                   href="https://tools.google.com/dlpage/gaoptout"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gold-600 hover:text-gold-700 underline"
+                  className="text-crimson-600 hover:text-crimson-700 underline"
                 >
                   Google Analytics Opt-out Browser Add-on
                 </a>{" "}
@@ -183,7 +183,7 @@ export default function CookiesPage() {
             Email us at{" "}
             <a
               href="mailto:privacy@makeoverarena.com"
-              className="text-gold-600 hover:text-gold-700 font-medium"
+              className="text-crimson-600 hover:text-crimson-700 font-medium"
             >
               privacy@makeoverarena.com
             </a>

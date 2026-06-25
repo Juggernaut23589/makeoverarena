@@ -101,10 +101,10 @@ export default async function ConsultationsPage({
     : 0;
 
   return (
-    <div className="p-6 lg:p-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="flex items-start sm:items-center justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-display text-3xl text-navy-900">Consultations</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-navy-900">Consultations</h1>
           <p className="text-navy-500 text-sm mt-1">
             {upcomingCount ?? 0} upcoming · {completedMonth ?? 0} completed this month
           </p>
@@ -113,28 +113,28 @@ export default async function ConsultationsPage({
           href="/book"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-gold-500 text-navy-900 rounded-lg text-sm font-semibold hover:bg-gold-400 transition-colors"
+          className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-crimson-500 text-white rounded-lg text-sm font-semibold hover:bg-crimson-400 transition-colors shrink-0"
         >
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" />
           </svg>
-          New Booking
+          <span className="hidden sm:inline">New Booking</span>
         </a>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {[
           { label: "Today", value: todayCount ?? 0, color: "text-blue-600 bg-blue-50", icon: "📅" },
           { label: "Upcoming", value: upcomingCount ?? 0, color: "text-purple-600 bg-purple-50", icon: "🗓️" },
           { label: "Completed (month)", value: completedMonth ?? 0, color: "text-green-600 bg-green-50", icon: "✅" },
           { label: "No-show Rate", value: `${noShowRate}%`, color: "text-red-600 bg-red-50", icon: "❌" },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl shadow-card p-5">
-            <div className={cn("w-9 h-9 rounded-lg flex items-center justify-center text-lg mb-3", s.color)}>
+          <div key={s.label} className="bg-white rounded-xl shadow-card p-3 sm:p-5">
+            <div className={cn("w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center text-base sm:text-lg mb-2 sm:mb-3", s.color)}>
               {s.icon}
             </div>
-            <div className="font-display text-2xl text-navy-900 font-medium">{s.value}</div>
-            <div className="text-navy-500 text-xs mt-0.5">{s.label}</div>
+            <div className="font-display text-xl sm:text-2xl text-navy-900 font-medium">{s.value}</div>
+            <div className="text-navy-500 text-xs mt-0.5 leading-tight">{s.label}</div>
           </div>
         ))}
       </div>
@@ -144,7 +144,7 @@ export default async function ConsultationsPage({
           <select
             name="status"
             defaultValue={params.status ?? ""}
-            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-gold-400"
+            className="h-9 px-3 text-sm border border-border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
           >
             <option value="">All Status</option>
             {Object.entries(statusLabels).map(([v, l]) => (
@@ -199,7 +199,7 @@ export default async function ConsultationsPage({
                   </div>
                 </td>
                 <td className="px-4 py-4">
-                  <div className={cn("font-medium text-sm", c.scheduled_date === today ? "text-gold-600" : "text-navy-900")}>
+                  <div className={cn("font-medium text-sm", c.scheduled_date === today ? "text-crimson-600" : "text-navy-900")}>
                     {formatDateLabel(c.scheduled_date)}
                   </div>
                   <div className="text-navy-400 text-xs">{formatTime(c.scheduled_time)} · {c.duration_minutes}min</div>

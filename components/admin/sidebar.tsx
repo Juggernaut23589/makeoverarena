@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/(admin)/admin/login/actions";
@@ -126,7 +127,7 @@ function SidebarFooter({ collapsed, role, adminName, onToggleCollapse }: {
       {!collapsed && adminName && (
         <div className="px-3 py-2 mb-1">
           <p className="text-xs text-white/40 truncate">{adminName}</p>
-          <p className="text-xs text-gold-400/70 font-medium">{role === "super_admin" ? "Super Admin" : "Admin"}</p>
+          <p className="text-xs text-crimson-400/70 font-medium">{role === "super_admin" ? "Super Admin" : "Admin"}</p>
         </div>
       )}
       {!collapsed && (
@@ -172,15 +173,20 @@ function Brand({ collapsed }: { collapsed: boolean }) {
   return (
     <Link
       href="/"
-      className={cn("flex items-center h-16 px-4 border-b border-white/5 shrink-0", collapsed ? "justify-center" : "gap-3")}
+      className={cn("flex items-center h-16 px-4 border-b border-white/5 shrink-0", collapsed ? "justify-center" : "")}
     >
-      <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center shrink-0">
-        <span className="font-display text-navy-900 font-bold text-sm leading-none">M</span>
-      </div>
-      {!collapsed && (
-        <span className="font-display text-white font-semibold">
-          Makeover<span className="text-gold-400">Arena</span>
-        </span>
+      {collapsed ? (
+        <div className="w-8 h-8 bg-crimson-500 rounded-lg flex items-center justify-center shrink-0">
+          <span className="font-display text-white font-bold text-sm leading-none">M</span>
+        </div>
+      ) : (
+        <Image
+          src="/makeover-logo-dark.png"
+          alt="MakeoverArena"
+          width={150}
+          height={36}
+          className="h-7 w-auto"
+        />
       )}
     </Link>
   );
@@ -211,11 +217,14 @@ export function AdminMobileDrawer({ open, onClose, role, adminName }: { open: bo
         aria-label="Admin navigation"
       >
         <div className="flex items-center justify-between h-16 px-4 border-b border-white/5 shrink-0">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gold-500 rounded-lg flex items-center justify-center shrink-0">
-              <span className="font-display text-navy-900 font-bold text-sm leading-none">M</span>
-            </div>
-            <span className="font-display text-white font-semibold">Makeover<span className="text-gold-400">Arena</span></span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/makeover-logo-dark.png"
+              alt="MakeoverArena"
+              width={150}
+              height={36}
+              className="h-7 w-auto"
+            />
           </Link>
           <button onClick={onClose} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close menu">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

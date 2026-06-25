@@ -67,7 +67,7 @@ function LoginForm() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
               <div className="w-12 h-12 bg-navy-900 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <span className="font-display text-gold-400 font-bold text-xl leading-none">M</span>
+                <span className="font-display text-crimson-400 font-bold text-xl leading-none">M</span>
               </div>
             </Link>
             <h1 className="font-display text-2xl text-navy-900">
@@ -93,7 +93,7 @@ function LoginForm() {
               </p>
               <button
                 onClick={() => { setResetMode(false); setResetSent(false); }}
-                className="text-sm text-gold-600 hover:text-gold-700 font-medium"
+                className="text-sm text-crimson-600 hover:text-crimson-700 font-medium"
               >
                 ← Back to sign in
               </button>
@@ -108,7 +108,7 @@ function LoginForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder="your@email.com"
-                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 placeholder:text-navy-300"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400 placeholder:text-navy-300"
                 />
               </div>
 
@@ -119,7 +119,7 @@ function LoginForm() {
                     <button
                       type="button"
                       onClick={() => setResetMode(true)}
-                      className="text-xs text-gold-600 hover:text-gold-700"
+                      className="text-xs text-crimson-600 hover:text-crimson-700"
                     >
                       Forgot password?
                     </button>
@@ -130,7 +130,7 @@ function LoginForm() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     placeholder="••••••••"
-                    className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 placeholder:text-navy-300"
+                    className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400 placeholder:text-navy-300"
                   />
                 </div>
               )}
@@ -164,7 +164,7 @@ function LoginForm() {
           {!resetMode && !resetSent && (
             <p className="text-center text-sm text-navy-500 mt-6">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-gold-600 hover:text-gold-700 font-medium">
+              <Link href="/signup" className="text-crimson-600 hover:text-crimson-700 font-medium">
                 Sign up
               </Link>
             </p>
@@ -173,7 +173,7 @@ function LoginForm() {
 
         <p className="text-center text-xs text-navy-400 mt-4">
           Student portal for MakeoverArena clients only.{" "}
-          <Link href="/apply" className="text-gold-600 hover:text-gold-700">
+          <Link href="/apply" className="text-crimson-600 hover:text-crimson-700">
             Apply here
           </Link>{" "}
           if you&apos;re new.
@@ -187,7 +187,7 @@ export default function LoginPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gold-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-crimson-400 border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <LoginForm />

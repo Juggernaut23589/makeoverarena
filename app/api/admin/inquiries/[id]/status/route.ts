@@ -9,7 +9,7 @@ const VALID_STATUSES = ["new", "reviewed", "contacted", "consultation_booked", "
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token || !decodeSession(token)) {
+  if (!token || !await decodeSession(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

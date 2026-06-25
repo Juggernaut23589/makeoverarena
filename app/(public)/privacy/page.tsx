@@ -115,8 +115,8 @@ export default function PrivacyPage() {
         {/* Header */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-4">
-            <div className="h-px w-8 bg-gold-500" />
-            <span className="text-gold-600 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-500" />
+            <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
               Legal
             </span>
           </div>
@@ -151,7 +151,7 @@ export default function PrivacyPage() {
             Contact our privacy team at{" "}
             <a
               href="mailto:privacy@makeoverarena.com"
-              className="text-gold-600 hover:text-gold-700 font-medium"
+              className="text-crimson-600 hover:text-crimson-700 font-medium"
             >
               privacy@makeoverarena.com
             </a>

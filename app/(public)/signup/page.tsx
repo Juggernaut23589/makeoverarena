@@ -93,7 +93,7 @@ function SignupForm() {
           <div className="text-center mb-8">
             <Link href="/" className="inline-block">
               <div className="w-12 h-12 bg-navy-900 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <span className="font-display text-gold-400 font-bold text-xl leading-none">M</span>
+                <span className="font-display text-crimson-400 font-bold text-xl leading-none">M</span>
               </div>
             </Link>
             {fromApplication ? (
@@ -122,7 +122,7 @@ function SignupForm() {
                 onChange={(e) => setForm({ ...form, fullName: e.target.value })}
                 required
                 placeholder="Amara Okonkwo"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 placeholder:text-navy-300"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400 placeholder:text-navy-300"
               />
             </div>
             <div>
@@ -133,7 +133,7 @@ function SignupForm() {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
                 placeholder="your@email.com"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 placeholder:text-navy-300"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400 placeholder:text-navy-300"
               />
             </div>
             <div>
@@ -144,7 +144,7 @@ function SignupForm() {
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
                 required
                 placeholder="Minimum 8 characters"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 placeholder:text-navy-300"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400 placeholder:text-navy-300"
               />
             </div>
             <div>
@@ -155,7 +155,7 @@ function SignupForm() {
                 onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
                 required
                 placeholder="Repeat password"
-                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-gold-400 placeholder:text-navy-300"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-border bg-navy-50 text-navy-900 text-sm focus:outline-none focus:ring-2 focus:ring-crimson-400 placeholder:text-navy-300"
               />
             </div>
 
@@ -176,7 +176,7 @@ function SignupForm() {
 
           <p className="text-center text-sm text-navy-500 mt-6">
             Already have an account?{" "}
-            <Link href="/login" className="text-gold-600 hover:text-gold-700 font-medium">
+            <Link href="/login" className="text-crimson-600 hover:text-crimson-700 font-medium">
               Sign in
             </Link>
           </p>
@@ -184,9 +184,9 @@ function SignupForm() {
 
         <p className="text-center text-xs text-navy-400 mt-4">
           By signing up, you agree to our{" "}
-          <Link href="/terms" className="text-gold-600 hover:text-gold-700">Terms of Service</Link>
+          <Link href="/terms" className="text-crimson-600 hover:text-crimson-700">Terms of Service</Link>
           {" "}and{" "}
-          <Link href="/privacy" className="text-gold-600 hover:text-gold-700">Privacy Policy</Link>.
+          <Link href="/privacy" className="text-crimson-600 hover:text-crimson-700">Privacy Policy</Link>.
         </p>
       </div>
     </div>
@@ -197,7 +197,7 @@ export default function SignupPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-gold-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-10 h-10 border-4 border-crimson-400 border-t-transparent rounded-full animate-spin" />
       </div>
     }>
       <SignupForm />

@@ -97,7 +97,7 @@ export function ClientsTable({ clients: initialClients, agents }: { clients: Cli
                           value={client.assigned_staff_id ?? ""}
                           onChange={(e) => handleAssign(client, e.target.value)}
                           disabled={savingId === client.id}
-                          className="text-xs border border-border rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-gold-400 disabled:opacity-50"
+                          className="text-xs border border-border rounded-lg px-2 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-crimson-400 disabled:opacity-50"
                         >
                           <option value="">— Select agent —</option>
                           {agents.map((a) => (

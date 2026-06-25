@@ -7,7 +7,7 @@ import { supabaseAdmin } from "@/lib/supabase";
 export async function GET(request: NextRequest) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token || !decodeSession(token)) {
+  if (!token || !await decodeSession(token)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

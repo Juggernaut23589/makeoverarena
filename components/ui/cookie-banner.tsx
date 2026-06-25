@@ -41,11 +41,11 @@ export function CookieBanner() {
             <p className="text-white/70 text-xs leading-relaxed">
               We use cookies to improve your experience and analyse site traffic. By clicking
               &ldquo;Accept all&rdquo; you consent to analytics cookies.{" "}
-              <Link href="/cookies" className="text-gold-400 hover:text-gold-300 underline underline-offset-2">
+              <Link href="/cookies" className="text-crimson-400 hover:text-crimson-300 underline underline-offset-2">
                 Cookie policy
               </Link>
               {" · "}
-              <Link href="/privacy" className="text-gold-400 hover:text-gold-300 underline underline-offset-2">
+              <Link href="/privacy" className="text-crimson-400 hover:text-crimson-300 underline underline-offset-2">
                 Privacy policy
               </Link>
             </p>
@@ -59,7 +59,7 @@ export function CookieBanner() {
             </button>
             <button
               onClick={() => accept("all")}
-              className="px-4 py-2 text-xs font-semibold bg-gold-500 text-navy-900 rounded-lg hover:bg-gold-400 transition-colors"
+              className="px-4 py-2 text-xs font-semibold bg-crimson-500 text-white rounded-lg hover:bg-crimson-400 transition-colors"
             >
               Accept all
             </button>

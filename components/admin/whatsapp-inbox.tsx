@@ -279,7 +279,7 @@ export function WhatsAppInbox() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search conversations…"
-              className="w-full h-8 pl-8 pr-3 text-xs border border-border rounded-lg bg-navy-50 focus:outline-none focus:ring-2 focus:ring-gold-400"
+              className="w-full h-8 pl-8 pr-3 text-xs border border-border rounded-lg bg-navy-50 focus:outline-none focus:ring-2 focus:ring-crimson-400"
             />
           </div>
 
@@ -306,7 +306,7 @@ export function WhatsAppInbox() {
         <div className="flex-1 overflow-y-auto divide-y divide-border">
           {loadingConvs ? (
             <div className="flex items-center justify-center py-12">
-              <div className="w-6 h-6 border-2 border-gold-400 border-t-transparent rounded-full animate-spin" />
+              <div className="w-6 h-6 border-2 border-crimson-400 border-t-transparent rounded-full animate-spin" />
             </div>
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center px-6">
@@ -401,7 +401,7 @@ export function WhatsAppInbox() {
                 <select
                   value={activeConv.status}
                   onChange={(e) => updateStatus(activeConv.id, e.target.value)}
-                  className="h-7 px-2 text-xs border border-border rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-gold-400 text-navy-700"
+                  className="h-7 px-2 text-xs border border-border rounded-lg bg-white focus:outline-none focus:ring-1 focus:ring-crimson-400 text-navy-700"
                 >
                   <option value="open">Open</option>
                   <option value="pending">Pending</option>

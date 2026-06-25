@@ -8,7 +8,7 @@ export async function getAdminSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
-  return decodeSession(token);
+  return await decodeSession(token);
 }
 
 export async function logoutAction() {

@@ -115,7 +115,7 @@ export async function loginStaffAction(
       return { error: "No staff account found for this email." };
     }
 
-    const token = encodeSession({
+    const token = await encodeSession({
       userId: staff.id,
       email: staff.email,
       fullName: staff.full_name,
@@ -150,7 +150,7 @@ export async function getStaffSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get(STAFF_COOKIE_NAME)?.value;
   if (!token) return null;
-  return decodeSession(token);
+  return await decodeSession(token);
 }
 
 // Called by super_admin to approve a pending staff member

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -33,23 +34,27 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
+    // min-h-dvh uses the dynamic viewport height so the form is
+    // always fully visible on mobile even with the browser chrome present.
+    <div className="min-h-dvh bg-navy-950 flex flex-col items-center justify-center p-4 overflow-y-auto">
+      <div className="w-full max-w-sm py-8">
+        <div className="text-center mb-6">
           <Link href="/" className="inline-block">
-            <div className="w-14 h-14 bg-gold-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <span className="font-display text-navy-900 font-bold text-2xl leading-none">M</span>
-            </div>
-            <h1 className="font-display text-2xl text-white font-light">
-              Makeover<span className="text-gold-400">Arena</span>
-            </h1>
+            <Image
+              src="/makeover-logo-dark.png"
+              alt="MakeoverArena"
+              width={200}
+              height={50}
+              className="h-10 w-auto mx-auto mb-2"
+              priority
+            />
           </Link>
           <p className="text-white/40 text-sm mt-1">Admin Portal</p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="bg-navy-900 rounded-2xl border border-white/10 p-6 space-y-4"
+          className="bg-navy-900 rounded-2xl border border-white/10 p-5 sm:p-6 space-y-4"
         >
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg px-4 py-3">
@@ -68,7 +73,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              className="w-full px-3 py-2.5 bg-navy-800 border border-white/10 rounded-lg text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all"
+              className="w-full h-11 px-3 bg-navy-800 border border-white/10 rounded-lg text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-crimson-500 focus:border-transparent transition-all"
               placeholder="admin@makeoverarena.com"
             />
           </div>
@@ -84,7 +89,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               autoComplete="current-password"
-              className="w-full px-3 py-2.5 bg-navy-800 border border-white/10 rounded-lg text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent transition-all"
+              className="w-full h-11 px-3 bg-navy-800 border border-white/10 rounded-lg text-white text-sm placeholder-white/20 focus:outline-none focus:ring-2 focus:ring-crimson-500 focus:border-transparent transition-all"
               placeholder="••••••••"
             />
           </div>
@@ -92,7 +97,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={pending}
-            className="w-full py-2.5 bg-gold-500 text-navy-900 rounded-lg font-semibold text-sm hover:bg-gold-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+            className="w-full h-11 bg-crimson-500 text-white rounded-lg font-semibold text-sm hover:bg-crimson-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed mt-2"
           >
             {pending ? "Signing in…" : "Sign In →"}
           </button>

@@ -25,11 +25,11 @@ export function StaffLoginClient() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 mb-8 justify-center">
-          <div className="w-9 h-9 bg-gold-500 rounded-lg flex items-center justify-center">
-            <span className="font-display text-navy-900 font-bold text-lg leading-none">M</span>
+          <div className="w-9 h-9 bg-crimson-500 rounded-lg flex items-center justify-center">
+            <span className="font-display text-white font-bold text-lg leading-none">M</span>
           </div>
           <span className="font-display font-semibold text-xl text-navy-900">
-            Makeover<span className="text-gold-500">Arena</span>
+            Makeover<span className="text-crimson-500">Arena</span>
           </span>
         </Link>
 
@@ -42,7 +42,7 @@ export function StaffLoginClient() {
                 onClick={() => setTab(t)}
                 className={`flex-1 py-3.5 text-sm font-semibold transition-colors ${
                   tab === t
-                    ? "text-navy-900 border-b-2 border-gold-500 -mb-px bg-white"
+                    ? "text-navy-900 border-b-2 border-crimson-500 -mb-px bg-white"
                     : "text-navy-400 hover:text-navy-700"
                 }`}
               >
@@ -63,7 +63,7 @@ export function StaffLoginClient() {
                     type="email"
                     required
                     autoComplete="email"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
                     placeholder="you@makeoverarena.com"
                   />
                 </div>
@@ -76,7 +76,7 @@ export function StaffLoginClient() {
                     type="password"
                     required
                     autoComplete="current-password"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
                     placeholder="••••••••"
                   />
                 </div>
@@ -118,7 +118,7 @@ export function StaffLoginClient() {
                           name="full_name"
                           type="text"
                           required
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
                           placeholder="Jane Doe"
                         />
                       </div>
@@ -130,7 +130,7 @@ export function StaffLoginClient() {
                           name="email"
                           type="email"
                           required
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
                           placeholder="jane@makeoverarena.com"
                         />
                       </div>
@@ -143,7 +143,7 @@ export function StaffLoginClient() {
                           type="password"
                           required
                           minLength={8}
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
                           placeholder="Min. 8 characters"
                         />
                       </div>
@@ -154,7 +154,7 @@ export function StaffLoginClient() {
                         <input
                           name="phone"
                           type="tel"
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
                           placeholder="+234 800 000 0000"
                         />
                       </div>
@@ -166,7 +166,7 @@ export function StaffLoginClient() {
                           name="job_title"
                           type="text"
                           required
-                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-gold-400 focus:border-transparent"
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
                           placeholder="e.g. Admissions Consultant"
                         />
                       </div>

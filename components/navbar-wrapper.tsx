@@ -3,11 +3,11 @@
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/marketing/navbar";
 
-const NO_NAVBAR_PREFIXES = ["/admin/", "/staff/"];
+const NO_NAVBAR_PREFIXES = ["/admin", "/staff"];
 
 function shouldShowNavbar(pathname: string) {
   if (pathname === "/staff/login") return true;
-  return !NO_NAVBAR_PREFIXES.some((p) => pathname.startsWith(p));
+  return !NO_NAVBAR_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));
 }
 
 export function NavbarWrapper({ children }: { children: React.ReactNode }) {

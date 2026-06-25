@@ -44,7 +44,7 @@ export function InquiryStatusSelect({ inquiryId, currentStatus, statusColors, st
         onChange={(e) => handleChange(e.target.value)}
         disabled={saving}
         className={cn(
-          "appearance-none pl-2 pr-6 py-0.5 rounded-full text-xs font-medium border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-gold-400 disabled:opacity-60",
+          "appearance-none pl-2 pr-6 py-0.5 rounded-full text-xs font-medium border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-crimson-400 disabled:opacity-60",
           statusColors[status] ?? "bg-gray-100 text-gray-700"
         )}
       >

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { AdminSidebar, AdminMobileDrawer, getNavItems } from "./sidebar";
 import type { AdminRole } from "@/lib/admin-auth";
@@ -34,7 +35,15 @@ export function AdminShell({ children, role, adminName }: { children: React.Reac
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <Link href="/" className="font-display text-white font-semibold text-sm">Makeover<span className="text-gold-400">Arena</span></Link>
+        <Link href="/" className="flex items-center">
+          <Image
+            src="/makeover-logo-dark.png"
+            alt="MakeoverArena"
+            width={140}
+            height={36}
+            className="h-7 w-auto"
+          />
+        </Link>
         {current && <span className="ml-auto text-white/50 text-xs font-medium uppercase tracking-wide truncate">{current.label}</span>}
       </header>
 

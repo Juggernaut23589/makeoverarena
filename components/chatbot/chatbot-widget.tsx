@@ -131,8 +131,8 @@ export function ChatbotWidget() {
       >
         {/* Header */}
         <Link href="/" className="bg-navy-900 px-5 py-4 flex items-center gap-3">
-          <div className="w-9 h-9 bg-gold-500 rounded-full flex items-center justify-center shrink-0">
-            <span className="text-navy-900 font-bold text-sm font-display">M</span>
+          <div className="w-9 h-9 bg-crimson-500 rounded-full flex items-center justify-center shrink-0">
+            <span className="text-white font-bold text-sm font-display">M</span>
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-white font-semibold text-sm">MakeoverArena</div>
@@ -226,12 +226,12 @@ export function ChatbotWidget() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="Type a message..."
-              className="flex-1 h-10 px-4 text-sm rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-gold-400 bg-navy-50"
+              className="flex-1 h-10 px-4 text-sm rounded-xl border border-border focus:outline-none focus:ring-2 focus:ring-crimson-400 bg-navy-50"
             />
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="w-10 h-10 bg-gold-500 text-navy-900 rounded-xl flex items-center justify-center hover:bg-gold-400 disabled:opacity-50 transition-colors shrink-0"
+              className="w-10 h-10 bg-crimson-500 text-white rounded-xl flex items-center justify-center hover:bg-crimson-400 disabled:opacity-50 transition-colors shrink-0"
             >
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -239,7 +239,7 @@ export function ChatbotWidget() {
             </button>
           </form>
           <p className="text-center text-xs text-navy-400 mt-2">
-            Powered by AI · <a href="/book" className="text-gold-600 hover:underline">Talk to a human</a>
+            Powered by AI · <a href="/book" className="text-crimson-600 hover:underline">Talk to a human</a>
           </p>
         </div>
       </div>

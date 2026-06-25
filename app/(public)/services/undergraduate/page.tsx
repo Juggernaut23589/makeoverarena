@@ -39,11 +39,11 @@ export default function UndergraduatePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-navy-950/80 to-transparent" />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-3">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">Service</span>
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">Service</span>
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-light text-white">
-            Undergraduate <em className="text-gold-400 not-italic">Admissions</em>
+            Undergraduate <em className="text-crimson-400 not-italic">Admissions</em>
           </h1>
           <p className="text-white/60 mt-3 text-lg max-w-lg">
             Expert guidance from application strategy to holding your offer letter.
@@ -62,8 +62,8 @@ export default function UndergraduatePage() {
                 <ul className="space-y-3">
                   {included.map((item) => (
                     <li key={item} className="flex items-start gap-3">
-                      <div className="w-5 h-5 rounded-full bg-gold-100 flex items-center justify-center shrink-0 mt-0.5">
-                        <svg className="w-3 h-3 text-gold-600" viewBox="0 0 20 20" fill="currentColor">
+                      <div className="w-5 h-5 rounded-full bg-crimson-100 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg className="w-3 h-3 text-crimson-600" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
                       </div>
@@ -86,7 +86,7 @@ export default function UndergraduatePage() {
                         {i < timeline.length - 1 && <div className="w-px flex-1 bg-navy-200 mt-2" />}
                       </div>
                       <div className="pb-6">
-                        <span className="text-xs text-gold-600 font-semibold uppercase tracking-wide">{t.phase}</span>
+                        <span className="text-xs text-crimson-600 font-semibold uppercase tracking-wide">{t.phase}</span>
                         <h3 className="font-semibold text-navy-900 mt-0.5 mb-1">{t.title}</h3>
                         <p className="text-navy-600 text-sm leading-relaxed">{t.desc}</p>
                       </div>
@@ -103,7 +103,7 @@ export default function UndergraduatePage() {
                 <p className="text-navy-600 text-sm mb-5">Start your application today. It takes 5 minutes and our team responds within 24 hours.</p>
                 <Link
                   href="/apply"
-                  className="block w-full text-center px-5 py-3 bg-gold-500 text-navy-900 rounded-xl font-semibold text-sm hover:bg-gold-400 transition-colors mb-3"
+                  className="block w-full text-center px-5 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors mb-3"
                 >
                   Start Application →
                 </Link>
@@ -116,7 +116,7 @@ export default function UndergraduatePage() {
               </div>
 
               <div className="bg-navy-900 rounded-2xl p-6 text-white">
-                <div className="text-3xl font-display font-light text-gold-400 mb-1">₦150k+</div>
+                <div className="text-3xl font-display font-light text-crimson-400 mb-1">₦150k+</div>
                 <div className="text-white/60 text-sm mb-4">Starting price for undergraduate packages</div>
                 <div className="text-white/50 text-xs">Price varies based on number of universities and service level. Book a free consultation for a personalised quote.</div>
               </div>

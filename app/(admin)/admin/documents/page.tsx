@@ -45,10 +45,10 @@ export default async function AdminDocumentsPage({
   const { count: pendingCount } = await (supabaseAdmin?.from("documents").select("*", { count: "exact", head: true }).eq("status", "pending_review") ?? Promise.resolve({ count: 0 }));
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-3xl text-navy-900">Documents</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-navy-900">Documents</h1>
           <p className="text-navy-500 text-sm mt-1">
             {pendingCount ?? 0} pending review
           </p>

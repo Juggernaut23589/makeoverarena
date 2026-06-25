@@ -75,7 +75,7 @@ export default async function AnalyticsPage() {
       service: service.charAt(0).toUpperCase() + service.slice(1),
       count: d.total,
       pct: Math.round((d.total / totalInquiries) * 100),
-      color: service === "undergraduate" ? "bg-blue-400" : service === "graduate" ? "bg-purple-400" : service === "scholarship" ? "bg-gold-400" : service === "visa" ? "bg-green-400" : "bg-orange-400",
+      color: service === "undergraduate" ? "bg-blue-400" : service === "graduate" ? "bg-purple-400" : service === "scholarship" ? "bg-crimson-400" : service === "visa" ? "bg-green-400" : "bg-orange-400",
     }));
 
   // Country breakdown
@@ -133,22 +133,22 @@ export default async function AnalyticsPage() {
   ];
 
   return (
-    <div className="p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-3xl text-navy-900">Analytics</h1>
+          <h1 className="font-display text-2xl sm:text-3xl text-navy-900">Analytics</h1>
           <p className="text-navy-500 text-sm mt-1">
             {now.toLocaleDateString("en-NG", { month: "long", year: "numeric" })} · Live data
           </p>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {overviewStats.map((s) => (
-          <div key={s.label} className="bg-white rounded-xl shadow-card p-5">
-            <div className="font-display text-2xl text-navy-900 font-medium mb-1">{s.value}</div>
-            <div className="text-navy-500 text-xs mb-2">{s.label}</div>
-            <div className={`text-xs font-medium ${s.positive ? "text-green-600" : "text-red-500"}`}>{s.change}</div>
+          <div key={s.label} className="bg-white rounded-xl shadow-card p-3 sm:p-5">
+            <div className="font-display text-xl sm:text-2xl text-navy-900 font-medium mb-1">{s.value}</div>
+            <div className="text-navy-500 text-xs mb-1 leading-tight">{s.label}</div>
+            <div className={`text-xs font-medium hidden sm:block ${s.positive ? "text-green-600" : "text-red-500"}`}>{s.change}</div>
           </div>
         ))}
       </div>
@@ -249,7 +249,7 @@ export default async function AnalyticsPage() {
                     <span className="text-xs text-navy-400 font-medium">{s.pct}%</span>
                   </div>
                   <div className="h-2 bg-navy-50 rounded-full overflow-hidden">
-                    <div className="h-full bg-gold-300 rounded-full" style={{ width: `${s.pct}%` }} />
+                    <div className="h-full bg-crimson-300 rounded-full" style={{ width: `${s.pct}%` }} />
                   </div>
                 </div>
               ))}

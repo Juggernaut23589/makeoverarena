@@ -16,15 +16,15 @@ export default function ApplyPage() {
         </div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="h-px w-8 bg-gold-400" />
-            <span className="text-gold-400 text-xs font-semibold tracking-widest uppercase">
+            <div className="h-px w-8 bg-crimson-400" />
+            <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
               Step 1 of 5
             </span>
-            <div className="h-px w-8 bg-gold-400" />
+            <div className="h-px w-8 bg-crimson-400" />
           </div>
           <h1 className="font-display text-4xl md:text-5xl font-light text-white mb-4">
             Start Your{" "}
-            <em className="text-gold-400 not-italic">Application</em>
+            <em className="text-crimson-400 not-italic">Application</em>
           </h1>
           <p className="text-white/60 text-lg max-w-xl mx-auto">
             Takes about 5 minutes. We&apos;ll review your profile and get back to you within 24 hours.
