@@ -82,9 +82,9 @@ export function Navbar() {
             <Image
               src="/makeover-logo-icon.png"
               alt=""
-              width={48}
-              height={48}
-              className="h-12 w-12 object-contain drop-shadow-sm"
+              width={56}
+              height={56}
+              className="h-14 w-14 object-contain drop-shadow-sm"
               priority
             />
             <span className={cn(
