@@ -48,8 +48,8 @@ export default function AdminLoginPage() {
               className="w-16 h-16 object-contain drop-shadow-lg"
               priority
             />
-            <span className="font-display font-bold text-xl text-white leading-none mt-1">
-              Makeover<span className="text-crimson-400">Arena</span>
+            <span className="font-display font-bold text-xl text-gold-400 leading-none mt-1">
+              MakeoverArena
             </span>
           </Link>
           <p className="text-white/40 text-sm mt-2">Admin Portal</p>

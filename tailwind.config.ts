@@ -36,6 +36,13 @@ const config: Config = {
           800: "#560A0F",
           900: "#3C070A",
         },
+        gold: {
+          300: "#F0D080",
+          400: "#E5BE6A",
+          500: "#D4A853",
+          600: "#B8860B",
+          700: "#9A6E08",
+        },
         cream: "#FAFAF5",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

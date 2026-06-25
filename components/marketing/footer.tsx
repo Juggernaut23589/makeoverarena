@@ -85,8 +85,8 @@ export function Footer() {
                 height={40}
                 className="w-10 h-10 object-contain shrink-0"
               />
-              <span className="font-display font-bold text-xl text-white">
-                Makeover<span className="text-crimson-400">Arena</span>
+              <span className="font-display font-bold text-xl text-gold-400">
+                MakeoverArena
               </span>
             </Link>
             <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-xs">

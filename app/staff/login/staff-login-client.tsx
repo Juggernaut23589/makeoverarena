@@ -33,8 +33,8 @@ export function StaffLoginClient() {
             height={40}
             className="w-10 h-10 object-contain"
           />
-          <span className="font-display font-bold text-xl text-navy-900">
-            Makeover<span className="text-crimson-500">Arena</span>
+          <span className="font-display font-bold text-xl text-gold-600">
+            MakeoverArena
           </span>
         </Link>
 

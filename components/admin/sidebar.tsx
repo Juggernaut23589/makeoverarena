@@ -183,8 +183,8 @@ function Brand({ collapsed }: { collapsed: boolean }) {
         className="w-8 h-8 object-contain shrink-0"
       />
       {!collapsed && (
-        <span className="font-display font-bold text-sm text-white leading-none">
-          Makeover<span className="text-crimson-400">Arena</span>
+        <span className="font-display font-bold text-sm text-gold-400 leading-none">
+          MakeoverArena
         </span>
       )}
     </Link>
@@ -224,8 +224,8 @@ export function AdminMobileDrawer({ open, onClose, role, adminName }: { open: bo
               height={36}
               className="w-8 h-8 object-contain"
             />
-            <span className="font-display font-bold text-sm text-white leading-none">
-              Makeover<span className="text-crimson-400">Arena</span>
+            <span className="font-display font-bold text-sm text-gold-400 leading-none">
+              MakeoverArena
             </span>
           </Link>
           <button onClick={onClose} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close menu">
