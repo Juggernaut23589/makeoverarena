@@ -97,6 +97,12 @@ export function StaffLoginClient() {
                 >
                   {loginPending ? "Signing in…" : "Sign In"}
                 </button>
+                <p className="text-center text-xs text-navy-400 pt-1">
+                  Admin?{" "}
+                  <Link href="/admin/login" className="text-crimson-600 hover:text-crimson-700 font-medium">
+                    Admin Login →
+                  </Link>
+                </p>
               </form>
             ) : (
               <form action={registerAction} className="space-y-4">

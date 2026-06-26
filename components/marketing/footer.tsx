@@ -202,13 +202,6 @@ export function Footer() {
             >
               Staff Login
             </Link>
-            <span className="text-xs text-white/10">·</span>
-            <Link
-              href="/admin/login"
-              className="text-xs text-white/20 hover:text-white/40 transition-colors"
-            >
-              Admin Login
-            </Link>
           </div>
           <div className="flex gap-6">
             {legal.map((item) => (
