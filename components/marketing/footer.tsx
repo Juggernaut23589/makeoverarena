@@ -4,7 +4,7 @@ import Image from "next/image";
 
 const PHONE = process.env.NEXT_PUBLIC_PHONE ?? "+234 800 000 0000";
 const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348000000000";
-const INSTAGRAM = process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://www.instagram.com/makeoverarena_?igsh=MTl1a3hwZ3FjdjlxcQ==";
+const INSTAGRAM = process.env.NEXT_PUBLIC_INSTAGRAM_URL ?? "https://www.instagram.com/makeoverarena_?igsh=MTl1a3hwZ3FjdjlxcQ%3D%3D";
 const LINKEDIN = process.env.NEXT_PUBLIC_LINKEDIN_URL ?? "https://www.linkedin.com/company/makeoverarena101/";
 const TIKTOK = process.env.NEXT_PUBLIC_TIKTOK_URL ?? "https://www.tiktok.com/@makeoverarena_?_r=1&_t=ZS-97V4Jl5COvN";
 
