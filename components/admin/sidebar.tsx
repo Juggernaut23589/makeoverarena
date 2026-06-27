@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LogoIcon } from "@/components/ui/logo-icon";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/(admin)/admin/login/actions";
@@ -175,13 +175,7 @@ function Brand({ collapsed }: { collapsed: boolean }) {
       href="/"
       className={cn("flex items-center h-16 px-3 border-b border-white/5 shrink-0 gap-2", collapsed ? "justify-center" : "")}
     >
-      <Image
-        src="/makeover-logo-icon.png"
-        alt="MakeoverArena"
-        width={36}
-        height={36}
-        className="w-8 h-8 object-contain shrink-0"
-      />
+      <LogoIcon className="w-8 h-8 shrink-0" />
       {!collapsed && (
         <span className="font-display font-bold text-sm text-gold-400 leading-none">
           MakeoverArena
@@ -217,13 +211,7 @@ export function AdminMobileDrawer({ open, onClose, role, adminName }: { open: bo
       >
         <div className="flex items-center justify-between h-16 px-3 border-b border-white/5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
-            <Image
-              src="/makeover-logo-icon.png"
-              alt="MakeoverArena"
-              width={36}
-              height={36}
-              className="w-8 h-8 object-contain"
-            />
+            <LogoIcon className="w-8 h-8" />
             <span className="font-display font-bold text-sm text-gold-400 leading-none">
               MakeoverArena
             </span>

@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LogoIcon } from "@/components/ui/logo-icon";
 
 const PHONE = process.env.NEXT_PUBLIC_PHONE ?? "+234 800 000 0000";
 const WHATSAPP = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "2348000000000";
@@ -78,13 +78,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-4 lg:col-span-2">
             <Link href="/" className="flex items-center gap-2.5 mb-5">
-              <Image
-                src="/makeover-logo-icon.png"
-                alt="MakeoverArena"
-                width={40}
-                height={40}
-                className="w-10 h-10 object-contain shrink-0"
-              />
+              <LogoIcon className="w-10 h-10 shrink-0" />
               <span className="font-display font-bold text-xl text-gold-400">
                 MakeoverArena
               </span>

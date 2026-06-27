@@ -4,8 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, UserCircle } from "lucide-react";
-import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { LogoIcon } from "@/components/ui/logo-icon";
 
 const serviceLinks = [
   { href: "/services/undergraduate", label: "Undergraduate" },
@@ -79,14 +79,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 lg:h-[72px]">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <Image
-              src="/makeover-logo-icon.png"
-              alt=""
-              width={56}
-              height={56}
-              className="h-14 w-14 object-contain drop-shadow-sm"
-              priority
-            />
+            <LogoIcon className="h-14 w-14 drop-shadow-sm" />
             <span className={cn(
               "font-brand font-black text-2xl leading-none tracking-tight transition-colors duration-300",
               isDark ? "text-gold-400" : "text-gold-600"

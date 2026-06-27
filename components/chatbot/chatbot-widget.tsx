@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LogoIcon } from "@/components/ui/logo-icon";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
@@ -137,13 +137,7 @@ export function ChatbotWidget() {
         {/* Header */}
         <Link href="/" className="bg-navy-900 px-5 py-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-navy-800">
-            <Image
-              src="/makeover-logo-icon.png"
-              alt="MakeoverArena"
-              width={36}
-              height={36}
-              className="w-full h-full object-contain"
-            />
+            <LogoIcon className="w-full h-full" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-white font-semibold text-sm">MakeoverArena</div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LogoIcon } from "@/components/ui/logo-icon";
 import { usePathname } from "next/navigation";
 import { AdminSidebar, AdminMobileDrawer, getNavItems } from "./sidebar";
 import type { AdminRole } from "@/lib/admin-auth";
@@ -36,13 +36,7 @@ export function AdminShell({ children, role, adminName }: { children: React.Reac
           </svg>
         </button>
         <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/makeover-logo-icon.png"
-            alt="MakeoverArena"
-            width={32}
-            height={32}
-            className="w-7 h-7 object-contain"
-          />
+          <LogoIcon className="w-7 h-7" />
           <span className="font-display font-bold text-sm text-gold-400 leading-none">
             MakeoverArena
           </span>

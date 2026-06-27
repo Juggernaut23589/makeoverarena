@@ -2,7 +2,7 @@
 
 import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { LogoIcon } from "@/components/ui/logo-icon";
 import { registerStaffAction, loginStaffAction } from "./actions";
 
 type Tab = "login" | "register";
@@ -26,13 +26,7 @@ export function StaffLoginClient() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 mb-8 justify-center">
-          <Image
-            src="/makeover-logo-icon.png"
-            alt="MakeoverArena"
-            width={40}
-            height={40}
-            className="w-10 h-10 object-contain"
-          />
+          <LogoIcon className="w-10 h-10" />
           <span className="font-display font-bold text-xl text-gold-600">
             MakeoverArena
           </span>
