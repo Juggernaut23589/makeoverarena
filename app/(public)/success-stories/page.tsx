@@ -16,7 +16,7 @@ const stories = [
     program: "MSc Computer Science",
     scholarship: "Full Scholarship — $45,000/year",
     quote: "MakeoverArena helped me navigate the entire application process from scratch. I had zero idea where to start and they guided me to a full scholarship offer. Best decision I ever made.",
-    image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&q=80",
+    image: "https://images.pexels.com/photos/3869648/pexels-photo-3869648.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     year: "2024",
   },
   {
@@ -27,7 +27,7 @@ const stories = [
     program: "MBA — Business Management",
     scholarship: null,
     quote: "Professional, responsive, and genuinely invested in my success. They reviewed my SOP multiple times until it was perfect. I highly recommend them to any serious applicant.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&q=80",
+    image: "https://images.pexels.com/photos/7446948/pexels-photo-7446948.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     year: "2024",
   },
   {
@@ -38,7 +38,7 @@ const stories = [
     program: "MSc Electrical Engineering",
     scholarship: "Merit Award — $12,000",
     quote: "From GRE prep guidance to visa support, they were with me every step of the way. Now I'm studying at my dream university in Atlanta.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&q=80",
+    image: "https://images.pexels.com/photos/9304685/pexels-photo-9304685.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     year: "2023",
   },
   {
