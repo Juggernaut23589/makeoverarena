@@ -49,7 +49,7 @@ const stories = [
     program: "PhD Civil Engineering",
     scholarship: "Research Scholarship",
     quote: "I applied to five universities with MakeoverArena's help and received offers from three. The team's knowledge of the Australian system was exceptional.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&q=80",
+    image: "https://images.pexels.com/photos/9363531/pexels-photo-9363531.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     year: "2023",
   },
   {
@@ -60,7 +60,7 @@ const stories = [
     program: "MSc Mechanical Engineering",
     scholarship: "DAAD Scholarship",
     quote: "I was skeptical at first, but the team knew the German university system inside out. They helped me secure a DAAD scholarship I didn't even know I was eligible for.",
-    image: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=300&q=80",
+    image: "https://images.pexels.com/photos/29852895/pexels-photo-29852895.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     year: "2024",
   },
   {
@@ -71,7 +71,7 @@ const stories = [
     program: "LLM International Law",
     scholarship: null,
     quote: "The personal statement support was incredible. My advisor completely transformed my draft into something compelling and uniquely me.",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&q=80",
+    image: "https://images.pexels.com/photos/9363116/pexels-photo-9363116.jpeg?auto=compress&cs=tinysrgb&w=300&h=300&fit=crop",
     year: "2023",
   },
 ];
