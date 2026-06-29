@@ -52,7 +52,7 @@ const testimonials = [
     school: "University of Toronto, Canada",
     program: "MSc Computer Science",
     quote: "MakeoverArena helped me navigate the entire application process from scratch. I had zero idea where to start and they guided me to a full scholarship offer.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80",
+    image: "https://images.pexels.com/photos/3869648/pexels-photo-3869648.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop",
     scholarship: "Full Scholarship",
   },
   {
@@ -60,7 +60,7 @@ const testimonials = [
     school: "University of Edinburgh, UK",
     program: "MBA",
     quote: "Professional, responsive, and genuinely invested in my success. They reviewed my SOP multiple times until it was perfect. Absolutely recommend.",
-    image: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=200&q=80",
+    image: "https://images.pexels.com/photos/7446948/pexels-photo-7446948.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop",
     scholarship: null,
   },
   {
@@ -68,7 +68,7 @@ const testimonials = [
     school: "Georgia Tech, USA",
     program: "MSc Electrical Engineering",
     quote: "From GRE prep guidance to visa support — they were with me every step. Now I'm studying at my dream university in Atlanta.",
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&q=80",
+    image: "https://images.pexels.com/photos/9304685/pexels-photo-9304685.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop",
     scholarship: "Merit Award",
   },
 ];
