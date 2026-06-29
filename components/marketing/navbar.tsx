@@ -71,7 +71,7 @@ export function Navbar() {
         scrolled || menuOpen
           ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-border"
           : isHomePage
-          ? "bg-transparent"
+          ? "bg-gradient-to-b from-navy-950/80 via-navy-950/30 to-transparent"
           : "bg-white/95 backdrop-blur-md shadow-sm border-b border-border"
       )}
     >
