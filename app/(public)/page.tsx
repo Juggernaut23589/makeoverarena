@@ -52,7 +52,7 @@ const testimonials = [
     school: "University of Toronto, Canada",
     program: "MSc Computer Science",
     quote: "MakeoverArena helped me navigate the entire application process from scratch. I had zero idea where to start and they guided me to a full scholarship offer.",
-    image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&q=80",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80",
     scholarship: "Full Scholarship",
   },
   {
@@ -60,7 +60,7 @@ const testimonials = [
     school: "University of Edinburgh, UK",
     program: "MBA",
     quote: "Professional, responsive, and genuinely invested in my success. They reviewed my SOP multiple times until it was perfect. Absolutely recommend.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
+    image: "https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=200&q=80",
     scholarship: null,
   },
   {
@@ -68,9 +68,33 @@ const testimonials = [
     school: "Georgia Tech, USA",
     program: "MSc Electrical Engineering",
     quote: "From GRE prep guidance to visa support — they were with me every step. Now I'm studying at my dream university in Atlanta.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=200&q=80",
     scholarship: "Merit Award",
   },
+];
+
+const partnerUniversities = [
+  { name: "Harvard University", abbr: "HU", bg: "#A41034" },
+  { name: "MIT", abbr: "MIT", bg: "#A31F34" },
+  { name: "Stanford University", abbr: "SU", bg: "#8C1515" },
+  { name: "University of Oxford", abbr: "Oxon", bg: "#002147" },
+  { name: "University of Cambridge", abbr: "Cam", bg: "#003B49" },
+  { name: "UCL", abbr: "UCL", bg: "#500778" },
+  { name: "University of Toronto", abbr: "UofT", bg: "#002A5C" },
+  { name: "UBC", abbr: "UBC", bg: "#002145" },
+  { name: "McGill University", abbr: "McGill", bg: "#ED1B2F" },
+  { name: "Univ. of Edinburgh", abbr: "UoE", bg: "#00325E" },
+  { name: "TU Munich", abbr: "TUM", bg: "#3070B3" },
+  { name: "UNSW Sydney", abbr: "UNSW", bg: "#1C3E6E" },
+];
+
+const journeySteps = [
+  { icon: "✍️", label: "Submit Profile", sub: "Day 1", color: "bg-crimson-50 border-crimson-200 text-crimson-700" },
+  { icon: "📞", label: "Strategy Call", sub: "Week 1", color: "bg-navy-50 border-navy-200 text-navy-700" },
+  { icon: "📄", label: "Applications Sent", sub: "Month 1–2", color: "bg-amber-50 border-amber-200 text-amber-700" },
+  { icon: "📬", label: "Offer Received", sub: "Month 3–6", color: "bg-green-50 border-green-200 text-green-700" },
+  { icon: "🛂", label: "Visa Approved", sub: "Month 5–7", color: "bg-blue-50 border-blue-200 text-blue-700" },
+  { icon: "🎓", label: "You've Arrived!", sub: "Month 7–9", color: "bg-gold-50 border-gold-300 text-gold-700" },
 ];
 
 const process = [
@@ -368,6 +392,41 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ─── PARTNER UNIVERSITIES ─── */}
+      <section className="py-16 bg-navy-900 border-y border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <span className="text-white/40 text-xs font-semibold tracking-widest uppercase">
+              200+ Partner Universities Worldwide
+            </span>
+          </div>
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
+            {partnerUniversities.map((u) => (
+              <div
+                key={u.name}
+                className="flex flex-col items-center gap-2 group"
+                title={u.name}
+              >
+                <div
+                  className="w-14 h-14 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200"
+                  style={{ backgroundColor: u.bg }}
+                >
+                  <span className="text-white font-bold text-xs tracking-tight text-center leading-tight px-1">
+                    {u.abbr}
+                  </span>
+                </div>
+                <span className="text-white/40 text-[10px] text-center leading-tight line-clamp-2">
+                  {u.name}
+                </span>
+              </div>
+            ))}
+          </div>
+          <p className="text-center text-white/25 text-xs mt-8">
+            Placeholder logos — partner network includes 200+ accredited institutions
+          </p>
+        </div>
+      </section>
+
       {/* ─── TESTIMONIALS ─── */}
       <section className="py-24 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -442,39 +501,134 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── FAQ PREVIEW ─── */}
-      <section className="py-24 bg-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+      {/* ─── SUCCESS TIMELINE ─── */}
+      <section className="py-24 bg-navy-900 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[900px] rounded-full border border-white/20" />
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center mb-14">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="h-px w-8 bg-crimson-500" />
-              <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
-                FAQs
+              <div className="h-px w-8 bg-crimson-400" />
+              <span className="text-crimson-400 text-xs font-semibold tracking-widest uppercase">
+                Student Journey
               </span>
-              <div className="h-px w-8 bg-crimson-500" />
+              <div className="h-px w-8 bg-crimson-400" />
             </div>
-            <h2 className="font-display text-4xl font-light text-navy-900">
-              Common questions
+            <h2 className="font-display text-4xl md:text-5xl font-light text-white">
+              From application to{" "}
+              <em className="text-crimson-400 not-italic">arrival</em>
             </h2>
+            <p className="text-white/50 text-base mt-3 max-w-xl mx-auto">
+              Here&apos;s exactly what happens after you take the first step with MakeoverArena.
+            </p>
           </div>
-          <div className="space-y-4">
+
+          {/* Desktop timeline */}
+          <div className="hidden md:block relative">
+            {/* Connecting line */}
+            <div className="absolute top-7 left-[8.33%] right-[8.33%] h-0.5 bg-white/10" />
+            <div className="grid grid-cols-6 gap-4">
+              {journeySteps.map((step, i) => (
+                <div key={step.label} className="flex flex-col items-center text-center gap-3">
+                  <div className="relative z-10 w-14 h-14 rounded-full bg-navy-800 border border-white/10 flex items-center justify-center text-2xl shadow-lg">
+                    {step.icon}
+                    <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-crimson-500 text-white text-[10px] font-bold flex items-center justify-center">
+                      {i + 1}
+                    </span>
+                  </div>
+                  <div>
+                    <div className="text-white font-semibold text-sm leading-tight">{step.label}</div>
+                    <div className="text-white/40 text-xs mt-0.5">{step.sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile timeline */}
+          <div className="md:hidden relative pl-8">
+            <div className="absolute left-3.5 top-0 bottom-0 w-0.5 bg-white/10" />
+            <div className="space-y-6">
+              {journeySteps.map((step, i) => (
+                <div key={step.label} className="relative flex items-start gap-4">
+                  <div className="absolute -left-8 w-7 h-7 rounded-full bg-navy-800 border border-white/10 flex items-center justify-center text-sm z-10">
+                    {step.icon}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full bg-crimson-500 text-white text-[9px] font-bold flex items-center justify-center shrink-0">
+                        {i + 1}
+                      </span>
+                      <span className="text-white font-semibold text-sm">{step.label}</span>
+                    </div>
+                    <div className="text-white/40 text-xs mt-0.5 ml-6">{step.sub}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-center mt-12">
+            <Link
+              href="/apply"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
+            >
+              Begin Your Journey →
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ─── FAQ PREVIEW ─── */}
+      <section className="py-24 bg-white" id="faq">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-px w-8 bg-crimson-500" />
+                <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
+                  Got Questions?
+                </span>
+              </div>
+              <h2 className="font-display text-4xl font-light text-navy-900">
+                Frequently asked questions
+              </h2>
+              <p className="text-navy-500 text-base mt-2">
+                Everything students ask us before getting started.
+              </p>
+            </div>
+            <Link
+              href="/faq"
+              className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-navy-900 text-white text-sm font-semibold hover:bg-navy-800 transition-colors"
+            >
+              Full FAQ Page →
+            </Link>
+          </div>
+          <div className="space-y-3">
             {faqs.map((faq) => (
-              <div key={faq.q} className="bg-cream rounded-xl p-6 border border-border">
-                <h3 className="font-semibold text-navy-900 mb-2">{faq.q}</h3>
-                <p className="text-navy-600 text-sm leading-relaxed">{faq.a}</p>
+              <div key={faq.q} className="bg-cream rounded-xl p-6 border border-border hover:border-crimson-200 transition-colors">
+                <h3 className="font-semibold text-navy-900 mb-2 flex items-start gap-2">
+                  <span className="text-crimson-500 shrink-0 mt-0.5">Q.</span>
+                  {faq.q}
+                </h3>
+                <p className="text-navy-600 text-sm leading-relaxed pl-5">{faq.a}</p>
               </div>
             ))}
           </div>
-          <div className="text-center mt-8">
-            <Link
-              href="/faq"
-              className="inline-flex items-center gap-2 text-sm font-medium text-navy-700 hover:text-navy-900 group"
-            >
-              View all FAQs
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </Link>
+          <div className="mt-8 p-5 bg-crimson-50 border border-crimson-100 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <p className="font-semibold text-navy-900 text-sm">Still have questions?</p>
+              <p className="text-navy-500 text-xs mt-0.5">Our team responds within 24 hours.</p>
+            </div>
+            <div className="flex gap-3 shrink-0">
+              <Link href="/faq" className="px-4 py-2 rounded-lg border border-navy-200 text-navy-700 text-sm font-medium hover:bg-white transition-colors">
+                Browse FAQs
+              </Link>
+              <Link href="/book" className="px-4 py-2 rounded-lg bg-crimson-500 text-white text-sm font-semibold hover:bg-crimson-400 transition-colors">
+                Book a Call
+              </Link>
+            </div>
           </div>
         </div>
       </section>

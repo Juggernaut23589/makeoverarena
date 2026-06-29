@@ -17,7 +17,7 @@ const serviceLinks = [
 const navLinks = [
   { href: "/success-stories", label: "Success Stories" },
   { href: "/about", label: "About" },
-  { href: "/faq", label: "FAQ" },
+  { href: "/faq", label: "FAQ", highlight: true },
   { href: "https://www.makeoverarena.com/", label: "Blog", external: true },
 ];
 
@@ -150,6 +150,19 @@ export function Navbar() {
                 >
                   {link.label}
                 </a>
+              ) : link.highlight ? (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={cn(
+                    "px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-150 whitespace-nowrap border",
+                    isDark
+                      ? "border-white/20 text-white hover:bg-white/10"
+                      : "border-crimson-200 text-crimson-600 hover:bg-crimson-50"
+                  )}
+                >
+                  {link.label}
+                </Link>
               ) : (
                 <Link
                   key={link.href}
