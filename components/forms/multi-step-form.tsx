@@ -15,7 +15,7 @@ import {
   step1Schema, step2Schema, step3Schema, step4Schema, step5Schema,
   type Step1Data, type Step2Data, type Step3Data, type Step4Data, type Step5Data,
   type FullInquiryData,
-  COUNTRIES, INTAKE_PERIODS, BUDGET_RANGES, TEST_OPTIONS, REFERRAL_SOURCES, EDUCATION_LEVELS,
+  COUNTRIES, HOME_COUNTRIES, INTAKE_PERIODS, BUDGET_RANGES, TEST_OPTIONS, REFERRAL_SOURCES, EDUCATION_LEVELS,
 } from "@/lib/validations/inquiry-schema";
 
 const STORAGE_KEY = "makeoverarena_application_draft";
@@ -222,6 +222,7 @@ export function MultiStepForm() {
           <Step4
             defaultValues={{
               preferred_countries: formData.preferred_countries,
+              preferred_countries_other: formData.preferred_countries_other,
               intake_period: formData.intake_period,
               budget_range: formData.budget_range,
               tests_taken: formData.tests_taken,
@@ -371,10 +372,11 @@ function Step2({
             {...register("city")}
             error={errors.city?.message}
           />
-          <Input
+          <Select
             label="Country"
-            placeholder="e.g. Nigeria"
             required
+            options={HOME_COUNTRIES.map((c) => ({ value: c, label: c }))}
+            placeholder="Select your country"
             {...register("country")}
             error={errors.country?.message}
           />
@@ -539,6 +541,7 @@ function Step4({
 
   const selectedCountries = watch("preferred_countries") || [];
   const selectedTests = watch("tests_taken") || [];
+  const otherSelected = selectedCountries.includes("Other");
 
   const toggleCountry = (country: string) => {
     if (selectedCountries.includes(country)) {
@@ -584,6 +587,16 @@ function Step4({
               </button>
             ))}
           </div>
+          {otherSelected && (
+            <div className="mt-3">
+              <Input
+                label="Please specify"
+                placeholder="e.g. Italy, Japan, UAE..."
+                {...register("preferred_countries_other")}
+                hint="Tell us which other countries you're interested in"
+              />
+            </div>
+          )}
           {errors.preferred_countries && (
             <p className="text-red-500 text-xs mt-1.5">{errors.preferred_countries.message}</p>
           )}

@@ -41,6 +41,7 @@ export const step4Schema = z.object({
   preferred_countries: z
     .array(z.string())
     .min(1, "Please select at least one country"),
+  preferred_countries_other: z.string().optional(),
   intake_period: z.string().min(1, "Please select an intake period"),
   budget_range: z.string().min(1, "Please select a budget range"),
   tests_taken: z.array(z.string()).optional(),
@@ -80,6 +81,28 @@ export const COUNTRIES = [
   "Norway",
   "Denmark",
   "New Zealand",
+  "Other",
+];
+
+export const HOME_COUNTRIES = [
+  "Nigeria",
+  "Ghana",
+  "Kenya",
+  "South Africa",
+  "Uganda",
+  "Tanzania",
+  "Cameroon",
+  "Senegal",
+  "Ethiopia",
+  "Rwanda",
+  "Zambia",
+  "Zimbabwe",
+  "Sierra Leone",
+  "Liberia",
+  "Gambia",
+  "United Kingdom",
+  "United States",
+  "Canada",
   "Other",
 ];
 

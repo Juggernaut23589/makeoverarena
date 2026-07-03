@@ -92,7 +92,7 @@ const journeySteps = [
   { icon: "✍️", label: "Submit Profile", sub: "Day 1", color: "bg-crimson-50 border-crimson-200 text-crimson-700" },
   { icon: "📞", label: "Strategy Call", sub: "Week 1", color: "bg-navy-50 border-navy-200 text-navy-700" },
   { icon: "📄", label: "Applications Sent", sub: "Month 1–2", color: "bg-amber-50 border-amber-200 text-amber-700" },
-  { icon: "📬", label: "Offer Received", sub: "Month 3–6", color: "bg-green-50 border-green-200 text-green-700" },
+  { icon: "📬", label: "Offer Letter", sub: "Month 3–6*", color: "bg-green-50 border-green-200 text-green-700" },
   { icon: "🛂", label: "Visa Approved", sub: "Month 5–7", color: "bg-blue-50 border-blue-200 text-blue-700" },
   { icon: "🎓", label: "You've Arrived!", sub: "Month 7–9", color: "bg-gold-50 border-gold-300 text-gold-700" },
 ];
@@ -130,7 +130,7 @@ const destinations = [
 ];
 
 const faqs = [
-  { q: "How long does the application process take?", a: "Typically 3–6 months from initial inquiry to admission offer, depending on the intake period and number of universities." },
+  { q: "How long does the application process take?", a: "Typically 3–6 months from initial inquiry to receiving an offer letter, depending on the intake period and number of universities. Timelines are estimates and may vary by institution and country." },
   { q: "What is your success rate?", a: "We maintain a 92% admission success rate across all our applicants." },
   { q: "Do you help with scholarship applications?", a: "Yes — 65% of our scholarship applicants received funding ranging from partial to full scholarships." },
   { q: "How much does it cost to use your service?", a: "Packages start from ₦150,000 and vary based on the number of universities and complexity of your application." },
@@ -309,7 +309,7 @@ export default function HomePage() {
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-light text-white">
               From inquiry to{" "}
-              <em className="text-crimson-400 not-italic">admission offer</em>
+              <em className="text-crimson-400 not-italic">studying abroad</em>
             </h2>
           </div>
 
@@ -569,7 +569,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="text-center mt-12">
+          <p className="text-white/30 text-xs text-center mt-6">* Timelines are estimates and may vary by institution, intake period, and individual circumstances.</p>
+
+          <div className="text-center mt-8">
             <Link
               href="/apply"
               className="inline-flex items-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
