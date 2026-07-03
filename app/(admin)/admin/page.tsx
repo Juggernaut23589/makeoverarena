@@ -16,12 +16,12 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  new: "New",
-  reviewed: "Reviewed",
+  new: "New Lead",
+  reviewed: "Qualified",
   contacted: "Contacted",
   consultation_booked: "Consult Booked",
-  proposal_sent: "Proposal Sent",
-  client: "Client",
+  proposal_sent: "Awaiting Payment",
+  client: "Active Client",
 };
 
 function timeAgo(dateStr: string) {
@@ -141,11 +141,11 @@ export default async function AdminDashboard() {
   ];
 
   const funnelStages = [
-    { label: "New Inquiries", value: thisMonth, pct: 100, color: "bg-blue-200" },
-    { label: "Reviewed", value: funnel.reviewed + funnel.contacted + funnel.consultation_booked + funnel.client, pct: Math.round(((funnel.reviewed + funnel.contacted + funnel.consultation_booked + funnel.client) / funnelTotal) * 100), color: "bg-purple-200" },
+    { label: "New Leads", value: thisMonth, pct: 100, color: "bg-blue-200" },
+    { label: "Qualified", value: funnel.reviewed + funnel.contacted + funnel.consultation_booked + funnel.client, pct: Math.round(((funnel.reviewed + funnel.contacted + funnel.consultation_booked + funnel.client) / funnelTotal) * 100), color: "bg-purple-200" },
     { label: "Contacted", value: funnel.contacted + funnel.consultation_booked + funnel.client, pct: Math.round(((funnel.contacted + funnel.consultation_booked + funnel.client) / funnelTotal) * 100), color: "bg-yellow-200" },
-    { label: "Consultation", value: funnel.consultation_booked + funnel.client, pct: Math.round(((funnel.consultation_booked + funnel.client) / funnelTotal) * 100), color: "bg-orange-200" },
-    { label: "Client", value: funnel.client, pct: Math.round((funnel.client / funnelTotal) * 100), color: "bg-green-200" },
+    { label: "Awaiting Payment", value: funnel.consultation_booked + funnel.client, pct: Math.round(((funnel.consultation_booked + funnel.client) / funnelTotal) * 100), color: "bg-orange-200" },
+    { label: "Active Client", value: funnel.client, pct: Math.round((funnel.client / funnelTotal) * 100), color: "bg-green-200" },
   ];
 
   return (

@@ -755,20 +755,20 @@ function SuccessScreen({ name, email }: { name: string; email: string }) {
         Application Received! 🎉
       </h2>
       <p className="text-navy-600 mb-2 max-w-sm mx-auto">
-        Thank you, <strong>{name}</strong>! We&apos;ve received your application and sent a confirmation to <strong>{email}</strong>.
+        Thank you, <strong>{name}</strong>! We&apos;ve received your profile and sent a confirmation to <strong>{email}</strong>.
       </p>
       <p className="text-navy-500 text-sm mb-8 max-w-xs mx-auto">
-        Our advisor will review your profile and reach out within 24 hours to schedule your free consultation.
+        Our team will review your details and reach out within 24 hours to discuss the right service and pricing for you.
       </p>
 
       <div className="bg-crimson-50 border border-crimson-200 rounded-xl p-5 text-left mb-8 max-w-sm mx-auto">
         <p className="text-sm font-semibold text-navy-800 mb-3">What happens next:</p>
         <ul className="space-y-2 text-sm text-navy-600">
           {[
-            "Your profile is reviewed by our expert advisor",
-            "You receive a personalised email within 24 hours",
-            "We schedule your free 30-min consultation",
-            "We create your custom university strategy",
+            "Our advisor reviews your profile and academic background",
+            "We contact you within 24 hours via WhatsApp or email",
+            "We confirm which service is right for you and share pricing",
+            "Once you proceed, we assign a dedicated agent to your case",
           ].map((item, i) => (
             <li key={i} className="flex items-start gap-2">
               <span className="w-5 h-5 rounded-full bg-crimson-200 text-crimson-700 text-xs flex items-center justify-center shrink-0 mt-0.5 font-semibold">
@@ -782,16 +782,10 @@ function SuccessScreen({ name, email }: { name: string; email: string }) {
 
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <a
-          href="/book"
+          href={`/signup?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`}
           className="inline-flex items-center justify-center px-6 py-3 bg-crimson-500 text-white rounded-xl text-sm font-semibold hover:bg-crimson-400 transition-colors"
         >
-          Book Free Consultation →
-        </a>
-        <a
-          href={`/signup?email=${encodeURIComponent(email)}&name=${encodeURIComponent(name)}`}
-          className="inline-flex items-center justify-center px-6 py-3 bg-navy-900 text-white rounded-xl text-sm font-medium hover:bg-navy-800 transition-colors"
-        >
-          Create Your Account
+          Create Your Account →
         </a>
         <a
           href="/"

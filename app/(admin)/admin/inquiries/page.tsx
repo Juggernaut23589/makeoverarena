@@ -22,12 +22,12 @@ const statusColors: Record<string, string> = {
 };
 
 const statusLabels: Record<string, string> = {
-  new: "New",
-  reviewed: "Reviewed",
+  new: "New Lead",
+  reviewed: "Qualified",
   contacted: "Contacted",
   consultation_booked: "Consult Booked",
-  proposal_sent: "Proposal Sent",
-  client: "Client",
+  proposal_sent: "Awaiting Payment",
+  client: "Active Client",
   lost: "Lost",
   on_hold: "On Hold",
 };
