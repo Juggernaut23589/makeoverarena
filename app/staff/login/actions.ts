@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin-auth";
 import { sendEmail } from "@/lib/emails/send-email";
 import StaffApproved from "@/emails/staff-approved";
+import { APP_URL } from "@/lib/site-url";
 
 const URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const ANON = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
@@ -171,7 +172,7 @@ export async function approveStaffAction(staffId: string): Promise<{ error?: str
 
   if (error) return { error: error.message };
 
-  const origin = process.env.NEXT_PUBLIC_APP_URL ?? "https://makeoverarena.com";
+  const origin = APP_URL;
   await sendEmail({
     to: staff.email,
     subject: "Your MakeoverArena staff account is approved",

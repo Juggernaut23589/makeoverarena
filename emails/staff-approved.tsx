@@ -11,6 +11,7 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { APP_URL } from "@/lib/site-url";
 
 interface StaffApprovedProps {
   staffName: string;
@@ -19,7 +20,7 @@ interface StaffApprovedProps {
 
 export default function StaffApproved({
   staffName = "Team Member",
-  loginUrl = "https://makeoverarena.com/staff/login",
+  loginUrl = `${APP_URL}/staff/login`,
 }: StaffApprovedProps) {
   return (
     <Html>

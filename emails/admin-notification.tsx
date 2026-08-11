@@ -11,6 +11,7 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { APP_URL } from "@/lib/site-url";
 
 interface AdminNotificationProps {
   studentName: string;
@@ -88,7 +89,7 @@ export default function AdminNotification({
             </Text>
             <Button
               style={button}
-              href={`https://makeoverarena.com/admin/inquiries`}
+              href={`${APP_URL}/admin/inquiries`}
             >
               Open Admin Dashboard →
             </Button>

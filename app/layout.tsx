@@ -4,10 +4,12 @@ import { Toaster } from "sonner";
 import Script from "next/script";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { NavbarWrapper } from "@/components/navbar-wrapper";
+import { APP_URL } from "@/lib/site-url";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID;
 
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_URL),
   title: {
     default: "MakeoverArena — Study Abroad Consultancy",
     template: "%s | MakeoverArena",
@@ -25,14 +27,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_NG",
-    url: "https://makeoverarena.com",
+    url: APP_URL,
     siteName: "MakeoverArena",
     title: "MakeoverArena — Study Abroad Consultancy",
     description:
       "Nigeria's premier study-abroad consultancy helping students achieve their dream of studying at top universities worldwide.",
     images: [
       {
-        url: "https://makeoverarena.com/og-image.jpg",
+        url: "/og-image.jpg",
         width: 1200,
         height: 630,
         alt: "MakeoverArena",

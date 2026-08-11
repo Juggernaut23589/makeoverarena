@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { APP_URL } from "@/lib/site-url";
 
 function LoginForm() {
   const router = useRouter();
@@ -47,7 +48,7 @@ function LoginForm() {
     setLoading(true);
 
     const supabase = createSupabaseBrowserClient();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
+    const appUrl = APP_URL;
     const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${appUrl}/api/auth/callback?next=/reset-password`,
     });

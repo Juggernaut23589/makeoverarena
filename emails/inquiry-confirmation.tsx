@@ -12,6 +12,7 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { APP_URL } from "@/lib/site-url";
 
 interface InquiryConfirmationProps {
   studentName: string;
@@ -85,7 +86,7 @@ export default function InquiryConfirmation({
               {
                 step: "2",
                 title: "Consultation Scheduling",
-                desc: "We'll reach out to schedule your free 30-minute strategy call. You can also book directly at makeoverarena.com/book.",
+                desc: "We'll reach out to schedule your free 30-minute strategy call. You can also book directly at hub.makeoverarena.com/book.",
               },
               {
                 step: "3",
@@ -114,7 +115,7 @@ export default function InquiryConfirmation({
             <Text style={ctaText}>
               Want to speed things up? Book your free consultation now.
             </Text>
-            <Button style={button} href="https://makeoverarena.com/book">
+            <Button style={button} href={`${APP_URL}/book`}>
               Book Free Consultation
             </Button>
           </Section>

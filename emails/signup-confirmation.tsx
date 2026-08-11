@@ -11,6 +11,7 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { APP_URL } from "@/lib/site-url";
 
 interface SignupConfirmationProps {
   studentName: string;
@@ -19,7 +20,7 @@ interface SignupConfirmationProps {
 
 export default function SignupConfirmation({
   studentName = "Amara",
-  dashboardUrl = "https://makeoverarena.com/dashboard",
+  dashboardUrl = `${APP_URL}/dashboard`,
 }: SignupConfirmationProps) {
   return (
     <Html>

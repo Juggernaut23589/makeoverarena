@@ -2,6 +2,7 @@ import {
   Body, Button, Container, Head, Heading, Hr, Html, Preview, Section, Text,
 } from "@react-email/components";
 import * as React from "react";
+import { APP_URL } from "@/lib/site-url";
 
 interface NurtureWeek4Props {
   studentName: string;
@@ -70,13 +71,13 @@ export default function NurtureWeek4({
 
             <Section style={{ display: "flex", gap: 12 }}>
               <Button
-                href="https://makeoverarena.com/book"
+                href={`${APP_URL}/book`}
                 style={{ backgroundColor: "#D4A853", color: "#0A0F1E", borderRadius: 10, padding: "14px 24px", fontWeight: 700, fontSize: 14, textDecoration: "none", display: "inline-block", marginRight: 12 }}
               >
                 Book Consultation
               </Button>
               <Button
-                href="https://makeoverarena.com/apply"
+                href={`${APP_URL}/apply`}
                 style={{ backgroundColor: "transparent", color: "#0A0F1E", borderRadius: 10, padding: "13px 24px", fontWeight: 600, fontSize: 14, textDecoration: "none", display: "inline-block", border: "2px solid #0A0F1E" }}
               >
                 Start Application

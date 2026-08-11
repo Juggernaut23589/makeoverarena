@@ -2,6 +2,7 @@
 
 import { createClient } from "@supabase/supabase-js";
 import { getAdminSession } from "@/app/(admin)/admin/login/actions";
+import { APP_URL } from "@/lib/site-url";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -25,7 +26,7 @@ export async function inviteAdminAction(formData: FormData): Promise<{ error?: s
     // Invite via Supabase Auth (sends email with magic link to set password)
     const { data: inviteData, error: inviteError } = await adminClient.auth.admin.inviteUserByEmail(email, {
       data: { full_name: fullName },
-      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL ?? "https://makeoverarena.vercel.app"}/api/auth/callback?next=/admin`,
+      redirectTo: `${APP_URL}/api/auth/callback?next=/admin`,
     });
 
     if (inviteError) {

@@ -11,6 +11,7 @@ import {
   Text,
 } from "@react-email/components";
 import * as React from "react";
+import { APP_URL } from "@/lib/site-url";
 
 interface InquiryFollowupProps {
   studentName: string;
@@ -54,7 +55,7 @@ export default function InquiryFollowup({
           <Hr style={hr} />
 
           <Section style={{ padding: "24px", textAlign: "center" as const }}>
-            <Button style={button} href="https://makeoverarena.com/book">
+            <Button style={button} href={`${APP_URL}/book`}>
               Book Free 30-Min Call →
             </Button>
             <Text style={{ color: "#9CA3AF", fontSize: "12px", margin: "12px 0 0" }}>
