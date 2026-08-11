@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { settleSuccessfulPayment, markPaymentFailed } from "@/lib/payments/settle";
 
 const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY ?? "";
 
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       amount: number;
       currency: string;
       paid_at: string;
-      metadata?: { client_id?: string; payment_id?: string };
+      metadata?: { client_id?: string; payment_id?: string; description?: string };
     };
     message?: string;
   };
@@ -36,36 +36,20 @@ export async function GET(request: NextRequest) {
   const txData = data.data;
   const success = txData.status === "success";
 
-  if (supabaseAdmin) {
-    await supabaseAdmin.from("payments")
-      .update({
-        status: success ? "paid" : "failed",
-        paid_at: success ? txData.paid_at : null,
-      })
-      .eq("paystack_reference", reference);
-
-    if (success && txData.metadata?.client_id) {
-      const { data: client } = await supabaseAdmin
-        .from("client_profiles")
-        .select("id, payment_status")
-        .eq("id", txData.metadata.client_id)
-        .single<{ id: string; payment_status: string }>();
-
-      if (client) {
-        const { data: payments } = await supabaseAdmin
-          .from("payments")
-          .select("status, amount")
-          .eq("client_id", client.id);
-
-        const allPaid = (payments ?? []).every((p) => p.status === "paid");
-        const anyPaid = (payments ?? []).some((p) => p.status === "paid");
-        const newStatus = allPaid ? "paid" : anyPaid ? "partial" : "pending";
-
-        await supabaseAdmin.from("client_profiles")
-          .update({ payment_status: newStatus })
-          .eq("id", client.id);
-      }
-    }
+  if (success) {
+    // Sends the receipt if this path wins the race; no-ops if the webhook
+    // already settled it. See lib/payments/settle.ts.
+    await settleSuccessfulPayment({
+      reference,
+      paidAt: txData.paid_at,
+      amountKobo: txData.amount,
+      currency: txData.currency,
+      clientId: txData.metadata?.client_id ?? null,
+      description: txData.metadata?.description ?? null,
+      source: "verify",
+    });
+  } else {
+    await markPaymentFailed(reference);
   }
 
   return NextResponse.json({ verified: true, success, reference });
