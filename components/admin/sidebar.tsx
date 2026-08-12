@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { LogoIcon } from "@/components/ui/logo-icon";
+import { Logo, LogoIcon } from "@/components/ui/logo-icon";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { logoutAction } from "@/app/(admin)/admin/login/actions";
@@ -180,12 +180,9 @@ function Brand({ collapsed }: { collapsed: boolean }) {
       href="/"
       className={cn("flex items-center h-16 px-3 border-b border-white/5 shrink-0 gap-2", collapsed ? "justify-center" : "")}
     >
-      <LogoIcon className="w-8 h-8 shrink-0" />
-      {!collapsed && (
-        <span className="font-display font-bold text-sm text-gold-400 leading-none">
-          MakeoverArena
-        </span>
-      )}
+      {collapsed
+        ? <LogoIcon className="w-8 h-8 shrink-0" />
+        : <Logo tone="dark" className="h-8 w-auto shrink-0" />}
     </Link>
   );
 }
@@ -216,10 +213,7 @@ export function AdminMobileDrawer({ open, onClose, role, adminName }: { open: bo
       >
         <div className="flex items-center justify-between h-16 px-3 border-b border-white/5 shrink-0">
           <Link href="/" className="flex items-center gap-2">
-            <LogoIcon className="w-8 h-8" />
-            <span className="font-display font-bold text-sm text-gold-400 leading-none">
-              MakeoverArena
-            </span>
+            <Logo tone="dark" className="h-8 w-auto" />
           </Link>
           <button onClick={onClose} className="p-1.5 rounded-lg text-white/60 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close menu">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

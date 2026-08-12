@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LogoIcon } from "@/components/ui/logo-icon";
+import { Logo } from "@/components/ui/logo-icon";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -40,10 +40,7 @@ export default function AdminLoginPage() {
       <div className="w-full max-w-sm py-8">
         <div className="text-center mb-6">
           <Link href="/" className="inline-flex flex-col items-center gap-1">
-            <LogoIcon className="w-16 h-16 drop-shadow-lg" />
-            <span className="font-display font-bold text-xl text-gold-400 leading-none mt-1">
-              MakeoverArena
-            </span>
+            <Logo tone="dark" className="h-14 w-auto drop-shadow-lg" />
           </Link>
           <p className="text-white/40 text-sm mt-2">Admin Portal</p>
         </div>

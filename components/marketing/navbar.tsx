@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, UserCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { LogoIcon } from "@/components/ui/logo-icon";
+import { Logo } from "@/components/ui/logo-icon";
 
 const serviceLinks = [
   { href: "/services/undergraduate", label: "Undergraduate" },
@@ -79,25 +79,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 lg:h-[72px]">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-            <div className={cn(
-              "rounded-xl overflow-hidden shrink-0 transition-colors duration-300",
-              isDark ? "bg-navy-900" : "bg-white"
-            )}>
-              <LogoIcon className="h-14 w-14" />
-            </div>
-            <span
-              className={cn(
-                "font-brand font-black text-2xl leading-none tracking-tight transition-colors duration-300",
-                isDark ? "text-gold-400" : "text-gold-600"
-              )}
-              style={{
-                textShadow: isDark
-                  ? "0 0 18px rgba(229,190,106,0.45), 0 1px 3px rgba(0,0,0,0.4)"
-                  : "0 0 12px rgba(184,134,11,0.25)",
-              }}
-            >
-              MakeoverArena
-            </span>
+            <Logo tone={isDark ? "dark" : "light"} className="h-11 w-auto shrink-0" />
           </Link>
 
           {/* Desktop Nav */}

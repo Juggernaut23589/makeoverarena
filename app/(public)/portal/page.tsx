@@ -2,7 +2,7 @@
 
 import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
-import { LogoIcon } from "@/components/ui/logo-icon";
+import { Logo } from "@/components/ui/logo-icon";
 import { loginStaffAction, registerStaffAction } from "@/app/staff/login/actions";
 
 type Tab = "staff-login" | "staff-register" | "admin";
@@ -164,10 +164,7 @@ export default function PortalPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 mb-8 justify-center">
-          <LogoIcon className="w-11 h-11" />
-          <span className="font-brand font-black text-2xl text-gold-600 tracking-tight">
-            MakeoverArena
-          </span>
+          <Logo tone="light" className="h-12 w-auto" />
         </Link>
 
         <div className="bg-white rounded-2xl shadow-card border border-border overflow-hidden">
