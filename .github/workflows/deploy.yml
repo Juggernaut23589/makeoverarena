@@ -12,7 +12,7 @@ concurrency:
 env:
   APP_DIR: /home/deploy/hub-makeoverarena
   PM2_NAME: hub-makeoverarena
-  HEALTH_URL: https://makeoverarena.com/
+  HEALTH_URL: https://www.makeoverarena.com/
 
 jobs:
   build:
