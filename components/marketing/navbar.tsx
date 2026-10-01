@@ -19,11 +19,11 @@ type NavLink = {
   label: string;
   highlight?: boolean;
   /** Render as a plain <a> rather than a Next <Link>. Needed for paths
-   *  this app doesn't route itself — /scholarships is the WordPress site
+   *  this app doesn't route itself — /blog is the WordPress site
    *  Apache serves under the same domain, so a client-side navigation
    *  would 404 instead of reaching it. */
   external?: boolean;
-  /** Only for genuinely off-site destinations. /scholarships is part of
+  /** Only for genuinely off-site destinations. /blog is part of
    *  this same site, so it opens in the current tab. */
   newTab?: boolean;
 };
@@ -32,7 +32,7 @@ const navLinks: NavLink[] = [
   { href: "/success-stories", label: "Success Stories" },
   { href: "/about", label: "About" },
   { href: "/faq", label: "FAQ", highlight: true },
-  { href: "/scholarships", label: "Scholarships", external: true },
+  { href: "/blog", label: "Blog", external: true },
 ];
 
 export function Navbar() {
