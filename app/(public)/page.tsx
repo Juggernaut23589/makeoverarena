@@ -46,48 +46,6 @@ const services = [
   },
 ];
 
-const testimonials = [
-  {
-    name: "Adaeze Okonkwo",
-    school: "University of Toronto, Canada",
-    program: "MSc Computer Science",
-    quote: "MakeoverArena helped me navigate the entire application process from scratch. I had zero idea where to start and they guided me to a full scholarship offer.",
-    image: "https://images.pexels.com/photos/3869648/pexels-photo-3869648.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop",
-    scholarship: "Full Scholarship",
-  },
-  {
-    name: "Emeka Nwosu",
-    school: "University of Edinburgh, UK",
-    program: "MBA",
-    quote: "Professional, responsive, and genuinely invested in my success. They reviewed my SOP multiple times until it was perfect. Absolutely recommend.",
-    image: "https://images.pexels.com/photos/7446948/pexels-photo-7446948.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop",
-    scholarship: null,
-  },
-  {
-    name: "Fatima Al-Hassan",
-    school: "Georgia Tech, USA",
-    program: "MSc Electrical Engineering",
-    quote: "From GRE prep guidance to visa support — they were with me every step. Now I'm studying at my dream university in Atlanta.",
-    image: "https://images.pexels.com/photos/9304685/pexels-photo-9304685.jpeg?auto=compress&cs=tinysrgb&w=200&h=200&fit=crop",
-    scholarship: "Merit Award",
-  },
-];
-
-const partnerUniversities = [
-  { name: "Harvard University", abbr: "HU", bg: "#A41034" },
-  { name: "MIT", abbr: "MIT", bg: "#A31F34" },
-  { name: "Stanford University", abbr: "SU", bg: "#8C1515" },
-  { name: "University of Oxford", abbr: "Oxon", bg: "#002147" },
-  { name: "University of Cambridge", abbr: "Cam", bg: "#003B49" },
-  { name: "UCL", abbr: "UCL", bg: "#500778" },
-  { name: "University of Toronto", abbr: "UofT", bg: "#002A5C" },
-  { name: "UBC", abbr: "UBC", bg: "#002145" },
-  { name: "McGill University", abbr: "McGill", bg: "#ED1B2F" },
-  { name: "Univ. of Edinburgh", abbr: "UoE", bg: "#00325E" },
-  { name: "TU Munich", abbr: "TUM", bg: "#3070B3" },
-  { name: "UNSW Sydney", abbr: "UNSW", bg: "#1C3E6E" },
-];
-
 const journeySteps = [
   { icon: "✍️", label: "Submit Profile", sub: "Day 1", color: "bg-crimson-50 border-crimson-200 text-crimson-700" },
   { icon: "📞", label: "Strategy Call", sub: "Week 1", color: "bg-navy-50 border-navy-200 text-navy-700" },
@@ -392,45 +350,17 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── PARTNER UNIVERSITIES ─── */}
-      <section className="py-16 bg-navy-900 border-y border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <span className="text-white/40 text-xs font-semibold tracking-widest uppercase">
-              200+ Partner Universities Worldwide
-            </span>
-          </div>
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-4">
-            {partnerUniversities.map((u) => (
-              <div
-                key={u.name}
-                className="flex flex-col items-center gap-2 group"
-                title={u.name}
-              >
-                <div
-                  className="w-14 h-14 rounded-xl flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200"
-                  style={{ backgroundColor: u.bg }}
-                >
-                  <span className="text-white font-bold text-xs tracking-tight text-center leading-tight px-1">
-                    {u.abbr}
-                  </span>
-                </div>
-                <span className="text-white/40 text-[10px] text-center leading-tight line-clamp-2">
-                  {u.name}
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className="text-center text-white/25 text-xs mt-8">
-            Placeholder logos — partner network includes 200+ accredited institutions
-          </p>
-        </div>
-      </section>
-
       {/* ─── TESTIMONIALS ─── */}
+      {/* Was a strip of named university logos ("partner network") and
+          three testimonial cards built from stock Pexels photos under
+          invented names and quotes — removed per the platform review
+          (claiming a partnership with Harvard/MIT/Stanford/etc. with none
+          in place, and presenting fabricated people as real students, are
+          both real exposure, not just unpolished content). Replace this
+          block with real, consented student stories as they're collected. */}
       <section className="py-24 bg-cream">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
+          <div className="text-center mb-10">
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="h-px w-8 bg-crimson-500" />
               <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
@@ -439,63 +369,20 @@ export default function HomePage() {
               <div className="h-px w-8 bg-crimson-500" />
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-light text-navy-900">
-              Real students.{" "}
-              <em className="not-italic text-crimson-500">Real results.</em>
+              We&apos;re building a story worth telling.
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map((t) => (
-              <div
-                key={t.name}
-                className="bg-white rounded-2xl p-7 shadow-card hover:shadow-card-hover transition-all duration-300"
-              >
-                {/* Stars */}
-                <div className="flex gap-0.5 mb-5">
-                  {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-crimson-400" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                    </svg>
-                  ))}
-                </div>
-                <blockquote className="text-navy-700 text-sm leading-relaxed mb-6 italic">
-                  &ldquo;{t.quote}&rdquo;
-                </blockquote>
-                <div className="flex items-center gap-3">
-                  <div className="relative w-11 h-11 rounded-full overflow-hidden shrink-0">
-                    <Image
-                      src={t.image}
-                      alt={t.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  <div>
-                    <div className="font-semibold text-navy-900 text-sm">{t.name}</div>
-                    <div className="text-navy-500 text-xs">{t.program}</div>
-                    <div className="text-navy-400 text-xs">{t.school}</div>
-                  </div>
-                  {t.scholarship && (
-                    <div className="ml-auto shrink-0">
-                      <span className="bg-crimson-100 text-crimson-700 text-xs font-medium px-2.5 py-1 rounded-full">
-                        {t.scholarship}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div className="text-center mt-10">
+          <div className="max-w-xl mx-auto bg-white rounded-2xl p-8 shadow-card text-center">
+            <p className="text-navy-600 text-sm leading-relaxed">
+              We&apos;re collecting verified, consented stories from our clients. Check back soon
+              — or start your own application today and be one of the first we feature.
+            </p>
             <Link
-              href="/success-stories"
-              className="inline-flex items-center gap-2 text-sm font-medium text-navy-700 hover:text-navy-900 group"
+              href="/apply"
+              className="inline-flex items-center gap-2 mt-5 px-6 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
             >
-              Read all success stories
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              Start Your Application
             </Link>
           </div>
         </div>

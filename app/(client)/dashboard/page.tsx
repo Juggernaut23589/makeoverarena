@@ -143,7 +143,6 @@ export default async function ClientDashboardPage() {
       payments={(paymentsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["payments"]}
       consultations={(consultationsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["consultations"]}
       documents={(documentsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["documents"]}
-      clientId={clientId}
       agent={agent as unknown as Parameters<typeof ClientDashboard>[0]["agent"]}
       documentsCompleted={Boolean(profile.documents_completed)}
       consultationBooked={Boolean(profile.consultation_booked)}

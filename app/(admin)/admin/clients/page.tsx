@@ -8,7 +8,14 @@ export const metadata: Metadata = { title: "Clients | Admin" };
 
 export default async function ClientsPage() {
   const session = await getAdminSession();
-  if (!session || session.role !== "super_admin") redirect("/admin?error=forbidden");
+  // Was super_admin-only, inconsistent with every other /admin page (which
+  // relies on the middleware's session gate alone — see
+  // lib/admin-auth.ts's SUPER_ADMIN_ROUTES). Viewing clients and raising a
+  // payment is routine admin work, not a super_admin-only action; agent
+  // assignment below stays restricted via requireSuperAdmin in actions.ts.
+  if (!session || !["super_admin", "admin"].includes(session.role)) {
+    redirect("/admin?error=forbidden");
+  }
 
   const adminClient = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

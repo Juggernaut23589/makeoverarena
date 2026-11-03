@@ -3,6 +3,9 @@ import { supabaseAdmin } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Documents | Admin" };
+// Signed URLs are generated fresh on every load (see below) — never cache
+// this page, or a reviewer could click a link whose signature has expired.
+export const dynamic = "force-dynamic";
 
 const DOC_TYPE_LABELS: Record<string, string> = {
   transcript: "Transcript",
@@ -43,6 +46,24 @@ export default async function AdminDocumentsPage({
   })();
 
   const { count: pendingCount } = await (supabaseAdmin?.from("documents").select("*", { count: "exact", head: true }).eq("status", "pending_review") ?? Promise.resolve({ count: 0 }));
+
+  // The "documents" bucket is private, so staff need a signed URL to open
+  // a file at all — previously the storage path was passed down but never
+  // turned into a link, which is very likely why every upload still sits
+  // unreviewed. 10 minutes is plenty to open it from this page load.
+  const viewUrls = new Map<string, string>();
+  const storageClient = supabaseAdmin;
+  if (storageClient && documents && documents.length > 0) {
+    const signed = await Promise.all(
+      documents.map((doc) =>
+        storageClient.storage.from("documents").createSignedUrl(doc.storage_path, 60 * 10)
+      )
+    );
+    documents.forEach((doc, i) => {
+      const url = signed[i].data?.signedUrl;
+      if (url) viewUrls.set(doc.id, url);
+    });
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">
@@ -127,7 +148,7 @@ export default async function AdminDocumentsPage({
                     {new Date(doc.created_at).toLocaleDateString("en-NG", { month: "short", day: "numeric" })}
                   </td>
                   <td className="px-4 py-4">
-                    <DocumentActions docId={doc.id} currentStatus={doc.status} storagePath={doc.storage_path} />
+                    <DocumentActions docId={doc.id} currentStatus={doc.status} viewUrl={viewUrls.get(doc.id)} />
                   </td>
                 </tr>
               );
@@ -140,9 +161,19 @@ export default async function AdminDocumentsPage({
   );
 }
 
-function DocumentActions({ docId, currentStatus, storagePath }: { docId: string; currentStatus: string; storagePath: string }) {
+function DocumentActions({ docId, currentStatus, viewUrl }: { docId: string; currentStatus: string; viewUrl?: string }) {
   return (
     <div className="flex items-center gap-1">
+      {viewUrl && (
+        <a
+          href={viewUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs px-2 py-1 bg-navy-50 text-navy-700 rounded hover:bg-navy-100 transition-colors font-medium"
+        >
+          View
+        </a>
+      )}
       <form action={`/api/admin/documents/${docId}/status`} method="POST">
         <input type="hidden" name="status" value="approved" />
         {currentStatus !== "approved" && (

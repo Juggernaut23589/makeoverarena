@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { assignAgentAction } from "./actions";
 import { cn } from "@/lib/utils";
 
@@ -83,7 +84,9 @@ export function ClientsTable({ clients: initialClients, agents }: { clients: Cli
                 return (
                   <tr key={client.id} className="hover:bg-navy-50/40 transition-colors">
                     <td className="px-5 py-4">
-                      <div className="font-medium text-navy-900">{client.full_name}</div>
+                      <Link href={`/admin/clients/${client.id}`} className="font-medium text-navy-900 hover:text-crimson-600 hover:underline">
+                        {client.full_name}
+                      </Link>
                       <div className="text-navy-400 text-xs">{client.email}</div>
                     </td>
                     <td className="px-4 py-4">

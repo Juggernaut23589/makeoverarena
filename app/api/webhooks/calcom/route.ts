@@ -10,10 +10,17 @@ const CALCOM_WEBHOOK_SECRET = process.env.CALCOM_WEBHOOK_SECRET ?? "";
 
 function verifySignature(body: string, signature: string): boolean {
   if (!CALCOM_WEBHOOK_SECRET) return true;
+  if (!signature) return false;
   const expected = crypto
     .createHmac("sha256", CALCOM_WEBHOOK_SECRET)
     .update(body)
     .digest("hex");
+  // A length check before timingSafeEqual, same pattern as the Paystack and
+  // WhatsApp webhooks — timingSafeEqual throws (not returns false) on a
+  // length mismatch, which previously meant any request missing or
+  // malformed the x-cal-signature-256 header crashed this route with an
+  // unhandled exception instead of a clean 401.
+  if (expected.length !== signature.length) return false;
   return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));
 }
 

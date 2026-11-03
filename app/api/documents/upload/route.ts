@@ -1,18 +1,38 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase";
+import { requireClientProfile } from "@/lib/client-auth";
 
 const ALLOWED_TYPES = ["application/pdf", "image/jpeg", "image/png", "image/jpg", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
+// Must match the documents.document_type check constraint in
+// 20240101_initial_schema.sql — kept in sync by hand.
+const ALLOWED_DOCUMENT_TYPES = [
+  "transcript", "certificate", "id", "passport", "sop", "lor",
+  "cv", "test_scores", "financial", "other",
+];
+
 export async function POST(request: NextRequest) {
   try {
+    // client_id is derived from the session below, never trusted from the
+    // form — previously any unauthenticated request could attach a file to
+    // any client's record. See lib/client-auth.ts.
+    const auth = await requireClientProfile();
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    const clientId = auth.clientId;
+
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
-    const clientId = formData.get("client_id") as string | null;
     const documentType = formData.get("document_type") as string | null;
 
-    if (!file || !clientId || !documentType) {
+    if (!file || !documentType) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    if (!ALLOWED_DOCUMENT_TYPES.includes(documentType)) {
+      return NextResponse.json({ error: "Invalid document type." }, { status: 400 });
     }
 
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -48,6 +68,7 @@ export async function POST(request: NextRequest) {
       .from("documents")
       .insert({
         client_id: clientId,
+        uploaded_by: auth.userId,
         file_name: file.name,
         file_type: file.type,
         file_size: file.size,

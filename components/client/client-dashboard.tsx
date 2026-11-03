@@ -89,7 +89,6 @@ interface Props {
   payments: Payment[];
   consultations: Consultation[];
   documents: Document[];
-  clientId: string;
   agent?: Agent | null;
   documentsCompleted?: boolean;
   consultationBooked?: boolean;
@@ -150,7 +149,7 @@ interface ScholarshipMatch {
   application_url: string | null;
 }
 
-export function ClientDashboard({ profile, applications, payments, consultations, documents, clientId, agent, documentsCompleted = false, consultationBooked = false }: Props) {
+export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<ClientProfile>>(profile);
@@ -231,13 +230,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
       const res = await fetch("/api/payments/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          client_id: clientId,
-          payment_id: payment.id,
-          email: profile.email,
-          amount: payment.amount,
-          description: payment.description,
-        }),
+        body: JSON.stringify({ payment_id: payment.id }),
       });
       const data = (await res.json()) as { authorization_url?: string; error?: string };
       if (!res.ok || !data.authorization_url) {
@@ -260,7 +253,6 @@ export function ClientDashboard({ profile, applications, payments, consultations
     setUploadingDoc(true);
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("client_id", clientId);
     formData.append("document_type", docType);
 
     try {
