@@ -3,6 +3,8 @@
 import { useState, useActionState, useEffect } from "react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo-icon";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { APP_URL } from "@/lib/site-url";
 import { registerStaffAction, loginStaffAction } from "./actions";
 
 type Tab = "login" | "register";
@@ -15,11 +17,35 @@ export function StaffLoginClient() {
     undefined
   );
 
+  const [resetMode, setResetMode] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetError, setResetError] = useState("");
+  const [resetPending, setResetPending] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+
   useEffect(() => {
     if (loginState?.success) {
       window.location.href = "/staff/dashboard";
     }
   }, [loginState]);
+
+  async function handleReset(e: React.FormEvent) {
+    e.preventDefault();
+    setResetError("");
+    setResetPending(true);
+
+    const supabase = createSupabaseBrowserClient();
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${APP_URL}/api/auth/callback?next=/reset-password`,
+    });
+
+    if (error) {
+      setResetError(error.message);
+    } else {
+      setResetSent(true);
+    }
+    setResetPending(false);
+  }
 
   return (
     <div className="min-h-screen bg-cream flex items-center justify-center p-6">
@@ -49,52 +75,115 @@ export function StaffLoginClient() {
 
           <div className="p-6">
             {tab === "login" ? (
-              <form action={loginAction} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
-                    Email
-                  </label>
-                  <input
-                    name="email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
-                    placeholder="you@makeoverarena.com"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
-                    Password
-                  </label>
-                  <input
-                    name="password"
-                    type="password"
-                    required
-                    autoComplete="current-password"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
-                    placeholder="••••••••"
-                  />
-                </div>
-                {loginState?.error && (
-                  <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">
-                    {loginState.error}
+              resetSent ? (
+                <div className="text-center py-6">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="font-semibold text-navy-900 mb-2">Check your email</p>
+                  <p className="text-sm text-navy-500 mb-4">
+                    We&apos;ve sent a password reset link to <strong>{resetEmail}</strong>
                   </p>
-                )}
-                <button
-                  type="submit"
-                  disabled={loginPending}
-                  className="w-full py-2.5 bg-navy-900 text-white rounded-xl font-semibold text-sm hover:bg-navy-800 transition-colors disabled:opacity-60"
-                >
-                  {loginPending ? "Signing in…" : "Sign In"}
-                </button>
-                <p className="text-center text-xs text-navy-400 pt-1">
-                  Admin?{" "}
-                  <Link href="/admin/login" className="text-crimson-600 hover:text-crimson-700 font-medium">
-                    Admin Login →
-                  </Link>
-                </p>
-              </form>
+                  <button
+                    onClick={() => { setResetMode(false); setResetSent(false); }}
+                    className="text-sm text-crimson-600 hover:text-crimson-700 font-medium"
+                  >
+                    ← Back to sign in
+                  </button>
+                </div>
+              ) : resetMode ? (
+                <form onSubmit={handleReset} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      value={resetEmail}
+                      onChange={(e) => setResetEmail(e.target.value)}
+                      required
+                      autoComplete="email"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
+                      placeholder="you@makeoverarena.com"
+                    />
+                  </div>
+                  {resetError && (
+                    <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">{resetError}</p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={resetPending}
+                    className="w-full py-2.5 bg-navy-900 text-white rounded-xl font-semibold text-sm hover:bg-navy-800 transition-colors disabled:opacity-60"
+                  >
+                    {resetPending ? "Sending…" : "Send Reset Link"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setResetMode(false)}
+                    className="w-full text-sm text-navy-500 hover:text-navy-700 py-1"
+                  >
+                    ← Back to sign in
+                  </button>
+                </form>
+              ) : (
+                <form action={loginAction} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-navy-600 mb-1.5 uppercase tracking-wide">
+                      Email
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      required
+                      autoComplete="email"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
+                      placeholder="you@makeoverarena.com"
+                    />
+                  </div>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-navy-600 uppercase tracking-wide">
+                        Password
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setResetMode(true)}
+                        className="text-xs text-crimson-600 hover:text-crimson-700"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+                    <input
+                      name="password"
+                      type="password"
+                      required
+                      autoComplete="current-password"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-navy-200 text-sm text-navy-900 placeholder-navy-300 focus:outline-none focus:ring-2 focus:ring-crimson-400 focus:border-transparent"
+                      placeholder="••••••••"
+                    />
+                  </div>
+                  {loginState?.error && (
+                    <p className="text-red-600 text-sm bg-red-50 px-3 py-2 rounded-lg">
+                      {loginState.error}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={loginPending}
+                    className="w-full py-2.5 bg-navy-900 text-white rounded-xl font-semibold text-sm hover:bg-navy-800 transition-colors disabled:opacity-60"
+                  >
+                    {loginPending ? "Signing in…" : "Sign In"}
+                  </button>
+                  <p className="text-center text-xs text-navy-400 pt-1">
+                    Admin?{" "}
+                    <Link href="/admin/login" className="text-crimson-600 hover:text-crimson-700 font-medium">
+                      Admin Login →
+                    </Link>
+                  </p>
+                </form>
+              )
             ) : (
               <form action={registerAction} className="space-y-4">
                 {registerState?.success ? (
