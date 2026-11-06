@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export const metadata: Metadata = {
   title: "Scholarship Applications | MakeoverArena",
@@ -86,7 +87,35 @@ const timeline = [
   },
 ];
 
-export default function ScholarshipsPage() {
+interface FeaturedScholarship {
+  id: string;
+  name: string;
+  institution_name: string | null;
+  programme_name: string | null;
+  destination_country: string | null;
+  funding_type: string | null;
+  amount: string | null;
+  application_deadline: string | null;
+  application_url: string | null;
+}
+
+async function getFeaturedScholarships(): Promise<FeaturedScholarship[]> {
+  if (!supabaseAdmin) return [];
+  // Already publicly selectable under the existing RLS policy
+  // (is_active = true) — this is a lead-gen teaser, not a new access path,
+  // so only an allowlist of display columns is fetched, never the internal
+  // verification fields (verified_by/created_by/last_checked_by).
+  const { data } = await supabaseAdmin
+    .from("scholarships")
+    .select("id, name, institution_name, programme_name, destination_country, funding_type, amount, application_deadline, application_url")
+    .eq("is_active", true)
+    .order("application_deadline", { ascending: true, nullsFirst: false })
+    .limit(6);
+  return data ?? [];
+}
+
+export default async function ScholarshipsPage() {
+  const featured = await getFeaturedScholarships();
   return (
     <div className="pt-20">
       {/* Hero */}
@@ -177,6 +206,46 @@ export default function ScholarshipsPage() {
                   ))}
                 </div>
               </div>
+
+              {/* Featured open scholarships — live from our sourcing database */}
+              {featured.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="h-px w-6 bg-crimson-500" />
+                    <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
+                      Live From Our Database
+                    </span>
+                  </div>
+                  <h2 className="font-display text-3xl text-navy-900 mb-6">
+                    Featured open opportunities
+                  </h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {featured.map((s) => (
+                      <div key={s.id} className="bg-white rounded-xl p-5 shadow-card border border-border">
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h3 className="font-semibold text-navy-900 text-sm">{s.name}</h3>
+                          {s.funding_type && (
+                            <span className="shrink-0 bg-crimson-100 text-crimson-700 text-xs font-medium px-2 py-0.5 rounded-full">
+                              {s.funding_type === "full" ? "Fully funded" : "Partial funding"}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-xs text-navy-500 mb-2">
+                          {[s.institution_name, s.destination_country].filter(Boolean).join(" · ")}
+                        </div>
+                        {s.application_deadline && (
+                          <p className="text-navy-600 text-xs leading-relaxed mb-1">
+                            Deadline: {new Date(s.application_deadline).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" })}
+                          </p>
+                        )}
+                        <Link href="/signup" className="text-crimson-600 hover:text-crimson-700 text-xs font-semibold">
+                          Sign up to see full details →
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* What's included */}
               <div>

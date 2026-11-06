@@ -63,6 +63,15 @@ export default async function StaffDashboardPage() {
       : Promise.resolve({ data: [] }),
   ]);
 
+  const { data: scholarships } = hasAbility(liveSession, "manage_scholarships")
+    ? await db!
+        .from("scholarships")
+        .select(
+          "id, name, institution_name, programme_name, destination_country, study_level, funding_type, description, eligibility_notes, amount, application_deadline, application_url, source_url, listing_status, is_active, last_checked_at, verified_by, verified_at, created_by"
+        )
+        .order("created_at", { ascending: false })
+    : { data: [] };
+
   // Agent performance: clients per assigned staff
   let agentStats: { staff_id: string; full_name: string; client_count: number }[] = [];
   if (hasAbility(liveSession, "view_analytics")) {
@@ -111,6 +120,7 @@ export default async function StaffDashboardPage() {
         agentStats,
       }}
       staffList={staffList ?? []}
+      scholarships={scholarships ?? []}
     />
   );
 }

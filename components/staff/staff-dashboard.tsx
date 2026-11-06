@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { formatDate } from "@/lib/utils";
 import { logoutStaffAction, approveStaffAction, updateAbilitiesAction } from "@/app/staff/login/actions";
 import type { AdminSession, StaffAbility } from "@/lib/admin-auth";
+import { ScholarshipsManager, type ScholarshipRow } from "@/components/staff/scholarships-manager";
 
 type StaffRole = "super_admin" | "staff" | "admin";
 
@@ -74,6 +75,7 @@ interface Props {
   inquiries: InquiryRow[];
   analyticsData: AnalyticsData | null;
   staffList: StaffMember[] | null;
+  scholarships: ScholarshipRow[];
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -103,14 +105,14 @@ const ALL_ABILITIES: { key: StaffAbility; label: string }[] = [
   { key: "view_analytics", label: "View Analytics" },
 ];
 
-type Tab = "overview" | "clients" | "consultations" | "analytics" | "team";
+type Tab = "overview" | "clients" | "consultations" | "analytics" | "scholarships" | "team";
 
 function can(session: AdminSession, ability: StaffAbility): boolean {
   if (session.role === "super_admin") return true;
   return Boolean(session.abilities?.[ability]);
 }
 
-export function StaffDashboard({ staff, session, clients, consultations, inquiries, analyticsData, staffList }: Props) {
+export function StaffDashboard({ staff, session, clients, consultations, inquiries, analyticsData, staffList, scholarships }: Props) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [expandedStaff, setExpandedStaff] = useState<string | null>(null);
@@ -127,6 +129,7 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
     { id: "clients", label: "Clients", show: can(session, "view_clients") },
     { id: "consultations", label: "Consultations", show: true },
     { id: "analytics", label: "Analytics", show: can(session, "view_analytics") },
+    { id: "scholarships", label: "Scholarships", show: can(session, "manage_scholarships") },
     { id: "team", label: "Team", show: isSuperAdmin },
   ];
 
@@ -425,6 +428,11 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
               </div>
             </div>
           </div>
+        )}
+
+        {/* SCHOLARSHIPS */}
+        {activeTab === "scholarships" && can(session, "manage_scholarships") && (
+          <ScholarshipsManager scholarships={scholarships} />
         )}
 
         {/* TEAM (super_admin only) */}

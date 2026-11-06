@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
 import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
@@ -147,6 +148,31 @@ interface ScholarshipMatch {
   amount: string | null;
   tuition_range: string | null;
   application_url: string | null;
+  institution_name?: string | null;
+  programme_name?: string | null;
+  study_level?: string | null;
+  funding_type?: string | null;
+  application_deadline?: string | null;
+  source_url?: string | null;
+  listing_status?: string | null;
+}
+
+const STUDY_LEVEL_LABELS: Record<string, string> = {
+  undergraduate: "Undergraduate",
+  graduate: "Graduate",
+  phd: "PhD",
+  other: "Other",
+};
+
+const FUNDING_TYPE_LABELS: Record<string, string> = { full: "Full funding", partial: "Partial funding" };
+
+function scholarshipDeadlineBadge(s: ScholarshipMatch): { label: string; cls: string } | null {
+  if (s.listing_status === "upcoming") return { label: "Upcoming", cls: "bg-blue-100 text-blue-700 dark:bg-blue-500/10 dark:text-blue-400" };
+  if (!s.application_deadline) return null;
+  const days = Math.ceil((new Date(s.application_deadline).getTime() - Date.now()) / 86_400_000);
+  if (days < 0) return { label: "Closed", cls: "bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-white/40" };
+  if (days <= 14) return { label: `Closing soon · ${days}d left`, cls: "bg-red-100 text-red-700 dark:bg-red-500/10 dark:text-red-400" };
+  return { label: "Open", cls: "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400" };
 }
 
 export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false }: Props) {
@@ -162,16 +188,40 @@ export function ClientDashboard({ profile, applications, payments, consultations
   const [scholarshipKind, setScholarshipKind] = useState<"scholarships" | "low_tuition" | null>(null);
   const [scholarshipMatches, setScholarshipMatches] = useState<ScholarshipMatch[]>([]);
   const [loadingScholarships, setLoadingScholarships] = useState(false);
+  const [browseAllScholarships, setBrowseAllScholarships] = useState(false);
+  const [scholarshipCountry, setScholarshipCountry] = useState("");
+  const [scholarshipStudyLevel, setScholarshipStudyLevel] = useState("");
+  const [scholarshipFunding, setScholarshipFunding] = useState("");
+  const [scholarshipSearch, setScholarshipSearch] = useState("");
+  const [debouncedScholarshipSearch, setDebouncedScholarshipSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedScholarshipSearch(scholarshipSearch), 300);
+    return () => clearTimeout(timer);
+  }, [scholarshipSearch]);
 
   useEffect(() => {
     const isPassFail = Boolean(profile.is_pass_fail);
-    if (!isPassFail && (!profile.gpa || !profile.gpa_scale)) return;
+    if (!browseAllScholarships && !isPassFail && (!profile.gpa || !profile.gpa_scale)) return;
+
     setLoadingScholarships(true);
-    const params = new URLSearchParams({ is_pass_fail: String(isPassFail) });
-    if (!isPassFail) {
-      params.set("gpa", String(profile.gpa));
-      params.set("gpa_scale", String(profile.gpa_scale));
+    const params = new URLSearchParams();
+    if (browseAllScholarships) {
+      params.set("mode", "all");
+    } else {
+      params.set("is_pass_fail", String(isPassFail));
+      if (!isPassFail) {
+        params.set("gpa", String(profile.gpa));
+        params.set("gpa_scale", String(profile.gpa_scale));
+      }
     }
+    // Filters layer on top of either mode — they never bypass is_active on
+    // the API side, they just narrow whichever base list is being shown.
+    if (scholarshipCountry) params.set("country", scholarshipCountry);
+    if (scholarshipStudyLevel) params.set("study_level", scholarshipStudyLevel);
+    if (scholarshipFunding) params.set("funding_type", scholarshipFunding);
+    if (debouncedScholarshipSearch.trim()) params.set("q", debouncedScholarshipSearch.trim());
+
     fetch(`/api/scholarships?${params.toString()}`)
       .then((res) => res.json())
       .then((data: { kind: "scholarships" | "low_tuition"; items: ScholarshipMatch[] }) => {
@@ -179,7 +229,16 @@ export function ClientDashboard({ profile, applications, payments, consultations
         setScholarshipMatches(data.items ?? []);
       })
       .finally(() => setLoadingScholarships(false));
-  }, [profile.gpa, profile.gpa_scale, profile.is_pass_fail]);
+  }, [
+    profile.gpa,
+    profile.gpa_scale,
+    profile.is_pass_fail,
+    browseAllScholarships,
+    scholarshipCountry,
+    scholarshipStudyLevel,
+    scholarshipFunding,
+    debouncedScholarshipSearch,
+  ]);
 
   const upcomingConsultation = consultations.find(
     (c) => c.status === "scheduled" && new Date(`${c.scheduled_date}T${c.scheduled_time}`) >= new Date()
@@ -909,45 +968,122 @@ export function ClientDashboard({ profile, applications, payments, consultations
         {/* ── SCHOLARSHIPS / LOW TUITION ── */}
         {activeTab === "scholarships" && (
           <div className="space-y-4">
-            <h2 className="font-display text-2xl text-navy-900 dark:text-white">
-              {scholarshipKind === "low_tuition" ? "Low Tuition Packages" : "Matched Scholarships"}
-            </h2>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <h2 className="font-display text-2xl text-navy-900 dark:text-white">
+                {scholarshipKind === "low_tuition" ? "Low Tuition Packages" : "Matched Scholarships"}
+              </h2>
+              {scholarshipKind !== "low_tuition" && (
+                <button
+                  onClick={() => setBrowseAllScholarships((v) => !v)}
+                  className={cn(
+                    "text-xs font-medium px-3 py-1.5 rounded-full border transition-colors",
+                    browseAllScholarships
+                      ? "bg-crimson-500 text-white border-crimson-500"
+                      : "border-border text-navy-600 dark:text-white/60 hover:bg-navy-50 dark:hover:bg-white/5"
+                  )}
+                >
+                  {browseAllScholarships ? "Showing all open scholarships" : "Browse all open scholarships"}
+                </button>
+              )}
+            </div>
+
+            {browseAllScholarships && (
+              <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-4 flex flex-wrap gap-2">
+                <input
+                  type="search"
+                  value={scholarshipSearch}
+                  onChange={(e) => setScholarshipSearch(e.target.value)}
+                  placeholder="Search name, institution, programme…"
+                  className="flex-1 min-w-[180px] h-9 px-3 text-sm border border-border rounded-lg bg-navy-50 dark:bg-navy-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
+                />
+                <select
+                  value={scholarshipCountry}
+                  onChange={(e) => setScholarshipCountry(e.target.value)}
+                  className="h-9 px-2 text-sm border border-border rounded-lg bg-white dark:bg-navy-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
+                >
+                  <option value="">All countries</option>
+                  {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                </select>
+                <select
+                  value={scholarshipStudyLevel}
+                  onChange={(e) => setScholarshipStudyLevel(e.target.value)}
+                  className="h-9 px-2 text-sm border border-border rounded-lg bg-white dark:bg-navy-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
+                >
+                  <option value="">All study levels</option>
+                  {Object.entries(STUDY_LEVEL_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                </select>
+                <select
+                  value={scholarshipFunding}
+                  onChange={(e) => setScholarshipFunding(e.target.value)}
+                  className="h-9 px-2 text-sm border border-border rounded-lg bg-white dark:bg-navy-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
+                >
+                  <option value="">All funding types</option>
+                  {Object.entries(FUNDING_TYPE_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                </select>
+              </div>
+            )}
+
             {loadingScholarships ? (
               <p className="text-navy-500 dark:text-white/50 text-sm">Loading matches…</p>
             ) : scholarshipMatches.length === 0 ? (
               <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-12 text-center">
                 <div className="text-4xl mb-3">🎓</div>
                 <p className="text-navy-500 dark:text-white/50 text-sm">
-                  {profile.gpa || profile.is_pass_fail
-                    ? "No matches found yet. Your advisor will share options shortly."
-                    : "Complete your academic info to see matched scholarships."}
+                  {browseAllScholarships
+                    ? "No scholarships match these filters yet."
+                    : profile.gpa || profile.is_pass_fail
+                      ? "No matches found yet. Your advisor will share options shortly."
+                      : "Complete your academic info to see matched scholarships."}
                 </p>
               </div>
             ) : (
-              scholarshipMatches.map((s) => (
-                <div key={s.id} className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-5">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h4 className="font-display text-lg text-navy-900 dark:text-white">{s.name}</h4>
-                      <p className="text-navy-500 dark:text-white/50 text-xs mt-0.5">{s.destination_country}</p>
-                      {s.description && <p className="text-navy-600 dark:text-white/60 text-sm mt-2">{s.description}</p>}
+              scholarshipMatches.map((s, i) => {
+                const badge = scholarshipDeadlineBadge(s);
+                return (
+                  <motion.div
+                    key={s.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.25 }}
+                    className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-5"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h4 className="font-display text-lg text-navy-900 dark:text-white">{s.name}</h4>
+                        <p className="text-navy-500 dark:text-white/50 text-xs mt-0.5">
+                          {[s.institution_name, s.programme_name, s.destination_country].filter(Boolean).join(" · ")}
+                        </p>
+                        {s.description && <p className="text-navy-600 dark:text-white/60 text-sm mt-2">{s.description}</p>}
+                      </div>
+                      <span className="text-sm font-semibold text-crimson-600 dark:text-crimson-400 shrink-0">
+                        {s.amount ?? s.tuition_range ?? (s.funding_type ? FUNDING_TYPE_LABELS[s.funding_type] : "")}
+                      </span>
                     </div>
-                    <span className="text-sm font-semibold text-crimson-600 dark:text-crimson-400 shrink-0">
-                      {s.amount ?? s.tuition_range ?? ""}
-                    </span>
-                  </div>
-                  {s.application_url && (
-                    <a
-                      href={s.application_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block mt-3 text-sm text-crimson-600 hover:text-crimson-700 font-medium"
-                    >
-                      Learn more →
-                    </a>
-                  )}
-                </div>
-              ))
+                    <div className="flex items-center gap-2 mt-3 flex-wrap">
+                      {s.study_level && (
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-navy-100 text-navy-600 dark:bg-white/10 dark:text-white/60">
+                          {STUDY_LEVEL_LABELS[s.study_level] ?? s.study_level}
+                        </span>
+                      )}
+                      {badge && (
+                        <span className={cn("text-xs px-2 py-0.5 rounded-full font-medium", badge.cls)}>
+                          {badge.label}
+                        </span>
+                      )}
+                    </div>
+                    {(s.source_url ?? s.application_url) && (
+                      <a
+                        href={s.application_url ?? s.source_url ?? undefined}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-block mt-3 text-sm text-crimson-600 hover:text-crimson-700 font-medium"
+                      >
+                        {s.application_url ? "Learn more →" : "View official source →"}
+                      </a>
+                    )}
+                  </motion.div>
+                );
+              })
             )}
           </div>
         )}
