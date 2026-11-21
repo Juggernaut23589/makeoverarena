@@ -42,6 +42,7 @@ interface AccessClass {
   name: string;
   slug: string;
   rank: number;
+  description: string | null;
 }
 
 interface AccessPeriod {
@@ -121,6 +122,8 @@ interface Props {
   accessPeriods: AccessPeriod[];
   accessClassPrices: AccessClassPrice[];
   savedScholarshipIds: string[];
+  scholarshipCountByClassId: Record<string, number>;
+  freeScholarshipCount: number;
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -206,7 +209,7 @@ function scholarshipDeadlineBadge(s: ScholarshipMatch): { label: string; cls: st
   return { label: "Open", cls: "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400" };
 }
 
-export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false, accessClasses, accessPeriods, accessClassPrices, savedScholarshipIds }: Props) {
+export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false, accessClasses, accessPeriods, accessClassPrices, savedScholarshipIds, scholarshipCountByClassId, freeScholarshipCount }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<ClientProfile>>(profile);
@@ -1316,7 +1319,12 @@ export function ClientDashboard({ profile, applications, payments, consultations
         {activeTab === "plans" && (
           <div className="space-y-4">
             <h2 className="font-display text-2xl text-navy-900 dark:text-white">Plans</h2>
-            <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-4">
+            <div className={cn(
+              "rounded-xl border p-4",
+              subscriptionActive && daysLeft !== null && daysLeft < 7
+                ? "bg-amber-50 dark:bg-amber-500/10 border-amber-300 dark:border-amber-500/30"
+                : "bg-white dark:bg-navy-800 border-border"
+            )}>
               {subscriptionActive && currentAccessClass ? (
                 <p className="text-sm text-navy-600 dark:text-white/70">
                   Current plan: <span className="font-semibold">{currentAccessClass.name}</span>
@@ -1331,33 +1339,65 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <p className="text-sm text-navy-400 dark:text-white/30">Plans aren&apos;t available yet — check back soon.</p>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {accessClasses.map((c) => (
-                  <div key={c.id} className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-5 space-y-3">
-                    <h3 className="font-display text-lg text-navy-900 dark:text-white">{c.name}</h3>
-                    <div className="space-y-2">
-                      {accessPeriods.map((p) => {
-                        const price = accessClassPrices.find((pr) => pr.class_id === c.id && pr.period_id === p.id);
-                        if (!price) return null;
-                        const key = `${c.id}__${p.id}`;
-                        const isCurrent = subscriptionActive && profile.current_access_class_id === c.id;
-                        return (
-                          <button
-                            key={p.id}
-                            onClick={() => handleSubscribe(c.id, p.id)}
-                            disabled={subscribingKey === key}
-                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-border hover:bg-navy-50 dark:hover:bg-white/5 text-sm disabled:opacity-50"
-                          >
-                            <span className="text-navy-600 dark:text-white/70">{p.label}</span>
-                            <span className="font-semibold text-navy-900 dark:text-white">
-                              {subscribingKey === key ? "…" : `₦${price.price_naira.toLocaleString()}`}
-                              {isCurrent ? " · Renew" : ""}
-                            </span>
-                          </button>
-                        );
-                      })}
+                {[...accessClasses].sort((a, b) => a.rank - b.rank).map((c, i, sorted) => {
+                  const isCurrentTier = subscriptionActive && profile.current_access_class_id === c.id;
+                  const isHighest = i === sorted.length - 1;
+                  const unlockedCount = scholarshipCountByClassId[c.id] ?? freeScholarshipCount;
+                  const periodsForTier = accessPeriods.filter((p) => accessClassPrices.some((pr) => pr.class_id === c.id && pr.period_id === p.id));
+                  return (
+                    <div
+                      key={c.id}
+                      className={cn(
+                        "rounded-xl border p-5 space-y-3 relative",
+                        isCurrentTier
+                          ? "bg-white dark:bg-navy-800 border-2 border-crimson-500 shadow-elevated"
+                          : "bg-white dark:bg-navy-800 border-border shadow-card"
+                      )}
+                    >
+                      {isCurrentTier && (
+                        <span className="absolute -top-3 left-5 bg-crimson-500 text-white text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full">
+                          Current Plan
+                        </span>
+                      )}
+                      {!isCurrentTier && isHighest && (
+                        <span className="absolute -top-3 left-5 bg-amber-400 text-navy-900 text-[10px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full">
+                          Most Access
+                        </span>
+                      )}
+                      <h3 className="font-display text-lg text-navy-900 dark:text-white">{c.name}</h3>
+                      {c.description && (
+                        <p className="text-navy-500 dark:text-white/50 text-xs leading-relaxed">{c.description}</p>
+                      )}
+                      <p className="text-xs font-medium text-crimson-600 dark:text-crimson-400">
+                        Unlocks {unlockedCount} scholarship{unlockedCount === 1 ? "" : "s"}
+                      </p>
+                      <div className="space-y-2 pt-1">
+                        {periodsForTier.length === 0 && (
+                          <p className="text-xs text-navy-400 dark:text-white/30">Pricing coming soon</p>
+                        )}
+                        {periodsForTier.map((p) => {
+                          const price = accessClassPrices.find((pr) => pr.class_id === c.id && pr.period_id === p.id);
+                          if (!price) return null;
+                          const key = `${c.id}__${p.id}`;
+                          return (
+                            <button
+                              key={p.id}
+                              onClick={() => handleSubscribe(c.id, p.id)}
+                              disabled={subscribingKey === key}
+                              className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-border hover:bg-navy-50 dark:hover:bg-white/5 text-sm disabled:opacity-50"
+                            >
+                              <span className="text-navy-600 dark:text-white/70">{p.label}</span>
+                              <span className="font-semibold text-navy-900 dark:text-white">
+                                {subscribingKey === key ? "…" : `₦${price.price_naira.toLocaleString()}`}
+                                {isCurrentTier ? " · Renew" : ""}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>

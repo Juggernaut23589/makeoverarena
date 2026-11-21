@@ -99,7 +99,7 @@ export default async function ClientDashboardPage() {
 
   const clientId = profile.id as string;
 
-  const [applicationsResult, paymentsResult, consultationsResult, documentsResult, accessClassesResult, accessPeriodsResult, accessClassPricesResult, savedScholarshipsResult] = await Promise.all([
+  const [applicationsResult, paymentsResult, consultationsResult, documentsResult, accessClassesResult, accessPeriodsResult, accessClassPricesResult, savedScholarshipsResult, scholarshipTierCountsResult] = await Promise.all([
     adminClient
       .from("application_tracking")
       .select("*")
@@ -120,14 +120,28 @@ export default async function ClientDashboardPage() {
       .select("*")
       .eq("client_id", clientId)
       .order("created_at", { ascending: false }),
-    adminClient.from("access_classes").select("id, name, slug, rank").eq("is_active", true).order("rank", { ascending: true }),
+    adminClient.from("access_classes").select("id, name, slug, rank, description").eq("is_active", true).order("rank", { ascending: true }),
     adminClient.from("access_periods").select("id, label, duration_days, display_order").eq("is_active", true).order("display_order", { ascending: true }),
     adminClient.from("access_class_prices").select("class_id, period_id, price_naira"),
     adminClient.from("saved_scholarships").select("scholarship_id").eq("client_id", clientId),
+    adminClient.from("scholarships").select("required_class_id").eq("is_active", true),
   ]);
 
   if (!profile.user_id) {
     await adminClient.from("client_profiles").update({ user_id: userId }).eq("id", clientId);
+  }
+
+  // Cumulative per-tier scholarship counts — hierarchical, so a tier's
+  // count includes everything free plus everything at or below its own
+  // rank, matching the actual access-check logic in /api/scholarships.
+  const sortedClasses = [...(accessClassesResult.data ?? [])].sort((a, b) => a.rank - b.rank);
+  const freeCount = (scholarshipTierCountsResult.data ?? []).filter((s) => s.required_class_id === null).length;
+  const countByClassId: Record<string, number> = {};
+  let runningCount = freeCount;
+  for (const cls of sortedClasses) {
+    const ownCount = (scholarshipTierCountsResult.data ?? []).filter((s) => s.required_class_id === cls.id).length;
+    runningCount += ownCount;
+    countByClassId[cls.id] = runningCount;
   }
 
   let agent: Record<string, unknown> | null = null;
@@ -154,6 +168,8 @@ export default async function ClientDashboardPage() {
       accessPeriods={accessPeriodsResult.data ?? []}
       accessClassPrices={accessClassPricesResult.data ?? []}
       savedScholarshipIds={(savedScholarshipsResult.data ?? []).map((r) => r.scholarship_id as string)}
+      scholarshipCountByClassId={countByClassId}
+      freeScholarshipCount={freeCount}
     />
   );
 }
