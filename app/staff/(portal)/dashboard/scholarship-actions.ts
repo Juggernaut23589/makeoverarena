@@ -25,6 +25,7 @@ const scholarshipFieldsSchema = z.object({
   application_url: z.string().trim().url("Enter a valid URL.").optional().nullable(),
   source_url: z.string().trim().url("Enter a valid URL.").optional().nullable(),
   last_checked_at: z.string().regex(DATE_RE, "Use YYYY-MM-DD.").optional().nullable(),
+  required_class_id: z.string().uuid().optional().nullable(),
 });
 
 function emptyToNull(v: FormDataEntryValue | null): string | null {
@@ -47,6 +48,7 @@ function readScholarshipFields(formData: FormData) {
     application_url: emptyToNull(formData.get("application_url")),
     source_url: emptyToNull(formData.get("source_url")),
     last_checked_at: emptyToNull(formData.get("last_checked_at")),
+    required_class_id: emptyToNull(formData.get("required_class_id")),
   };
 }
 

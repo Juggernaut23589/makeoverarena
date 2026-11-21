@@ -104,11 +104,14 @@ async function getFeaturedScholarships(): Promise<FeaturedScholarship[]> {
   // Already publicly selectable under the existing RLS policy
   // (is_active = true) — this is a lead-gen teaser, not a new access path,
   // so only an allowlist of display columns is fetched, never the internal
-  // verification fields (verified_by/created_by/last_checked_by).
+  // verification fields (verified_by/created_by/last_checked_by). Explicitly
+  // excludes tier-gated scholarships — this teaser is logged-out and must
+  // never leak a paid-class-only entry.
   const { data } = await supabaseAdmin
     .from("scholarships")
     .select("id, name, institution_name, programme_name, destination_country, funding_type, amount, application_deadline, application_url")
     .eq("is_active", true)
+    .is("required_class_id", null)
     .order("application_deadline", { ascending: true, nullsFirst: false })
     .limit(6);
   return data ?? [];

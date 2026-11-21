@@ -30,6 +30,7 @@ type ClaimedRow = {
   client_id: string | null;
   description: string | null;
   amount: number | null;
+  metadata: { kind?: string; class_id?: string; period_id?: string } | null;
 };
 
 export async function settleSuccessfulPayment(input: {
@@ -49,7 +50,7 @@ export async function settleSuccessfulPayment(input: {
     .update({ status: "paid", paid_at: input.paidAt })
     .eq("paystack_reference", input.reference)
     .neq("status", "paid")
-    .select("id, client_id, description, amount");
+    .select("id, client_id, description, amount, metadata");
 
   if (error) {
     console.error(`[payments:${input.source}] claim failed for ${input.reference}:`, error);
@@ -74,7 +75,75 @@ export async function settleSuccessfulPayment(input: {
     });
   }
 
+  // Subscription purchases carry { kind: "subscription", class_id, period_id }
+  // in the payments row's OWN metadata (set server-side at checkout time) —
+  // never Paystack's echoed webhook payload, consistent with this codebase's
+  // server-side-only trust model for amounts/identity. Runs inside the same
+  // idempotent claim as everything else above, so it fires exactly once.
+  if (clientId && rows[0].metadata?.kind === "subscription") {
+    await activateSubscription({
+      clientId,
+      classId: rows[0].metadata.class_id ?? null,
+      periodId: rows[0].metadata.period_id ?? null,
+      paymentId: rows[0].id,
+      priceNaira: rows[0].amount ?? input.amountKobo / 100,
+    });
+  }
+
   return { settled: true, alreadySettled: false };
+}
+
+/**
+ * A purchase buys a fixed expiry window (prepaid, not true auto-recurring
+ * billing — no Paystack Plans infra exists). Renewing the SAME class while
+ * still active extends from the current expiry; anything else (lapsed, or
+ * switching class) starts fresh from now — an immediate switch with no
+ * proration of whatever was left on the old plan.
+ */
+async function activateSubscription(params: {
+  clientId: string;
+  classId: string | null;
+  periodId: string | null;
+  paymentId: string;
+  priceNaira: number;
+}): Promise<void> {
+  if (!supabaseAdmin || !params.classId || !params.periodId) return;
+
+  const { data: period } = await supabaseAdmin
+    .from("access_periods")
+    .select("duration_days")
+    .eq("id", params.periodId)
+    .maybeSingle<{ duration_days: number }>();
+  if (!period) return;
+
+  const { data: profile } = await supabaseAdmin
+    .from("client_profiles")
+    .select("current_access_class_id, subscription_expires_at")
+    .eq("id", params.clientId)
+    .maybeSingle<{ current_access_class_id: string | null; subscription_expires_at: string | null }>();
+
+  const now = Date.now();
+  const stillActiveSameClass =
+    profile?.current_access_class_id === params.classId &&
+    !!profile?.subscription_expires_at &&
+    new Date(profile.subscription_expires_at).getTime() > now;
+
+  const base = stillActiveSameClass ? new Date(profile!.subscription_expires_at!).getTime() : now;
+  const expiresAt = new Date(base + period.duration_days * 86_400_000).toISOString();
+
+  await supabaseAdmin.from("client_subscriptions").insert({
+    client_id: params.clientId,
+    class_id: params.classId,
+    period_id: params.periodId,
+    payment_id: params.paymentId,
+    price_naira: params.priceNaira,
+    expires_at: expiresAt,
+  });
+
+  await supabaseAdmin
+    .from("client_profiles")
+    .update({ current_access_class_id: params.classId, subscription_expires_at: expiresAt })
+    .eq("id", params.clientId);
 }
 
 /** Mark a reference failed, but never downgrade one that is already paid. */

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
+import { createSubscriptionCheckout } from "@/app/(client)/dashboard/subscription-actions";
 import {
   COUNTRIES,
   EDUCATION_LEVELS,
@@ -31,6 +32,28 @@ interface ClientProfile {
   gpa: number | null;
   gpa_scale: string | null;
   is_pass_fail: boolean | null;
+  current_access_class_id: string | null;
+  subscription_expires_at: string | null;
+}
+
+interface AccessClass {
+  id: string;
+  name: string;
+  slug: string;
+  rank: number;
+}
+
+interface AccessPeriod {
+  id: string;
+  label: string;
+  duration_days: number;
+  display_order: number;
+}
+
+interface AccessClassPrice {
+  class_id: string;
+  period_id: string;
+  price_naira: number;
 }
 
 interface Application {
@@ -93,6 +116,9 @@ interface Props {
   agent?: Agent | null;
   documentsCompleted?: boolean;
   consultationBooked?: boolean;
+  accessClasses: AccessClass[];
+  accessPeriods: AccessPeriod[];
+  accessClassPrices: AccessClassPrice[];
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -138,7 +164,7 @@ const GPA_SCALE_OPTIONS = [
   { value: "5.0", label: "5.0 Scale" },
 ];
 
-type Tab = "overview" | "profile" | "applications" | "consultations" | "payments" | "documents" | "scholarships";
+type Tab = "overview" | "profile" | "applications" | "consultations" | "payments" | "documents" | "scholarships" | "plans";
 
 interface ScholarshipMatch {
   id: string;
@@ -175,12 +201,13 @@ function scholarshipDeadlineBadge(s: ScholarshipMatch): { label: string; cls: st
   return { label: "Open", cls: "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400" };
 }
 
-export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false }: Props) {
+export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false, accessClasses, accessPeriods, accessClassPrices }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<ClientProfile>>(profile);
   const [saving, setSaving] = useState(false);
   const [payingId, setPayingId] = useState<string | null>(null);
+  const [subscribingKey, setSubscribingKey] = useState<string | null>(null);
   const [uploadingDoc, setUploadingDoc] = useState(false);
   const [docType, setDocType] = useState("transcript");
   const [docList, setDocList] = useState<Document[]>(documents);
@@ -304,6 +331,33 @@ export function ClientDashboard({ profile, applications, payments, consultations
     }
   };
 
+  const handleSubscribe = async (classId: string, periodId: string) => {
+    const key = `${classId}__${periodId}`;
+    setSubscribingKey(key);
+    try {
+      const result = await createSubscriptionCheckout(classId, periodId);
+      if (!result.ok) {
+        toast.error(result.error);
+        return;
+      }
+      const res = await fetch("/api/payments/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ payment_id: result.paymentId }),
+      });
+      const data = (await res.json()) as { authorization_url?: string; error?: string };
+      if (!res.ok || !data.authorization_url) {
+        toast.error(data.error ?? "Payment failed to initialize");
+        return;
+      }
+      window.location.href = data.authorization_url;
+    } catch {
+      toast.error("Network error. Please try again.");
+    } finally {
+      setSubscribingKey(null);
+    }
+  };
+
   const handleDocUpload = async () => {
     const file = fileRef.current?.files?.[0];
     if (!file) { toast.error("Please select a file"); return; }
@@ -360,7 +414,16 @@ export function ClientDashboard({ profile, applications, payments, consultations
     { id: "payments", label: "Payments" },
     { id: "documents", label: "Documents" },
     { id: "scholarships", label: scholarshipKind === "low_tuition" ? "Low Tuition" : "Scholarships" },
+    { id: "plans", label: "Plans" },
   ];
+
+  const currentAccessClass = accessClasses.find((c) => c.id === profile.current_access_class_id) ?? null;
+  const subscriptionActive = Boolean(
+    currentAccessClass && profile.subscription_expires_at && new Date(profile.subscription_expires_at).getTime() > Date.now()
+  );
+  const daysLeft = profile.subscription_expires_at
+    ? Math.ceil((new Date(profile.subscription_expires_at).getTime() - Date.now()) / 86_400_000)
+    : null;
 
   return (
     <div className="min-h-screen bg-cream dark:bg-navy-950">
@@ -1084,6 +1147,56 @@ export function ClientDashboard({ profile, applications, payments, consultations
                   </motion.div>
                 );
               })
+            )}
+          </div>
+        )}
+
+        {activeTab === "plans" && (
+          <div className="space-y-4">
+            <h2 className="font-display text-2xl text-navy-900 dark:text-white">Plans</h2>
+            <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-4">
+              {subscriptionActive && currentAccessClass ? (
+                <p className="text-sm text-navy-600 dark:text-white/70">
+                  Current plan: <span className="font-semibold">{currentAccessClass.name}</span>
+                  {daysLeft !== null && <> — expires in {daysLeft} day{daysLeft === 1 ? "" : "s"}</>}
+                </p>
+              ) : (
+                <p className="text-sm text-navy-500 dark:text-white/50">No active plan — pick one below to unlock more scholarships.</p>
+              )}
+            </div>
+
+            {accessClasses.length === 0 || accessPeriods.length === 0 ? (
+              <p className="text-sm text-navy-400 dark:text-white/30">Plans aren&apos;t available yet — check back soon.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {accessClasses.map((c) => (
+                  <div key={c.id} className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-5 space-y-3">
+                    <h3 className="font-display text-lg text-navy-900 dark:text-white">{c.name}</h3>
+                    <div className="space-y-2">
+                      {accessPeriods.map((p) => {
+                        const price = accessClassPrices.find((pr) => pr.class_id === c.id && pr.period_id === p.id);
+                        if (!price) return null;
+                        const key = `${c.id}__${p.id}`;
+                        const isCurrent = subscriptionActive && profile.current_access_class_id === c.id;
+                        return (
+                          <button
+                            key={p.id}
+                            onClick={() => handleSubscribe(c.id, p.id)}
+                            disabled={subscribingKey === key}
+                            className="w-full flex items-center justify-between px-3 py-2 rounded-lg border border-border hover:bg-navy-50 dark:hover:bg-white/5 text-sm disabled:opacity-50"
+                          >
+                            <span className="text-navy-600 dark:text-white/70">{p.label}</span>
+                            <span className="font-semibold text-navy-900 dark:text-white">
+                              {subscribingKey === key ? "…" : `₦${price.price_naira.toLocaleString()}`}
+                              {isCurrent ? " · Renew" : ""}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}

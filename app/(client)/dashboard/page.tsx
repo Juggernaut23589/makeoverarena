@@ -99,7 +99,7 @@ export default async function ClientDashboardPage() {
 
   const clientId = profile.id as string;
 
-  const [applicationsResult, paymentsResult, consultationsResult, documentsResult] = await Promise.all([
+  const [applicationsResult, paymentsResult, consultationsResult, documentsResult, accessClassesResult, accessPeriodsResult, accessClassPricesResult] = await Promise.all([
     adminClient
       .from("application_tracking")
       .select("*")
@@ -120,6 +120,9 @@ export default async function ClientDashboardPage() {
       .select("*")
       .eq("client_id", clientId)
       .order("created_at", { ascending: false }),
+    adminClient.from("access_classes").select("id, name, slug, rank").eq("is_active", true).order("rank", { ascending: true }),
+    adminClient.from("access_periods").select("id, label, duration_days, display_order").eq("is_active", true).order("display_order", { ascending: true }),
+    adminClient.from("access_class_prices").select("class_id, period_id, price_naira"),
   ]);
 
   if (!profile.user_id) {
@@ -146,6 +149,9 @@ export default async function ClientDashboardPage() {
       agent={agent as unknown as Parameters<typeof ClientDashboard>[0]["agent"]}
       documentsCompleted={Boolean(profile.documents_completed)}
       consultationBooked={Boolean(profile.consultation_booked)}
+      accessClasses={accessClassesResult.data ?? []}
+      accessPeriods={accessPeriodsResult.data ?? []}
+      accessClassPrices={accessClassPricesResult.data ?? []}
     />
   );
 }

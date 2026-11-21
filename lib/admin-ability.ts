@@ -43,3 +43,33 @@ export async function requireStaffAbility(ability: StaffAbility): Promise<{
 
   return { session: liveSession, adminClient };
 }
+
+/**
+ * Pricing (access classes, periods, the price matrix) is a financial lever,
+ * not an editorial one — kept out of the StaffAbility system entirely and
+ * gated to super_admin only, re-verified live against staff_profiles.role
+ * the same way requireStaffAbility re-verifies abilities (a role change
+ * must take effect without forcing a re-login).
+ */
+export async function requireSuperAdminStaff(): Promise<{
+  session: AdminSession;
+  adminClient: SupabaseClient;
+}> {
+  const cookieStore = await cookies();
+  const token = cookieStore.get(STAFF_COOKIE_NAME)?.value;
+  const session = token ? await decodeSession(token) : null;
+  if (!session) throw new Error("Forbidden");
+
+  const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  const { data: staff } = await adminClient
+    .from("staff_profiles")
+    .select("role, is_active, is_pending")
+    .eq("id", session.userId)
+    .maybeSingle();
+
+  if (!staff || !staff.is_active || staff.is_pending || staff.role !== "super_admin") {
+    throw new Error("Forbidden");
+  }
+
+  return { session: { ...session, role: staff.role }, adminClient };
+}

@@ -67,9 +67,26 @@ export default async function StaffDashboardPage() {
     ? await db!
         .from("scholarships")
         .select(
-          "id, name, institution_name, programme_name, destination_country, study_level, funding_type, description, eligibility_notes, amount, application_deadline, application_url, source_url, listing_status, is_active, last_checked_at, verified_by, verified_at, created_by"
+          "id, name, institution_name, programme_name, destination_country, study_level, funding_type, description, eligibility_notes, amount, application_deadline, application_url, source_url, listing_status, is_active, last_checked_at, verified_by, verified_at, created_by, required_class_id"
         )
         .order("created_at", { ascending: false })
+    : { data: [] };
+
+  // Access classes are needed both by the Scholarships tab (to wire a
+  // scholarship to a class) and the Pricing tab (super_admin only) — fetch
+  // once here regardless of which ability the staff member has, since the
+  // table is tiny and read-only outside the Pricing tab anyway.
+  const { data: accessClasses } = await db!
+    .from("access_classes")
+    .select("id, name, slug, rank, description, is_active")
+    .order("rank", { ascending: true });
+
+  const { data: accessPeriods } = liveSession.role === "super_admin"
+    ? await db!.from("access_periods").select("id, label, duration_days, display_order, is_active").order("display_order", { ascending: true })
+    : { data: [] };
+
+  const { data: accessClassPrices } = liveSession.role === "super_admin"
+    ? await db!.from("access_class_prices").select("class_id, period_id, price_naira")
     : { data: [] };
 
   // Agent performance: clients per assigned staff
@@ -121,6 +138,9 @@ export default async function StaffDashboardPage() {
       }}
       staffList={staffList ?? []}
       scholarships={scholarships ?? []}
+      accessClasses={accessClasses ?? []}
+      accessPeriods={accessPeriods ?? []}
+      accessClassPrices={accessClassPrices ?? []}
     />
   );
 }

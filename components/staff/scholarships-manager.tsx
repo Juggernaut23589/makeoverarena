@@ -33,6 +33,13 @@ export interface ScholarshipRow {
   verified_by: string | null;
   verified_at: string | null;
   created_by: string | null;
+  required_class_id: string | null;
+}
+
+export interface AccessClassOption {
+  id: string;
+  name: string;
+  rank: number;
 }
 
 const STUDY_LEVEL_LABELS: Record<string, string> = {
@@ -64,10 +71,12 @@ const labelClass = "block text-xs text-white/50 mb-1";
 
 function ScholarshipForm({
   initial,
+  accessClasses,
   onDone,
   onCancel,
 }: {
   initial?: ScholarshipRow;
+  accessClasses: AccessClassOption[];
   onDone: () => void;
   onCancel: () => void;
 }) {
@@ -153,6 +162,15 @@ function ScholarshipForm({
           <label className={labelClass}>Last checked</label>
           <input type="date" name="last_checked_at" defaultValue={initial?.last_checked_at ?? ""} className={inputClass} />
         </div>
+        <div>
+          <label className={labelClass}>Required access class</label>
+          <select name="required_class_id" defaultValue={initial?.required_class_id ?? ""} className={inputClass}>
+            <option value="">Free / No subscription required</option>
+            {[...accessClasses].sort((a, b) => a.rank - b.rank).map((c) => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
       </div>
       <div>
         <label className={labelClass}>Eligibility notes</label>
@@ -198,7 +216,7 @@ function deadlineBadge(deadline: string | null): { label: string; cls: string } 
   return { label: new Date(deadline).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" }), cls: "text-white/50" };
 }
 
-export function ScholarshipsManager({ scholarships }: { scholarships: ScholarshipRow[] }) {
+export function ScholarshipsManager({ scholarships, accessClasses }: { scholarships: ScholarshipRow[]; accessClasses: AccessClassOption[] }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -282,7 +300,7 @@ export function ScholarshipsManager({ scholarships }: { scholarships: Scholarshi
       </div>
 
       {creating && (
-        <ScholarshipForm onDone={() => setCreating(false)} onCancel={() => setCreating(false)} />
+        <ScholarshipForm accessClasses={accessClasses} onDone={() => setCreating(false)} onCancel={() => setCreating(false)} />
       )}
 
       {/* CSV import */}
@@ -371,6 +389,11 @@ export function ScholarshipsManager({ scholarships }: { scholarships: Scholarshi
                         <p className="text-white/40 text-xs">
                           {[s.institution_name, s.programme_name].filter(Boolean).join(" · ") || "—"}
                         </p>
+                        <p className="text-white/30 text-xs mt-0.5">
+                          {s.required_class_id
+                            ? `Requires: ${accessClasses.find((c) => c.id === s.required_class_id)?.name ?? "Unknown class"}`
+                            : "Free / no subscription required"}
+                        </p>
                       </td>
                       <td className="px-4 py-3.5 text-white/60">{s.destination_country ?? "—"}</td>
                       <td className={cn("px-4 py-3.5 text-xs", badge?.cls ?? "text-white/30")}>{badge?.label ?? "—"}</td>
@@ -421,7 +444,7 @@ export function ScholarshipsManager({ scholarships }: { scholarships: Scholarshi
                     {editingId === s.id && (
                       <tr>
                         <td colSpan={5} className="px-5 py-4 bg-navy-900/50">
-                          <ScholarshipForm initial={s} onDone={() => setEditingId(null)} onCancel={() => setEditingId(null)} />
+                          <ScholarshipForm initial={s} accessClasses={accessClasses} onDone={() => setEditingId(null)} onCancel={() => setEditingId(null)} />
                         </td>
                       </tr>
                     )}
