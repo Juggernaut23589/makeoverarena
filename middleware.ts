@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { decodeSession, canAccess, COOKIE_NAME, STAFF_COOKIE_NAME, decodeStaffSession } from "@/lib/admin-auth";
+import { STAFF_COOKIE_NAME, decodeStaffSession } from "@/lib/admin-auth";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -31,23 +31,10 @@ export async function middleware(request: NextRequest) {
     await supabase.auth.getUser();
   }
 
-  // Admin route protection
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    const token = request.cookies.get(COOKIE_NAME)?.value;
-    const session = token ? await decodeSession(token) : null;
-
-    if (!session) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
-    }
-
-    if (!canAccess(session, pathname)) {
-      // Redirect to overview with an error param instead of a blank 403
-      return NextResponse.redirect(new URL("/admin?error=forbidden", request.url));
-    }
-
-    // Pass role to layouts via header
-    response.headers.set("x-admin-role", session.role);
-    response.headers.set("x-admin-name", session.fullName);
+  // The legacy /admin area has been retired in favor of /staff — redirect
+  // any lingering bookmarks/links there straight to the staff login.
+  if (pathname.startsWith("/admin")) {
+    return NextResponse.redirect(new URL("/staff/login", request.url));
   }
 
   // Staff route protection

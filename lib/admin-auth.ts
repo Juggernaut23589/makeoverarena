@@ -1,14 +1,12 @@
 // Uses only Web Crypto API (crypto.subtle) so this module runs in both
 // the Node.js runtime (API routes) and the Edge runtime (middleware).
 
-export const COOKIE_NAME = "admin_session";
 export const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
 export type AdminRole = "super_admin" | "admin" | "staff";
 
 export type StaffAbility =
   | "view_clients"
-  | "assign_agents"
   | "scholarship_research"
   | "scholarship_verify"
   | "scholarship_approve"
@@ -109,13 +107,3 @@ export async function decodeStaffSession(token: string): Promise<AdminSession | 
   return decodeSession(token);
 }
 
-// Routes only super_admin can access
-export const SUPER_ADMIN_ROUTES = ["/admin/settings", "/admin/team"];
-
-export function canAccess(session: AdminSession | null, pathname: string): boolean {
-  if (!session) return false;
-  if (SUPER_ADMIN_ROUTES.some((r) => pathname.startsWith(r))) {
-    return session.role === "super_admin";
-  }
-  return true;
-}
