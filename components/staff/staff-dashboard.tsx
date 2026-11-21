@@ -91,6 +91,8 @@ interface Props {
     topViewed: { name: string; view_count: number }[];
     topSearchTerms: { query: string; count: number }[];
   } | null;
+  myQueueCount: number;
+  myQueueLabel: string | null;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -130,7 +132,7 @@ function can(session: AdminSession, ability: StaffAbility): boolean {
   return Boolean(session.abilities?.[ability]);
 }
 
-export function StaffDashboard({ staff, session, clients, consultations, inquiries, analyticsData, staffList, scholarships, accessClasses, accessPeriods, accessClassPrices, reportData }: Props) {
+export function StaffDashboard({ staff, session, clients, consultations, inquiries, analyticsData, staffList, scholarships, accessClasses, accessPeriods, accessClassPrices, reportData, myQueueCount, myQueueLabel }: Props) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [expandedStaff, setExpandedStaff] = useState<string | null>(null);
@@ -242,6 +244,21 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
         {activeTab === "overview" && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl text-white">Overview</h2>
+            {myQueueLabel && (
+              <div className={cn(
+                "rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap border",
+                myQueueCount > 0 ? "bg-purple-500/10 border-purple-500/30" : "bg-navy-800 border-white/10"
+              )}>
+                <p className="text-sm text-white/80">
+                  <span className="font-bold text-lg">{myQueueCount}</span> scholarship{myQueueCount === 1 ? "" : "s"} {myQueueLabel}
+                </p>
+                {myQueueCount > 0 && (
+                  <button onClick={() => setActiveTab("scholarships")} className="text-xs font-semibold px-3 py-1.5 rounded-full bg-purple-500 text-white hover:bg-purple-400 shrink-0">
+                    Review now →
+                  </button>
+                )}
+              </div>
+            )}
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 { label: "Inquiries", value: inquiries.length, color: "text-blue-400" },

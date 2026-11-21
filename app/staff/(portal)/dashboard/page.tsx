@@ -163,6 +163,21 @@ export default async function StaffDashboardPage() {
     };
   }
 
+  // Personalized "awaiting your action" queue — visible to whoever actually
+  // holds the verify/approve ability, independent of view_analytics (the
+  // Reports tab's global counts above are a different, aggregate view).
+  let myQueueCount = 0;
+  let myQueueLabel: string | null = null;
+  if (hasAbility(liveSession, "scholarship_approve")) {
+    const { count } = await db!.from("scholarships").select("id", { count: "exact", head: true }).eq("listing_status", "verified");
+    myQueueCount = count ?? 0;
+    myQueueLabel = "awaiting your approval";
+  } else if (hasAbility(liveSession, "scholarship_verify")) {
+    const { count } = await db!.from("scholarships").select("id", { count: "exact", head: true }).eq("listing_status", "to_be_verified");
+    myQueueCount = count ?? 0;
+    myQueueLabel = "awaiting your verification";
+  }
+
   return (
     <StaffDashboard
       staff={{
@@ -188,6 +203,8 @@ export default async function StaffDashboardPage() {
       accessPeriods={accessPeriods ?? []}
       accessClassPrices={accessClassPrices ?? []}
       reportData={reportData}
+      myQueueCount={myQueueCount}
+      myQueueLabel={myQueueLabel}
     />
   );
 }
