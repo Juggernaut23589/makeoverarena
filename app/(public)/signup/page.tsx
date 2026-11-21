@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { APP_URL } from "@/lib/site-url";
 import { Suspense } from "react";
 
 function SignupForm() {
@@ -44,7 +45,10 @@ function SignupForm() {
       password: form.password,
       options: {
         data: { full_name: form.fullName },
-        emailRedirectTo: `${window.location.origin}/api/auth/callback?next=/dashboard`,
+        // Fixed production URL, not window.location.origin — a signup
+        // submitted from a local dev server would otherwise embed
+        // localhost in the confirmation email for every visitor.
+        emailRedirectTo: `${APP_URL}/api/auth/callback?next=/dashboard`,
       },
     });
 
