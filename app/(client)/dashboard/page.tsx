@@ -99,24 +99,9 @@ export default async function ClientDashboardPage() {
 
   const clientId = profile.id as string;
 
-  const [applicationsResult, paymentsResult, consultationsResult, documentsResult, accessClassesResult, accessPeriodsResult, accessClassPricesResult, savedScholarshipsResult, scholarshipTierCountsResult] = await Promise.all([
-    adminClient
-      .from("application_tracking")
-      .select("*")
-      .eq("client_id", clientId)
-      .order("created_at", { ascending: false }),
+  const [paymentsResult, accessClassesResult, accessPeriodsResult, accessClassPricesResult, savedScholarshipsResult, scholarshipTierCountsResult] = await Promise.all([
     adminClient
       .from("payments")
-      .select("*")
-      .eq("client_id", clientId)
-      .order("created_at", { ascending: false }),
-    adminClient
-      .from("consultations")
-      .select("id, student_name, scheduled_date, scheduled_time, timezone, status, outcome, meeting_link")
-      .eq("student_email", profile.email as string)
-      .order("scheduled_date", { ascending: false }),
-    adminClient
-      .from("documents")
       .select("*")
       .eq("client_id", clientId)
       .order("created_at", { ascending: false }),
@@ -144,26 +129,10 @@ export default async function ClientDashboardPage() {
     countByClassId[cls.id] = runningCount;
   }
 
-  let agent: Record<string, unknown> | null = null;
-  if (profile.assigned_staff_id) {
-    const { data } = await adminClient
-      .from("staff_profiles")
-      .select("full_name, email, phone, whatsapp")
-      .eq("id", profile.assigned_staff_id as string)
-      .maybeSingle();
-    agent = data ?? null;
-  }
-
   return (
     <ClientDashboard
       profile={profile as unknown as Parameters<typeof ClientDashboard>[0]["profile"]}
-      applications={(applicationsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["applications"]}
       payments={(paymentsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["payments"]}
-      consultations={(consultationsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["consultations"]}
-      documents={(documentsResult.data ?? []) as unknown as Parameters<typeof ClientDashboard>[0]["documents"]}
-      agent={agent as unknown as Parameters<typeof ClientDashboard>[0]["agent"]}
-      documentsCompleted={Boolean(profile.documents_completed)}
-      consultationBooked={Boolean(profile.consultation_booked)}
       accessClasses={accessClassesResult.data ?? []}
       accessPeriods={accessPeriodsResult.data ?? []}
       accessClassPrices={accessClassPricesResult.data ?? []}
