@@ -10,6 +10,7 @@ import {
   COOKIE_MAX_AGE,
   type AdminRole,
 } from "@/lib/admin-auth";
+import { requireSuperAdminStaff } from "@/lib/admin-ability";
 import { sendEmail } from "@/lib/emails/send-email";
 import StaffApproved from "@/emails/staff-approved";
 import { APP_URL } from "@/lib/site-url";
@@ -156,6 +157,12 @@ export async function getStaffSession() {
 
 // Called by super_admin to approve a pending staff member
 export async function approveStaffAction(staffId: string): Promise<{ error?: string }> {
+  try {
+    await requireSuperAdminStaff();
+  } catch {
+    return { error: "Forbidden." };
+  }
+
   const adminClient = createClient(URL, SERVICE);
   const { data: staff, error: fetchErr } = await adminClient
     .from("staff_profiles")
@@ -191,6 +198,12 @@ export async function updateAbilitiesAction(
   staffId: string,
   abilities: Record<string, boolean>
 ): Promise<{ error?: string }> {
+  try {
+    await requireSuperAdminStaff();
+  } catch {
+    return { error: "Forbidden." };
+  }
+
   const adminClient = createClient(URL, SERVICE);
   const { error } = await adminClient
     .from("staff_profiles")

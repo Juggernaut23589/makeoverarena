@@ -1,6 +1,8 @@
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendEmail } from "@/lib/emails/send-email";
 import PaymentConfirmation from "@/emails/payment-confirmation";
+import PaymentFailed from "@/emails/payment-failed";
+import { APP_URL } from "@/lib/site-url";
 
 /**
  * Marking a payment paid happens on two independent paths:
@@ -149,11 +151,40 @@ async function activateSubscription(params: {
 /** Mark a reference failed, but never downgrade one that is already paid. */
 export async function markPaymentFailed(reference: string): Promise<void> {
   if (!supabaseAdmin) return;
-  await supabaseAdmin
+
+  const { data: claimed } = await supabaseAdmin
     .from("payments")
     .update({ status: "failed", paid_at: null })
     .eq("paystack_reference", reference)
-    .neq("status", "paid");
+    .neq("status", "paid")
+    .is("failure_notice_sent_at", null)
+    .select("id, client_id, description");
+
+  const row = claimed?.[0] as { id: string; client_id: string | null; description: string | null } | undefined;
+  if (!row?.client_id) return;
+
+  try {
+    const { data: client } = await supabaseAdmin
+      .from("client_profiles")
+      .select("full_name, email")
+      .eq("id", row.client_id)
+      .maybeSingle<{ full_name: string; email: string }>();
+    if (!client?.email) return;
+
+    await sendEmail({
+      to: client.email,
+      subject: "Payment unsuccessful — MakeoverArena",
+      templateName: "payment-failed",
+      react: PaymentFailed({
+        studentName: client.full_name,
+        description: row.description ?? "your plan",
+        retryUrl: `${APP_URL}/dashboard`,
+      }),
+    });
+    await supabaseAdmin.from("payments").update({ failure_notice_sent_at: new Date().toISOString() }).eq("id", row.id);
+  } catch (err) {
+    console.error(`payment-failed email failed for ${reference}:`, err);
+  }
 }
 
 async function refreshClientPaymentStatus(clientId: string): Promise<void> {

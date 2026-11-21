@@ -6,6 +6,7 @@ import { cn, formatDate, formatDateTime } from "@/lib/utils";
 import { toast } from "sonner";
 import { supabase } from "@/lib/supabase";
 import { createSubscriptionCheckout } from "@/app/(client)/dashboard/subscription-actions";
+import { saveScholarship, unsaveScholarship } from "@/app/(client)/dashboard/saved-scholarships-actions";
 import {
   COUNTRIES,
   EDUCATION_LEVELS,
@@ -119,6 +120,7 @@ interface Props {
   accessClasses: AccessClass[];
   accessPeriods: AccessPeriod[];
   accessClassPrices: AccessClassPrice[];
+  savedScholarshipIds: string[];
 }
 
 const STATUS_BADGE: Record<string, string> = {
@@ -181,6 +183,9 @@ interface ScholarshipMatch {
   application_deadline?: string | null;
   source_url?: string | null;
   listing_status?: string | null;
+  eligibility_notes?: string | null;
+  academic_qualifications?: string | null;
+  field_of_study?: string | null;
 }
 
 const STUDY_LEVEL_LABELS: Record<string, string> = {
@@ -201,7 +206,7 @@ function scholarshipDeadlineBadge(s: ScholarshipMatch): { label: string; cls: st
   return { label: "Open", cls: "bg-green-100 text-green-700 dark:bg-green-500/10 dark:text-green-400" };
 }
 
-export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false, accessClasses, accessPeriods, accessClassPrices }: Props) {
+export function ClientDashboard({ profile, applications, payments, consultations, documents, agent, documentsCompleted = false, consultationBooked = false, accessClasses, accessPeriods, accessClassPrices, savedScholarshipIds }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState<Partial<ClientProfile>>(profile);
@@ -221,6 +226,11 @@ export function ClientDashboard({ profile, applications, payments, consultations
   const [scholarshipFunding, setScholarshipFunding] = useState("");
   const [scholarshipSearch, setScholarshipSearch] = useState("");
   const [debouncedScholarshipSearch, setDebouncedScholarshipSearch] = useState("");
+  const [scholarshipInstitution, setScholarshipInstitution] = useState("");
+  const [scholarshipSort, setScholarshipSort] = useState<"deadline" | "newest" | "name">("deadline");
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set(savedScholarshipIds));
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
+  const [savingId, setSavingId] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedScholarshipSearch(scholarshipSearch), 300);
@@ -247,6 +257,8 @@ export function ClientDashboard({ profile, applications, payments, consultations
     if (scholarshipCountry) params.set("country", scholarshipCountry);
     if (scholarshipStudyLevel) params.set("study_level", scholarshipStudyLevel);
     if (scholarshipFunding) params.set("funding_type", scholarshipFunding);
+    if (scholarshipInstitution.trim()) params.set("institution", scholarshipInstitution.trim());
+    params.set("sort", scholarshipSort);
     if (debouncedScholarshipSearch.trim()) params.set("q", debouncedScholarshipSearch.trim());
 
     fetch(`/api/scholarships?${params.toString()}`)
@@ -264,8 +276,49 @@ export function ClientDashboard({ profile, applications, payments, consultations
     scholarshipCountry,
     scholarshipStudyLevel,
     scholarshipFunding,
+    scholarshipInstitution,
+    scholarshipSort,
     debouncedScholarshipSearch,
   ]);
+
+  async function handleToggleSave(scholarshipId: string) {
+    setSavingId(scholarshipId);
+    try {
+      if (savedIds.has(scholarshipId)) {
+        await unsaveScholarship(scholarshipId);
+        setSavedIds((prev) => { const next = new Set(prev); next.delete(scholarshipId); return next; });
+      } else {
+        await saveScholarship(scholarshipId);
+        setSavedIds((prev) => new Set(prev).add(scholarshipId));
+      }
+    } catch {
+      toast.error("Couldn't update your saved list. Please try again.");
+    } finally {
+      setSavingId(null);
+    }
+  }
+
+  function handleDownloadScholarships() {
+    const rows = visibleScholarshipMatches;
+    const headers = ["Name", "Institution", "Programme", "Country", "Study Level", "Funding Type", "Amount", "Deadline", "Application Link"];
+    const csvRows = rows.map((s) =>
+      [s.name, s.institution_name, s.programme_name, s.destination_country, s.study_level, s.funding_type, s.amount, s.application_deadline, s.application_url]
+        .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`)
+        .join(",")
+    );
+    const csv = [headers.join(","), ...csvRows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `scholarships-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const visibleScholarshipMatches = showSavedOnly
+    ? scholarshipMatches.filter((s) => savedIds.has(s.id))
+    : scholarshipMatches;
 
   const upcomingConsultation = consultations.find(
     (c) => c.status === "scheduled" && new Date(`${c.scheduled_date}T${c.scheduled_time}`) >= new Date()
@@ -1035,19 +1088,40 @@ export function ClientDashboard({ profile, applications, payments, consultations
               <h2 className="font-display text-2xl text-navy-900 dark:text-white">
                 {scholarshipKind === "low_tuition" ? "Low Tuition Packages" : "Matched Scholarships"}
               </h2>
-              {scholarshipKind !== "low_tuition" && (
+              <div className="flex items-center gap-2 flex-wrap">
                 <button
-                  onClick={() => setBrowseAllScholarships((v) => !v)}
+                  onClick={() => setShowSavedOnly((v) => !v)}
                   className={cn(
                     "text-xs font-medium px-3 py-1.5 rounded-full border transition-colors",
-                    browseAllScholarships
+                    showSavedOnly
                       ? "bg-crimson-500 text-white border-crimson-500"
                       : "border-border text-navy-600 dark:text-white/60 hover:bg-navy-50 dark:hover:bg-white/5"
                   )}
                 >
-                  {browseAllScholarships ? "Showing all open scholarships" : "Browse all open scholarships"}
+                  {showSavedOnly ? `Saved (${savedIds.size})` : "Show saved only"}
                 </button>
-              )}
+                {scholarshipKind !== "low_tuition" && (
+                  <button
+                    onClick={() => setBrowseAllScholarships((v) => !v)}
+                    className={cn(
+                      "text-xs font-medium px-3 py-1.5 rounded-full border transition-colors",
+                      browseAllScholarships
+                        ? "bg-crimson-500 text-white border-crimson-500"
+                        : "border-border text-navy-600 dark:text-white/60 hover:bg-navy-50 dark:hover:bg-white/5"
+                    )}
+                  >
+                    {browseAllScholarships ? "Showing all open scholarships" : "Browse all open scholarships"}
+                  </button>
+                )}
+                {visibleScholarshipMatches.length > 0 && (
+                  <button
+                    onClick={handleDownloadScholarships}
+                    className="text-xs font-medium px-3 py-1.5 rounded-full border border-border text-navy-600 dark:text-white/60 hover:bg-navy-50 dark:hover:bg-white/5"
+                  >
+                    Download CSV
+                  </button>
+                )}
+              </div>
             </div>
 
             {browseAllScholarships && (
@@ -1083,16 +1157,34 @@ export function ClientDashboard({ profile, applications, payments, consultations
                   <option value="">All funding types</option>
                   {Object.entries(FUNDING_TYPE_LABELS).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                 </select>
+                <input
+                  type="search"
+                  value={scholarshipInstitution}
+                  onChange={(e) => setScholarshipInstitution(e.target.value)}
+                  placeholder="Institution…"
+                  className="h-9 px-3 text-sm border border-border rounded-lg bg-navy-50 dark:bg-navy-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
+                />
+                <select
+                  value={scholarshipSort}
+                  onChange={(e) => setScholarshipSort(e.target.value as "deadline" | "newest" | "name")}
+                  className="h-9 px-2 text-sm border border-border rounded-lg bg-white dark:bg-navy-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-crimson-400"
+                >
+                  <option value="deadline">Sort: Deadline</option>
+                  <option value="newest">Sort: Recently added</option>
+                  <option value="name">Sort: Name</option>
+                </select>
               </div>
             )}
 
             {loadingScholarships ? (
               <p className="text-navy-500 dark:text-white/50 text-sm">Loading matches…</p>
-            ) : scholarshipMatches.length === 0 ? (
+            ) : visibleScholarshipMatches.length === 0 ? (
               <div className="bg-white dark:bg-navy-800 rounded-xl border border-border shadow-card p-12 text-center">
                 <div className="text-4xl mb-3">🎓</div>
                 <p className="text-navy-500 dark:text-white/50 text-sm">
-                  {browseAllScholarships
+                  {showSavedOnly
+                    ? "You haven't saved any scholarships yet."
+                    : browseAllScholarships
                     ? "No scholarships match these filters yet."
                     : profile.gpa || profile.is_pass_fail
                       ? "No matches found yet. Your advisor will share options shortly."
@@ -1100,7 +1192,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 </p>
               </div>
             ) : (
-              scholarshipMatches.map((s, i) => {
+              visibleScholarshipMatches.map((s, i) => {
                 const badge = scholarshipDeadlineBadge(s);
                 return (
                   <motion.div
@@ -1117,10 +1209,30 @@ export function ClientDashboard({ profile, applications, payments, consultations
                           {[s.institution_name, s.programme_name, s.destination_country].filter(Boolean).join(" · ")}
                         </p>
                         {s.description && <p className="text-navy-600 dark:text-white/60 text-sm mt-2">{s.description}</p>}
+                        {(s.academic_qualifications || s.field_of_study || s.eligibility_notes) && (
+                          <p className="text-navy-400 dark:text-white/40 text-xs mt-2">
+                            {[s.field_of_study, s.academic_qualifications, s.eligibility_notes].filter(Boolean).join(" · ")}
+                          </p>
+                        )}
                       </div>
-                      <span className="text-sm font-semibold text-crimson-600 dark:text-crimson-400 shrink-0">
-                        {s.amount ?? s.tuition_range ?? (s.funding_type ? FUNDING_TYPE_LABELS[s.funding_type] : "")}
-                      </span>
+                      <div className="flex flex-col items-end gap-2 shrink-0">
+                        <span className="text-sm font-semibold text-crimson-600 dark:text-crimson-400">
+                          {s.amount ?? s.tuition_range ?? (s.funding_type ? FUNDING_TYPE_LABELS[s.funding_type] : "")}
+                        </span>
+                        <button
+                          onClick={() => handleToggleSave(s.id)}
+                          disabled={savingId === s.id}
+                          aria-label={savedIds.has(s.id) ? "Remove from saved" : "Save scholarship"}
+                          className={cn(
+                            "text-xs px-2 py-1 rounded-full border transition-colors",
+                            savedIds.has(s.id)
+                              ? "bg-crimson-500 text-white border-crimson-500"
+                              : "border-border text-navy-500 dark:text-white/50 hover:bg-navy-50 dark:hover:bg-white/5"
+                          )}
+                        >
+                          {savedIds.has(s.id) ? "★ Saved" : "☆ Save"}
+                        </button>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 mt-3 flex-wrap">
                       {s.study_level && (
@@ -1139,6 +1251,7 @@ export function ClientDashboard({ profile, applications, payments, consultations
                         href={s.application_url ?? s.source_url ?? undefined}
                         target="_blank"
                         rel="noopener noreferrer"
+                        onClick={() => { fetch(`/api/scholarships/${s.id}/view`, { method: "POST" }).catch(() => {}); }}
                         className="inline-block mt-3 text-sm text-crimson-600 hover:text-crimson-700 font-medium"
                       >
                         {s.application_url ? "Learn more →" : "View official source →"}

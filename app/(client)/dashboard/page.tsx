@@ -99,7 +99,7 @@ export default async function ClientDashboardPage() {
 
   const clientId = profile.id as string;
 
-  const [applicationsResult, paymentsResult, consultationsResult, documentsResult, accessClassesResult, accessPeriodsResult, accessClassPricesResult] = await Promise.all([
+  const [applicationsResult, paymentsResult, consultationsResult, documentsResult, accessClassesResult, accessPeriodsResult, accessClassPricesResult, savedScholarshipsResult] = await Promise.all([
     adminClient
       .from("application_tracking")
       .select("*")
@@ -123,6 +123,7 @@ export default async function ClientDashboardPage() {
     adminClient.from("access_classes").select("id, name, slug, rank").eq("is_active", true).order("rank", { ascending: true }),
     adminClient.from("access_periods").select("id, label, duration_days, display_order").eq("is_active", true).order("display_order", { ascending: true }),
     adminClient.from("access_class_prices").select("class_id, period_id, price_naira"),
+    adminClient.from("saved_scholarships").select("scholarship_id").eq("client_id", clientId),
   ]);
 
   if (!profile.user_id) {
@@ -152,6 +153,7 @@ export default async function ClientDashboardPage() {
       accessClasses={accessClassesResult.data ?? []}
       accessPeriods={accessPeriodsResult.data ?? []}
       accessClassPrices={accessClassPricesResult.data ?? []}
+      savedScholarshipIds={(savedScholarshipsResult.data ?? []).map((r) => r.scholarship_id as string)}
     />
   );
 }

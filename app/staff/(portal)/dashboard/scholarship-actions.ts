@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import Papa from "papaparse";
 import { requireStaffAbility } from "@/lib/admin-ability";
+import { notifyMatchingClients } from "@/lib/notifications/scholarship-match";
 
 export type ScholarshipActionResult = { error?: string; success?: boolean };
 
@@ -26,6 +27,8 @@ const scholarshipFieldsSchema = z.object({
   source_url: z.string().trim().url("Enter a valid URL.").optional().nullable(),
   last_checked_at: z.string().regex(DATE_RE, "Use YYYY-MM-DD.").optional().nullable(),
   required_class_id: z.string().uuid().optional().nullable(),
+  academic_qualifications: z.string().trim().max(2000).optional().nullable(),
+  field_of_study: z.string().trim().max(200).optional().nullable(),
 });
 
 function emptyToNull(v: FormDataEntryValue | null): string | null {
@@ -49,13 +52,15 @@ function readScholarshipFields(formData: FormData) {
     source_url: emptyToNull(formData.get("source_url")),
     last_checked_at: emptyToNull(formData.get("last_checked_at")),
     required_class_id: emptyToNull(formData.get("required_class_id")),
+    academic_qualifications: emptyToNull(formData.get("academic_qualifications")),
+    field_of_study: emptyToNull(formData.get("field_of_study")),
   };
 }
 
 export async function createScholarship(formData: FormData): Promise<ScholarshipActionResult> {
   let gate;
   try {
-    gate = await requireStaffAbility("manage_scholarships");
+    gate = await requireStaffAbility("scholarship_research");
   } catch {
     return { error: "Forbidden." };
   }
@@ -81,7 +86,7 @@ export async function createScholarship(formData: FormData): Promise<Scholarship
 export async function updateScholarship(scholarshipId: string, formData: FormData): Promise<ScholarshipActionResult> {
   let gate;
   try {
-    gate = await requireStaffAbility("manage_scholarships");
+    gate = await requireStaffAbility("scholarship_research");
   } catch {
     return { error: "Forbidden." };
   }
@@ -101,7 +106,7 @@ export async function updateScholarship(scholarshipId: string, formData: FormDat
 export async function deleteScholarship(scholarshipId: string): Promise<ScholarshipActionResult> {
   let gate;
   try {
-    gate = await requireStaffAbility("manage_scholarships");
+    gate = await requireStaffAbility("scholarship_research");
   } catch {
     return { error: "Forbidden." };
   }
@@ -116,30 +121,36 @@ export async function deleteScholarship(scholarshipId: string): Promise<Scholars
 }
 
 /**
- * The only path that can ever set is_active=true. Sets listing_status to
- * "open" by default, or "upcoming" when the caller explicitly marks it so
- * (e.g. an entry sourced ahead of its intake opening) — never jumps
- * straight to "closed" from here.
+ * Stage 2 of the approval workflow: a Verifier confirms the sourced entry
+ * against its official source. This does NOT publish anything — it only
+ * moves the row from "to_be_verified" to "verified", leaving is_active
+ * false. Publishing is a separate, Database-Manager-only step
+ * (approveAndPublishScholarship) so the same person can't both source and
+ * publish an entry unchecked.
  */
-export async function verifyAndPublishScholarship(
-  scholarshipId: string,
-  listingStatus: "open" | "upcoming" = "open"
-): Promise<ScholarshipActionResult> {
+export async function markScholarshipVerified(scholarshipId: string): Promise<ScholarshipActionResult> {
   let gate;
   try {
-    gate = await requireStaffAbility("manage_scholarships");
+    gate = await requireStaffAbility("scholarship_verify");
   } catch {
     return { error: "Forbidden." };
   }
   const { session, adminClient } = gate;
   if (!scholarshipId) return { error: "Missing scholarship." };
-  if (listingStatus !== "open" && listingStatus !== "upcoming") return { error: "Invalid status." };
+
+  const { data: current } = await adminClient
+    .from("scholarships")
+    .select("listing_status")
+    .eq("id", scholarshipId)
+    .maybeSingle();
+  if (current?.listing_status !== "to_be_verified") {
+    return { error: "This entry isn't awaiting verification." };
+  }
 
   const { error } = await adminClient
     .from("scholarships")
     .update({
-      is_active: true,
-      listing_status: listingStatus,
+      listing_status: "verified",
       verified_by: session.userId,
       verified_at: new Date().toISOString(),
       last_checked_by: session.userId,
@@ -152,16 +163,69 @@ export async function verifyAndPublishScholarship(
   return { success: true };
 }
 
-/** Quick status toggle for an already-published entry. Never used to
- * publish an unverified one — "to_be_verified" is deliberately not a
- * valid target here, that transition only happens via verify/unverify. */
+/**
+ * Stage 3: the only path that can ever set is_active=true. Only callable on
+ * a row already "verified" by a Verifier — enforced here, not just by the
+ * UI, matching the DB's scholarships_active_requires_verified constraint
+ * (which now requires both verified_by AND approved_by before is_active can
+ * be true). Fires the "new matching scholarship" client notification once,
+ * on the transition to live.
+ */
+export async function approveAndPublishScholarship(
+  scholarshipId: string,
+  listingStatus: "open" | "upcoming" = "open"
+): Promise<ScholarshipActionResult> {
+  let gate;
+  try {
+    gate = await requireStaffAbility("scholarship_approve");
+  } catch {
+    return { error: "Forbidden." };
+  }
+  const { session, adminClient } = gate;
+  if (!scholarshipId) return { error: "Missing scholarship." };
+  if (listingStatus !== "open" && listingStatus !== "upcoming") return { error: "Invalid status." };
+
+  const { data: current } = await adminClient
+    .from("scholarships")
+    .select("listing_status")
+    .eq("id", scholarshipId)
+    .maybeSingle();
+  if (current?.listing_status !== "verified") {
+    return { error: "This entry must be verified before it can be approved." };
+  }
+
+  const { error } = await adminClient
+    .from("scholarships")
+    .update({
+      is_active: true,
+      listing_status: listingStatus,
+      approved_by: session.userId,
+      approved_at: new Date().toISOString(),
+    })
+    .eq("id", scholarshipId);
+  if (error) return { error: error.message };
+
+  revalidatePath("/staff/dashboard");
+
+  // Best-effort — a notification failure must never block publishing.
+  notifyMatchingClients(scholarshipId).catch((err) =>
+    console.error(`notifyMatchingClients failed for ${scholarshipId}:`, err)
+  );
+
+  return { success: true };
+}
+
+/** Quick status toggle for an already-published entry — a publish-level
+ * decision, gated the same as approveAndPublishScholarship. Never used to
+ * publish an unverified/unapproved one — "to_be_verified"/"verified" are
+ * deliberately not valid targets here. */
 export async function setListingStatus(
   scholarshipId: string,
   status: "open" | "upcoming" | "closed"
 ): Promise<ScholarshipActionResult> {
   let gate;
   try {
-    gate = await requireStaffAbility("manage_scholarships");
+    gate = await requireStaffAbility("scholarship_approve");
   } catch {
     return { error: "Forbidden." };
   }
@@ -193,7 +257,7 @@ export type ImportResult = { error?: string; imported?: number; skipped?: { row:
 export async function importScholarshipsCsv(formData: FormData): Promise<ImportResult> {
   let gate;
   try {
-    gate = await requireStaffAbility("manage_scholarships");
+    gate = await requireStaffAbility("scholarship_research");
   } catch {
     return { error: "Forbidden." };
   }
@@ -229,6 +293,8 @@ export async function importScholarshipsCsv(formData: FormData): Promise<ImportR
       application_url: emptyToNull(row.application_url ?? row.official_link ?? null),
       source_url: emptyToNull(row.source_url ?? row.source ?? null),
       last_checked_at: emptyToNull(row.last_checked_at ?? row.last_checked ?? null),
+      academic_qualifications: emptyToNull(row.academic_qualifications ?? null),
+      field_of_study: emptyToNull(row.field_of_study ?? null),
     };
     const parsed = scholarshipFieldsSchema.safeParse(candidate);
     if (!parsed.success) {

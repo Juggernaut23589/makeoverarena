@@ -7,7 +7,17 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 // must never reach the browser. required_class_id is fine to expose — it's
 // just a reference into the public access_classes table.
 const PUBLIC_COLUMNS =
-  "id, name, description, destination_country, institution_name, programme_name, study_level, funding_type, eligibility_notes, amount, application_deadline, application_url, source_url, listing_status, min_gpa_4_scale, min_gpa_5_scale, is_active, created_at, required_class_id";
+  "id, name, description, destination_country, institution_name, programme_name, study_level, funding_type, eligibility_notes, academic_qualifications, field_of_study, amount, application_deadline, application_url, source_url, listing_status, min_gpa_4_scale, min_gpa_5_scale, is_active, created_at, required_class_id, view_count";
+
+/** Fire-and-forget — logging a search term must never slow down or block
+ *  the actual search response. */
+function logSearch(q: string | null | undefined) {
+  if (!supabaseAdmin || !q) return;
+  supabaseAdmin.from("scholarship_search_logs").insert({ query: q }).then(
+    () => {},
+    () => {}
+  );
+}
 
 type GatedScholarship = { required_class_id: string | null };
 
@@ -66,7 +76,13 @@ export async function GET(request: NextRequest) {
   const country = searchParams.get("country");
   const studyLevel = searchParams.get("study_level");
   const fundingType = searchParams.get("funding_type");
+  const institution = searchParams.get("institution")?.trim();
+  const sort = searchParams.get("sort");
   const q = searchParams.get("q")?.trim();
+  logSearch(q);
+
+  const orderCol = sort === "newest" ? "created_at" : sort === "name" ? "name" : "application_deadline";
+  const orderAsc = sort !== "newest";
 
   // Browse mode: every open/upcoming scholarship regardless of GPA, for the
   // dashboard's search/filter UI. Still always is_active=true — GPA-gating
@@ -77,10 +93,11 @@ export async function GET(request: NextRequest) {
       .from("scholarships")
       .select(PUBLIC_COLUMNS)
       .eq("is_active", true)
-      .order("application_deadline", { ascending: true, nullsFirst: false });
+      .order(orderCol, { ascending: orderAsc, nullsFirst: false });
     if (country) query = query.eq("destination_country", country);
     if (studyLevel) query = query.eq("study_level", studyLevel);
     if (fundingType) query = query.eq("funding_type", fundingType);
+    if (institution) query = query.ilike("institution_name", `%${institution}%`);
     if (q) query = query.or(`name.ilike.%${q}%,institution_name.ilike.%${q}%,programme_name.ilike.%${q}%`);
     const { data } = await query;
     return NextResponse.json({ kind: "scholarships", items: await filterByAccessTier(data ?? []) });
@@ -121,10 +138,11 @@ export async function GET(request: NextRequest) {
     .select(PUBLIC_COLUMNS)
     .eq("is_active", true)
     .lte(column, gpa)
-    .order("created_at", { ascending: false });
+    .order(orderCol, { ascending: orderAsc, nullsFirst: false });
   if (country) query = query.eq("destination_country", country);
   if (studyLevel) query = query.eq("study_level", studyLevel);
   if (fundingType) query = query.eq("funding_type", fundingType);
+  if (institution) query = query.ilike("institution_name", `%${institution}%`);
   if (q) query = query.or(`name.ilike.%${q}%,institution_name.ilike.%${q}%,programme_name.ilike.%${q}%`);
 
   const { data } = await query;

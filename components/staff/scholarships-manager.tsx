@@ -8,7 +8,8 @@ import {
   createScholarship,
   updateScholarship,
   deleteScholarship,
-  verifyAndPublishScholarship,
+  markScholarshipVerified,
+  approveAndPublishScholarship,
   setListingStatus,
   importScholarshipsCsv,
 } from "@/app/staff/(portal)/dashboard/scholarship-actions";
@@ -34,6 +35,10 @@ export interface ScholarshipRow {
   verified_at: string | null;
   created_by: string | null;
   required_class_id: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  academic_qualifications: string | null;
+  field_of_study: string | null;
 }
 
 export interface AccessClassOption {
@@ -53,6 +58,7 @@ const FUNDING_LABELS: Record<string, string> = { full: "Full funding", partial: 
 
 const STATUS_COLORS: Record<string, string> = {
   to_be_verified: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+  verified: "bg-purple-500/10 text-purple-400 border-purple-500/20",
   open: "bg-green-500/10 text-green-400 border-green-500/20",
   upcoming: "bg-blue-500/10 text-blue-400 border-blue-500/20",
   closed: "bg-white/10 text-white/40 border-white/10",
@@ -60,6 +66,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   to_be_verified: "Needs verification",
+  verified: "Verified — awaiting approval",
   open: "Open",
   upcoming: "Upcoming",
   closed: "Closed",
@@ -171,9 +178,17 @@ function ScholarshipForm({
             ))}
           </select>
         </div>
+        <div>
+          <label className={labelClass}>Field of study</label>
+          <input name="field_of_study" defaultValue={initial?.field_of_study ?? ""} placeholder="e.g. Public Health" className={inputClass} />
+        </div>
       </div>
       <div>
-        <label className={labelClass}>Eligibility notes</label>
+        <label className={labelClass}>Academic qualifications required</label>
+        <textarea name="academic_qualifications" defaultValue={initial?.academic_qualifications ?? ""} rows={2} className={inputClass} />
+      </div>
+      <div>
+        <label className={labelClass}>Other eligibility requirements</label>
         <textarea name="eligibility_notes" defaultValue={initial?.eligibility_notes ?? ""} rows={2} className={inputClass} />
       </div>
       <div>
@@ -216,7 +231,19 @@ function deadlineBadge(deadline: string | null): { label: string; cls: string } 
   return { label: new Date(deadline).toLocaleDateString("en-NG", { day: "numeric", month: "short", year: "numeric" }), cls: "text-white/50" };
 }
 
-export function ScholarshipsManager({ scholarships, accessClasses }: { scholarships: ScholarshipRow[]; accessClasses: AccessClassOption[] }) {
+export function ScholarshipsManager({
+  scholarships,
+  accessClasses,
+  canResearch,
+  canVerify,
+  canApprove,
+}: {
+  scholarships: ScholarshipRow[];
+  accessClasses: AccessClassOption[];
+  canResearch: boolean;
+  canVerify: boolean;
+  canApprove: boolean;
+}) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -252,9 +279,16 @@ export function ScholarshipsManager({ scholarships, accessClasses }: { scholarsh
     });
   }
 
-  function handleVerify(id: string, status: "open" | "upcoming") {
+  function handleMarkVerified(id: string) {
     startTransition(async () => {
-      await verifyAndPublishScholarship(id, status);
+      await markScholarshipVerified(id);
+      router.refresh();
+    });
+  }
+
+  function handleApprove(id: string, status: "open" | "upcoming") {
+    startTransition(async () => {
+      await approveAndPublishScholarship(id, status);
       router.refresh();
     });
   }
@@ -290,12 +324,14 @@ export function ScholarshipsManager({ scholarships, accessClasses }: { scholarsh
           >
             Export CSV
           </a>
-          <button
-            onClick={() => { setCreating((v) => !v); setEditingId(null); }}
-            className="px-3 py-2 bg-crimson-500 text-white rounded-lg text-sm font-semibold hover:bg-crimson-400"
-          >
-            {creating ? "Close" : "+ Add scholarship"}
-          </button>
+          {canResearch && (
+            <button
+              onClick={() => { setCreating((v) => !v); setEditingId(null); }}
+              className="px-3 py-2 bg-crimson-500 text-white rounded-lg text-sm font-semibold hover:bg-crimson-400"
+            >
+              {creating ? "Close" : "+ Add scholarship"}
+            </button>
+          )}
         </div>
       </div>
 
@@ -303,7 +339,8 @@ export function ScholarshipsManager({ scholarships, accessClasses }: { scholarsh
         <ScholarshipForm accessClasses={accessClasses} onDone={() => setCreating(false)} onCancel={() => setCreating(false)} />
       )}
 
-      {/* CSV import */}
+      {/* CSV import — Researcher only */}
+      {canResearch && (
       <form onSubmit={handleImport} className="bg-navy-800 border border-white/10 rounded-xl p-4 flex flex-wrap items-center gap-3">
         <span className="text-sm text-white/60">Bulk import (CSV):</span>
         <input ref={fileRef} type="file" name="file" accept=".csv,text/csv" className="text-sm text-white/70" />
@@ -316,10 +353,11 @@ export function ScholarshipsManager({ scholarships, accessClasses }: { scholarsh
         </button>
         <span className="text-xs text-white/30">
           Columns: name, institution_name, programme_name, destination_country, study_level, funding_type,
-          amount, application_deadline, application_url, source_url, eligibility_notes, description. Imported
-          rows always land unverified.
+          amount, academic_qualifications, field_of_study, application_deadline, application_url, source_url,
+          eligibility_notes, description. Imported rows always land unverified.
         </span>
       </form>
+      )}
       {importResult && (
         <div className="text-sm">
           {importResult.error && <p className="text-red-400">{importResult.error}</p>}
@@ -404,40 +442,58 @@ export function ScholarshipsManager({ scholarships, accessClasses }: { scholarsh
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          {s.listing_status === "to_be_verified" ? (
+                          {s.listing_status === "to_be_verified" && canVerify && (
+                            <button onClick={() => handleMarkVerified(s.id)} disabled={isPending} className="px-2 py-1 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded text-xs hover:bg-purple-500/20 disabled:opacity-50">
+                              Mark verified
+                            </button>
+                          )}
+                          {s.listing_status === "to_be_verified" && !canVerify && (
+                            <span className="text-xs text-white/30">Awaiting a verifier</span>
+                          )}
+                          {s.listing_status === "verified" && canApprove && (
                             <>
-                              <button onClick={() => handleVerify(s.id, "open")} disabled={isPending} className="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded text-xs hover:bg-green-500/20 disabled:opacity-50">
-                                Verify &amp; publish
+                              <button onClick={() => handleApprove(s.id, "open")} disabled={isPending} className="px-2 py-1 bg-green-500/10 text-green-400 border border-green-500/20 rounded text-xs hover:bg-green-500/20 disabled:opacity-50">
+                                Approve &amp; publish
                               </button>
-                              <button onClick={() => handleVerify(s.id, "upcoming")} disabled={isPending} className="px-2 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded text-xs hover:bg-blue-500/20 disabled:opacity-50">
-                                Verify as upcoming
+                              <button onClick={() => handleApprove(s.id, "upcoming")} disabled={isPending} className="px-2 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded text-xs hover:bg-blue-500/20 disabled:opacity-50">
+                                Approve as upcoming
                               </button>
                             </>
-                          ) : (
-                            <select
-                              value={s.listing_status}
-                              onChange={(e) => handleStatusChange(s.id, e.target.value as "open" | "upcoming" | "closed")}
-                              disabled={isPending}
-                              className="bg-navy-950 border border-white/10 rounded text-xs px-1.5 py-1 text-white/70"
-                            >
-                              <option value="open">Open</option>
-                              <option value="upcoming">Upcoming</option>
-                              <option value="closed">Closed</option>
-                            </select>
                           )}
-                          <button
-                            onClick={() => { setEditingId(editingId === s.id ? null : s.id); setCreating(false); }}
-                            className="px-2 py-1 border border-white/10 text-white/60 rounded text-xs hover:bg-white/5"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(s.id)}
-                            disabled={isPending}
-                            className="px-2 py-1 border border-red-500/20 text-red-400 rounded text-xs hover:bg-red-500/10 disabled:opacity-50"
-                          >
-                            Delete
-                          </button>
+                          {s.listing_status === "verified" && !canApprove && (
+                            <span className="text-xs text-white/30">Awaiting approval</span>
+                          )}
+                          {(s.listing_status === "open" || s.listing_status === "upcoming" || s.listing_status === "closed") && (
+                            canApprove ? (
+                              <select
+                                value={s.listing_status}
+                                onChange={(e) => handleStatusChange(s.id, e.target.value as "open" | "upcoming" | "closed")}
+                                disabled={isPending}
+                                className="bg-navy-950 border border-white/10 rounded text-xs px-1.5 py-1 text-white/70"
+                              >
+                                <option value="open">Open</option>
+                                <option value="upcoming">Upcoming</option>
+                                <option value="closed">Closed</option>
+                              </select>
+                            ) : null
+                          )}
+                          {canResearch && (
+                            <button
+                              onClick={() => { setEditingId(editingId === s.id ? null : s.id); setCreating(false); }}
+                              className="px-2 py-1 border border-white/10 text-white/60 rounded text-xs hover:bg-white/5"
+                            >
+                              Edit
+                            </button>
+                          )}
+                          {canResearch && (
+                            <button
+                              onClick={() => handleDelete(s.id)}
+                              disabled={isPending}
+                              className="px-2 py-1 border border-red-500/20 text-red-400 rounded text-xs hover:bg-red-500/10 disabled:opacity-50"
+                            >
+                              Delete
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

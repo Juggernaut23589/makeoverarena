@@ -63,11 +63,11 @@ export default async function StaffDashboardPage() {
       : Promise.resolve({ data: [] }),
   ]);
 
-  const { data: scholarships } = hasAbility(liveSession, "manage_scholarships")
+  const { data: scholarships } = (hasAbility(liveSession, "scholarship_research") || hasAbility(liveSession, "scholarship_verify") || hasAbility(liveSession, "scholarship_approve"))
     ? await db!
         .from("scholarships")
         .select(
-          "id, name, institution_name, programme_name, destination_country, study_level, funding_type, description, eligibility_notes, amount, application_deadline, application_url, source_url, listing_status, is_active, last_checked_at, verified_by, verified_at, created_by, required_class_id"
+          "id, name, institution_name, programme_name, destination_country, study_level, funding_type, description, eligibility_notes, amount, application_deadline, application_url, source_url, listing_status, is_active, last_checked_at, verified_by, verified_at, created_by, required_class_id, approved_by, approved_at, academic_qualifications, field_of_study"
         )
         .order("created_at", { ascending: false })
     : { data: [] };
@@ -117,6 +117,52 @@ export default async function StaffDashboardPage() {
     ? await db!.from("staff_profiles").select("id, full_name, email, role, is_active, is_pending, abilities, job_title, created_at").order("created_at", { ascending: true })
     : { data: [] };
 
+  // Scholarship/subscription report — reuses view_analytics, no new ability.
+  let reportData = null;
+  if (hasAbility(liveSession, "view_analytics")) {
+    const [tierStats, revenueByTier, subsThisYear, awaitingVerification, awaitingApproval, topViewed, topSearched] = await Promise.all([
+      db!.from("subscription_tier_stats").select("*"),
+      db!.from("subscription_revenue_by_tier").select("*").order("month", { ascending: true }),
+      db!.from("client_subscriptions").select("client_id, started_at, expires_at").order("started_at", { ascending: true }),
+      db!.from("scholarships").select("id", { count: "exact", head: true }).eq("listing_status", "to_be_verified"),
+      db!.from("scholarships").select("id", { count: "exact", head: true }).eq("listing_status", "verified"),
+      db!.from("scholarships").select("name, view_count").order("view_count", { ascending: false }).limit(10),
+      db!.from("scholarship_search_logs").select("query"),
+    ]);
+
+    // "Lapsed" — a client's most recent subscription row has expired and no
+    // later row for the same client exists. Explicitly not "cancellations":
+    // this prepaid model has no cancel action, so this is the closest real
+    // equivalent and is labeled as such in the UI.
+    const latestByClient = new Map<string, { expires_at: string }>();
+    for (const row of subsThisYear.data ?? []) {
+      const prev = latestByClient.get(row.client_id);
+      if (!prev || new Date(row.started_at) > new Date((prev as unknown as { started_at: string }).started_at ?? 0)) {
+        latestByClient.set(row.client_id, row as unknown as { expires_at: string });
+      }
+    }
+    const lapsedCount = [...latestByClient.values()].filter((r) => new Date(r.expires_at).getTime() < Date.now()).length;
+
+    const searchCounts: Record<string, number> = {};
+    for (const row of topSearched.data ?? []) {
+      const key = row.query.trim().toLowerCase();
+      if (!key) continue;
+      searchCounts[key] = (searchCounts[key] ?? 0) + 1;
+    }
+    const topSearchTerms = Object.entries(searchCounts).sort((a, b) => b[1] - a[1]).slice(0, 10).map(([query, count]) => ({ query, count }));
+
+    reportData = {
+      tierStats: tierStats.data ?? [],
+      revenueByTier: revenueByTier.data ?? [],
+      newSubscriptionsCount: (subsThisYear.data ?? []).length,
+      lapsedCount,
+      awaitingVerificationCount: awaitingVerification.count ?? 0,
+      awaitingApprovalCount: awaitingApproval.count ?? 0,
+      topViewed: topViewed.data ?? [],
+      topSearchTerms,
+    };
+  }
+
   return (
     <StaffDashboard
       staff={{
@@ -141,6 +187,7 @@ export default async function StaffDashboardPage() {
       accessClasses={accessClasses ?? []}
       accessPeriods={accessPeriods ?? []}
       accessClassPrices={accessClassPrices ?? []}
+      reportData={reportData}
     />
   );
 }

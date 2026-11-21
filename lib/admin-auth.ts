@@ -9,7 +9,10 @@ export type AdminRole = "super_admin" | "admin" | "staff";
 export type StaffAbility =
   | "view_clients"
   | "assign_agents"
-  | "manage_scholarships"
+  | "scholarship_research"
+  | "scholarship_verify"
+  | "scholarship_approve"
+  | "customer_support"
   | "view_payments"
   | "view_analytics";
 

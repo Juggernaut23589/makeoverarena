@@ -9,6 +9,7 @@ import { logoutStaffAction, approveStaffAction, updateAbilitiesAction } from "@/
 import type { AdminSession, StaffAbility } from "@/lib/admin-auth";
 import { ScholarshipsManager, type ScholarshipRow } from "@/components/staff/scholarships-manager";
 import { PricingManager, type AccessClassRow, type AccessPeriodRow, type AccessClassPriceRow } from "@/components/staff/pricing-manager";
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 type StaffRole = "super_admin" | "staff" | "admin";
 
@@ -80,6 +81,16 @@ interface Props {
   accessClasses: AccessClassRow[];
   accessPeriods: AccessPeriodRow[];
   accessClassPrices: AccessClassPriceRow[];
+  reportData: {
+    tierStats: { class_id: string; class_name: string; rank: number; active_subscribers: number }[];
+    revenueByTier: { class_id: string; class_name: string; month: string; revenue_naira: number; purchase_count: number }[];
+    newSubscriptionsCount: number;
+    lapsedCount: number;
+    awaitingVerificationCount: number;
+    awaitingApprovalCount: number;
+    topViewed: { name: string; view_count: number }[];
+    topSearchTerms: { query: string; count: number }[];
+  } | null;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -104,19 +115,22 @@ const STATUS_COLORS: Record<string, string> = {
 const ALL_ABILITIES: { key: StaffAbility; label: string }[] = [
   { key: "view_clients", label: "View Clients" },
   { key: "assign_agents", label: "Assign Agents" },
-  { key: "manage_scholarships", label: "Manage Scholarships" },
+  { key: "scholarship_research", label: "Scholarships: Research (create/edit/import)" },
+  { key: "scholarship_verify", label: "Scholarships: Verify" },
+  { key: "scholarship_approve", label: "Scholarships: Approve & Publish" },
+  { key: "customer_support", label: "Customer Support (view clients)" },
   { key: "view_payments", label: "View Payments" },
   { key: "view_analytics", label: "View Analytics" },
 ];
 
-type Tab = "overview" | "clients" | "consultations" | "analytics" | "scholarships" | "pricing" | "team";
+type Tab = "overview" | "clients" | "consultations" | "analytics" | "reports" | "scholarships" | "pricing" | "team";
 
 function can(session: AdminSession, ability: StaffAbility): boolean {
   if (session.role === "super_admin") return true;
   return Boolean(session.abilities?.[ability]);
 }
 
-export function StaffDashboard({ staff, session, clients, consultations, inquiries, analyticsData, staffList, scholarships, accessClasses, accessPeriods, accessClassPrices }: Props) {
+export function StaffDashboard({ staff, session, clients, consultations, inquiries, analyticsData, staffList, scholarships, accessClasses, accessPeriods, accessClassPrices, reportData }: Props) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<Tab>("overview");
   const [expandedStaff, setExpandedStaff] = useState<string | null>(null);
@@ -130,10 +144,11 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
 
   const tabs: { id: Tab; label: string; show: boolean }[] = [
     { id: "overview", label: "Overview", show: true },
-    { id: "clients", label: "Clients", show: can(session, "view_clients") },
+    { id: "clients", label: "Clients", show: can(session, "view_clients") || can(session, "customer_support") },
     { id: "consultations", label: "Consultations", show: true },
     { id: "analytics", label: "Analytics", show: can(session, "view_analytics") },
-    { id: "scholarships", label: "Scholarships", show: can(session, "manage_scholarships") },
+    { id: "reports", label: "Reports", show: can(session, "view_analytics") },
+    { id: "scholarships", label: "Scholarships", show: can(session, "scholarship_research") || can(session, "scholarship_verify") || can(session, "scholarship_approve") },
     { id: "pricing", label: "Pricing", show: isSuperAdmin },
     { id: "team", label: "Team", show: isSuperAdmin },
   ];
@@ -435,9 +450,113 @@ export function StaffDashboard({ staff, session, clients, consultations, inquiri
           </div>
         )}
 
+        {/* REPORTS — scholarship/subscription metrics, separate from the
+            pre-existing consultancy-business Analytics tab above. */}
+        {activeTab === "reports" && can(session, "view_analytics") && (
+          <div className="space-y-6">
+            <h2 className="font-display text-2xl text-white">Reports</h2>
+            {!reportData ? (
+              <p className="text-white/30 text-sm">No report data available.</p>
+            ) : (
+              <>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                    <p className="text-white/40 text-xs mb-1">New subscriptions</p>
+                    <p className="text-2xl font-bold text-white">{reportData.newSubscriptionsCount}</p>
+                  </div>
+                  <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                    <p className="text-white/40 text-xs mb-1">Lapsed (not renewed)</p>
+                    <p className="text-2xl font-bold text-white">{reportData.lapsedCount}</p>
+                    <p className="text-white/20 text-[10px] mt-1">Not &quot;cancellations&quot; — this model has no cancel action; lapsed means the plan simply wasn&apos;t renewed.</p>
+                  </div>
+                  <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                    <p className="text-white/40 text-xs mb-1">Awaiting verification</p>
+                    <p className="text-2xl font-bold text-white">{reportData.awaitingVerificationCount}</p>
+                  </div>
+                  <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                    <p className="text-white/40 text-xs mb-1">Awaiting approval</p>
+                    <p className="text-2xl font-bold text-white">{reportData.awaitingApprovalCount}</p>
+                  </div>
+                </div>
+
+                <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                  <h3 className="text-white font-semibold mb-3">Active subscribers by tier</h3>
+                  <div style={{ width: "100%", height: 260 }}>
+                    <ResponsiveContainer>
+                      <BarChart data={reportData.tierStats}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
+                        <XAxis dataKey="class_name" stroke="#ffffff80" fontSize={12} />
+                        <YAxis stroke="#ffffff80" fontSize={12} allowDecimals={false} />
+                        <Tooltip contentStyle={{ background: "#0B0F1A", border: "1px solid #ffffff1a" }} />
+                        <Bar dataKey="active_subscribers" name="Active subscribers" fill="#EF4444" radius={[4, 4, 0, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                  <h3 className="text-white font-semibold mb-3">Revenue by tier (monthly, ₦)</h3>
+                  <div style={{ width: "100%", height: 260 }}>
+                    <ResponsiveContainer>
+                      <LineChart data={reportData.revenueByTier}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff1a" />
+                        <XAxis dataKey="month" stroke="#ffffff80" fontSize={11} tickFormatter={(v) => new Date(v).toLocaleDateString("en-NG", { month: "short", year: "2-digit" })} />
+                        <YAxis stroke="#ffffff80" fontSize={12} />
+                        <Tooltip contentStyle={{ background: "#0B0F1A", border: "1px solid #ffffff1a" }} />
+                        <Legend />
+                        <Line type="monotone" dataKey="revenue_naira" name="Revenue (₦)" stroke="#D4A853" strokeWidth={2} dot={false} />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                    <h3 className="text-white font-semibold mb-3">Most viewed scholarships</h3>
+                    {reportData.topViewed.length === 0 ? (
+                      <p className="text-white/30 text-sm">No views recorded yet.</p>
+                    ) : (
+                      <ol className="space-y-1.5 text-sm">
+                        {reportData.topViewed.map((s, i) => (
+                          <li key={i} className="flex justify-between text-white/70">
+                            <span>{s.name}</span>
+                            <span className="text-white/40">{s.view_count}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                  <div className="bg-navy-800 border border-white/10 rounded-xl p-4">
+                    <h3 className="text-white font-semibold mb-3">Most searched terms</h3>
+                    {reportData.topSearchTerms.length === 0 ? (
+                      <p className="text-white/30 text-sm">No searches recorded yet.</p>
+                    ) : (
+                      <ol className="space-y-1.5 text-sm">
+                        {reportData.topSearchTerms.map((s, i) => (
+                          <li key={i} className="flex justify-between text-white/70">
+                            <span>{s.query}</span>
+                            <span className="text-white/40">{s.count}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
         {/* SCHOLARSHIPS */}
-        {activeTab === "scholarships" && can(session, "manage_scholarships") && (
-          <ScholarshipsManager scholarships={scholarships} accessClasses={accessClasses} />
+        {activeTab === "scholarships" &&
+          (can(session, "scholarship_research") || can(session, "scholarship_verify") || can(session, "scholarship_approve")) && (
+          <ScholarshipsManager
+            scholarships={scholarships}
+            accessClasses={accessClasses}
+            canResearch={can(session, "scholarship_research")}
+            canVerify={can(session, "scholarship_verify")}
+            canApprove={can(session, "scholarship_approve")}
+          />
         )}
 
         {activeTab === "pricing" && isSuperAdmin && (
