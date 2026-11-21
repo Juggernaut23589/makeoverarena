@@ -280,10 +280,9 @@ export default async function ScholarshipsPage() {
                 </div>
               )}
 
-              {/* Scholarship database access tiers — the self-serve product,
-                  distinct from the full-service consultancy package below.
-                  Sourced live so this can never say something different
-                  from what's actually configured in the Pricing tab. */}
+              {/* Scholarship database access tiers — sourced live so this
+                  can never say something different from what's actually
+                  configured in the Pricing tab. */}
               {planTiers.length > 0 && (
                 <div>
                   <div className="flex items-center gap-3 mb-5">
@@ -402,40 +401,18 @@ export default async function ScholarshipsPage() {
             <div className="space-y-5">
               <div className="bg-white rounded-2xl shadow-card p-6 sticky top-24">
                 <h3 className="font-display text-xl text-navy-900 mb-4">
-                  Apply for funding
+                  Find funding
                 </h3>
                 <p className="text-navy-600 text-sm mb-5">
-                  Tell us about your profile for a free initial scholarship
-                  match — our full-service application support and the
-                  self-serve database are both paid, with pricing shown
-                  before you commit to either.
+                  Subscribe to unlock the full database of verified scholarship
+                  opportunities, matched to your profile.
                 </p>
                 <Link
-                  href="/apply"
-                  className="block w-full text-center px-5 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors mb-3"
-                >
-                  Start Application →
-                </Link>
-                <Link
                   href="/signup"
-                  className="block w-full text-center px-5 py-3 border border-navy-200 text-navy-700 rounded-xl text-sm hover:bg-navy-50 transition-colors mb-3"
+                  className="block w-full text-center px-5 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
                 >
                   Subscribe to the Database
                 </Link>
-                <Link
-                  href="/book"
-                  className="block w-full text-center px-5 py-3 border border-navy-200 text-navy-700 rounded-xl text-sm hover:bg-navy-50 transition-colors"
-                >
-                  Book Free Consultation
-                </Link>
-
-                <div className="mt-6 pt-6 border-t border-border">
-                  <p className="text-xs text-navy-500 leading-relaxed">
-                    Our full-service scholarship support can be bundled with
-                    an admissions package — book a consultation to discuss
-                    pricing for your situation.
-                  </p>
-                </div>
               </div>
             </div>
           </div>

@@ -329,15 +329,15 @@ export default function AboutPage() {
             Ready to be our next success story?
           </h2>
           <p className="text-navy-600 mb-8 leading-relaxed">
-            Start your application — it takes 5 minutes and our team responds
-            within 24 hours with a personalised plan.
+            Create a free account — it takes a minute to sign up and subscribe
+            to start searching the full scholarship database.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/apply"
+              href="/signup"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
             >
-              Start Application — Free
+              Create a Free Account
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -353,10 +353,10 @@ export default function AboutPage() {
               </svg>
             </Link>
             <Link
-              href="/book"
+              href="/services/scholarships"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-navy-300 text-navy-700 rounded-xl font-medium text-base hover:bg-navy-50 transition-colors"
             >
-              Book a Free Consultation
+              View Plans & Pricing
             </Link>
           </div>
         </div>

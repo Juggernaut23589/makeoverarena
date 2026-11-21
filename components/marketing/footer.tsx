@@ -10,17 +10,15 @@ const LINKEDIN = process.env.NEXT_PUBLIC_LINKEDIN_URL ?? "https://www.linkedin.c
 const TIKTOK = process.env.NEXT_PUBLIC_TIKTOK_URL ?? "https://www.tiktok.com/@makeoverarena_?_r=1&_t=ZS-97V4Jl5COvN";
 
 const services = [
-  { href: "/services/undergraduate", label: "Undergraduate Admissions" },
-  { href: "/services/graduate", label: "Graduate Admissions" },
-  { href: "/services/scholarships", label: "Scholarship Assistance" },
-  { href: "/services/visa", label: "Visa Support" },
+  { href: "/services/scholarships", label: "Scholarship Database" },
+  { href: "/signup", label: "Subscribe" },
+  { href: "/login", label: "Log In" },
 ];
 
 const company = [
   { href: "/about", label: "About Us" },
   { href: "/success-stories", label: "Success Stories" },
   { href: "/faq", label: "FAQs" },
-  { href: "/book", label: "Book Consultation" },
 ];
 
 const legal = [
@@ -57,16 +55,16 @@ export function Footer() {
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <Link
-                href="/apply"
+                href="/signup"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-crimson-500 text-white font-semibold text-sm hover:bg-crimson-400 transition-colors"
               >
-                Start Your Application →
+                Subscribe Now →
               </Link>
               <Link
-                href="/book"
+                href="/services/scholarships"
                 className="inline-flex items-center justify-center px-6 py-3 rounded-xl border border-white/20 text-white text-sm font-medium hover:bg-white/10 transition-colors"
               >
-                Book Free Consultation
+                View Plans
               </Link>
             </div>
           </div>
@@ -82,7 +80,7 @@ export function Footer() {
               <Logo tone="dark" className="h-10 w-auto shrink-0" />
             </Link>
             <p className="text-white/50 text-sm leading-relaxed mb-6 max-w-xs">
-              Africa&apos;s leading study-abroad consultancy. We help ambitious students gain admission to top universities across the globe.
+              A centralised, verified database of scholarship opportunities for African students pursuing study abroad — search, save, and apply with confidence.
             </p>
             <div className="space-y-2 text-sm text-white/60">
               <p className="flex items-center gap-2">
@@ -135,10 +133,10 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Services */}
+          {/* Scholarship database */}
           <div>
             <h3 className="text-xs font-semibold uppercase tracking-widest text-crimson-400 mb-4">
-              Services
+              Platform
             </h3>
             <ul className="space-y-2.5">
               {services.map((item) => (

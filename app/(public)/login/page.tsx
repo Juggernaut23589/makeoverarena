@@ -173,9 +173,9 @@ function LoginForm() {
         </div>
 
         <p className="text-center text-xs text-navy-400 mt-4">
-          Student portal for MakeoverArena clients only.{" "}
-          <Link href="/apply" className="text-crimson-600 hover:text-crimson-700">
-            Apply here
+          Student portal for MakeoverArena subscribers.{" "}
+          <Link href="/signup" className="text-crimson-600 hover:text-crimson-700">
+            Sign up here
           </Link>{" "}
           if you&apos;re new.
         </p>

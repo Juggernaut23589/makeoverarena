@@ -3,78 +3,57 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "MakeoverArena — Your Journey to Top Universities Starts Here",
+  title: "MakeoverArena — Find Scholarships to Study Abroad",
   description:
-    "Nigeria's #1 study-abroad consultancy. Expert guidance for undergraduate, graduate, PhD, scholarship, and visa applications to US, UK, Canada, Australia, and Europe.",
+    "A centralised, verified scholarship database for African students pursuing study abroad — search, save, and track funding opportunities to the US, UK, Canada, Australia, and Europe.",
 };
 
 const stats = [
-  { number: "2,400+", label: "Students Helped" },
-  { number: "92%", label: "Success Rate" },
-  { number: "200+", label: "Partner Universities" },
-  { number: "15+", label: "Countries" },
+  { number: "60+", label: "Verified Scholarships" },
+  { number: "15+", label: "Countries Covered" },
+  { number: "3", label: "Access Tiers" },
+  { number: "24/7", label: "Database Access" },
 ];
 
 const services = [
   {
-    title: "Undergraduate",
-    description: "Bachelor's degree admissions to top universities in the US, UK, Canada, and beyond.",
-    icon: "🎓",
-    href: "/services/undergraduate",
-    image: "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=600&q=80",
-  },
-  {
-    title: "Graduate",
-    description: "Masters and postgraduate admissions — personalized strategy for every applicant.",
-    icon: "📚",
-    href: "/services/graduate",
-    image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=600&q=80",
-  },
-  {
-    title: "Scholarships",
-    description: "Identify and win funding — 65% of our scholarship applicants received financial aid.",
+    title: "Scholarship Database",
+    description: "A continuously-updated, verified database of scholarship opportunities — searchable by country, field, and funding type.",
     icon: "🏅",
     href: "/services/scholarships",
     image: "https://images.unsplash.com/photo-1557426272-fc759fdf7a8d?w=600&q=80",
   },
-  {
-    title: "Visa Support",
-    description: "End-to-end visa guidance so your documentation is flawless and stress-free.",
-    icon: "🌍",
-    href: "/services/visa",
-    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80",
-  },
 ];
 
 const journeySteps = [
-  { icon: "✍️", label: "Submit Profile", sub: "Day 1", color: "bg-crimson-50 border-crimson-200 text-crimson-700" },
-  { icon: "📞", label: "Strategy Call", sub: "Week 1", color: "bg-navy-50 border-navy-200 text-navy-700" },
-  { icon: "📄", label: "Applications Sent", sub: "Month 1–2", color: "bg-amber-50 border-amber-200 text-amber-700" },
-  { icon: "📬", label: "Offer Letter", sub: "Month 3–6*", color: "bg-green-50 border-green-200 text-green-700" },
-  { icon: "🛂", label: "Visa Approved", sub: "Month 5–7", color: "bg-blue-50 border-blue-200 text-blue-700" },
-  { icon: "🎓", label: "You've Arrived!", sub: "Month 7–9", color: "bg-gold-50 border-gold-300 text-gold-700" },
+  { icon: "✍️", label: "Create Account", sub: "Day 1", color: "bg-crimson-50 border-crimson-200 text-crimson-700" },
+  { icon: "💳", label: "Subscribe", sub: "Day 1", color: "bg-navy-50 border-navy-200 text-navy-700" },
+  { icon: "🔎", label: "Search & Filter", sub: "Ongoing", color: "bg-amber-50 border-amber-200 text-amber-700" },
+  { icon: "🔖", label: "Save Matches", sub: "Ongoing", color: "bg-green-50 border-green-200 text-green-700" },
+  { icon: "📥", label: "Download Details", sub: "Ongoing", color: "bg-blue-50 border-blue-200 text-blue-700" },
+  { icon: "🎓", label: "Apply & Get Funded", sub: "Ongoing", color: "bg-gold-50 border-gold-300 text-gold-700" },
 ];
 
 const process = [
   {
     step: "01",
-    title: "Submit Your Profile",
-    description: "Fill out our smart application form in under 10 minutes. Tell us about your goals and background.",
+    title: "Create an Account",
+    description: "Sign up free in under a minute and tell us your academic profile — field of study, GPA, and destination preferences.",
   },
   {
     step: "02",
-    title: "Free Consultation",
-    description: "Our expert advisor reviews your profile and schedules a personalised 30-minute strategy session.",
+    title: "Subscribe to a Tier",
+    description: "Pick the access tier that fits your needs — unlock more verified scholarships at higher tiers.",
   },
   {
     step: "03",
-    title: "Custom Strategy",
-    description: "We build your tailored university list, scholarship targets, and timeline — specific to you.",
+    title: "Search & Filter",
+    description: "Find scholarships matched to your profile — filter by country, field of study, funding type, and deadline.",
   },
   {
     step: "04",
-    title: "We Do the Heavy Lifting",
-    description: "Application preparation, document review, SOP writing support, interview prep, and submission.",
+    title: "Save & Apply",
+    description: "Bookmark the opportunities that fit, download the details, and apply directly with the source institution.",
   },
 ];
 
@@ -88,10 +67,10 @@ const destinations = [
 ];
 
 const faqs = [
-  { q: "How long does the application process take?", a: "Typically 3–6 months from initial inquiry to receiving an offer letter, depending on the intake period and number of universities. Timelines are estimates and may vary by institution and country." },
-  { q: "What is your success rate?", a: "We maintain a 92% admission success rate across all our applicants." },
-  { q: "Do you help with scholarship applications?", a: "Yes — 65% of our scholarship applicants received funding ranging from partial to full scholarships." },
-  { q: "How much does it cost to use your service?", a: "Packages start from ₦150,000 and vary based on the number of universities and complexity of your application." },
+  { q: "What exactly do I get access to?", a: "A searchable, continuously-updated database of verified scholarship opportunities — filterable by country, field of study, funding type, and deadline, with the ability to save and download listings." },
+  { q: "How are listings verified?", a: "Every scholarship goes through a staged research, verification, and approval process by our team before it's published, so you're not wasting time on stale or fake listings." },
+  { q: "How much does it cost?", a: "Access is sold in Basic, Standard, and Premium tiers over fixed periods — pricing is shown on the Scholarships page and at signup." },
+  { q: "Can I change tiers or renew later?", a: "Yes — you can upgrade, downgrade, or renew your access anytime from your dashboard." },
 ];
 
 export default function HomePage() {
@@ -130,36 +109,36 @@ export default function HomePage() {
 
             {/* Headline */}
             <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white leading-[1.05] mb-6">
-              Your Journey to{" "}
+              Find the Funding{" "}
               <br />
-              <em className="text-gradient-gold not-italic font-normal">Top Universities</em>
+              <em className="text-gradient-gold not-italic font-normal">for Your Journey</em>
               <br />
-              Starts Here
+              Abroad
             </h1>
 
             <p className="text-white/70 text-base sm:text-lg md:text-xl leading-relaxed mb-8 sm:mb-10 max-w-xl">
-              We guide ambitious African students through every step — from choosing the right program to holding that admission letter. 92% success rate across 200+ partner universities.
+              A verified, constantly-updated database of scholarships for ambitious African students — search, save, and track funding opportunities for universities across the globe.
             </p>
 
             {/* CTAs */}
             <div className="flex flex-wrap gap-4">
               <Link
-                href="/apply"
+                href="/signup"
                 className="inline-flex items-center gap-2 px-7 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-all duration-200 shadow-glow-crimson"
               >
-                Start Your Application
+                Subscribe to the Database
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </Link>
               <Link
-                href="/book"
+                href="/services/scholarships"
                 className="inline-flex items-center gap-2 px-7 py-4 border border-white/25 text-white rounded-xl font-medium text-base hover:bg-white/10 transition-all duration-200 backdrop-blur-sm"
               >
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Book Free Consultation
+                View Plans
               </Link>
             </div>
           </div>
@@ -194,22 +173,22 @@ export default function HomePage() {
                 </span>
               </div>
               <h2 className="font-display text-4xl md:text-5xl font-light text-navy-900 leading-tight">
-                Services tailored to{" "}
-                <em className="not-italic text-crimson-500">your ambitions</em>
+                Everything you need to{" "}
+                <em className="not-italic text-crimson-500">find funding</em>
               </h2>
             </div>
             <Link
-              href="/apply"
+              href="/signup"
               className="shrink-0 inline-flex items-center gap-2 text-sm font-medium text-navy-700 hover:text-navy-900 group"
             >
-              View all services
+              Subscribe to the database
               <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 max-w-sm mx-auto gap-5">
             {services.map((service, i) => (
               <Link
                 key={service.title}
@@ -266,8 +245,8 @@ export default function HomePage() {
               <div className="h-px w-8 bg-crimson-400" />
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-light text-white">
-              From inquiry to{" "}
-              <em className="text-crimson-400 not-italic">studying abroad</em>
+              From sign-up to{" "}
+              <em className="text-crimson-400 not-italic">funded</em>
             </h2>
           </div>
 
@@ -295,10 +274,10 @@ export default function HomePage() {
 
           <div className="text-center mt-12">
             <Link
-              href="/apply"
+              href="/signup"
               className="inline-flex items-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
             >
-              Start Now — It&apos;s Free
+              Create a Free Account
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
@@ -327,7 +306,7 @@ export default function HomePage() {
             {destinations.map((dest) => (
               <Link
                 key={dest.country}
-                href="/apply"
+                href="/services/scholarships"
                 className="group relative rounded-2xl overflow-hidden h-44 md:h-52"
               >
                 <Image
@@ -375,14 +354,14 @@ export default function HomePage() {
 
           <div className="max-w-xl mx-auto bg-white rounded-2xl p-8 shadow-card text-center">
             <p className="text-navy-600 text-sm leading-relaxed">
-              We&apos;re collecting verified, consented stories from our clients. Check back soon
-              — or start your own application today and be one of the first we feature.
+              We&apos;re collecting verified, consented stories from our subscribers. Check back soon
+              — or subscribe today and be one of the first we feature.
             </p>
             <Link
-              href="/apply"
+              href="/signup"
               className="inline-flex items-center gap-2 mt-5 px-6 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
             >
-              Start Your Application
+              Subscribe Now
             </Link>
           </div>
         </div>
@@ -403,11 +382,11 @@ export default function HomePage() {
               <div className="h-px w-8 bg-crimson-400" />
             </div>
             <h2 className="font-display text-4xl md:text-5xl font-light text-white">
-              From application to{" "}
-              <em className="text-crimson-400 not-italic">arrival</em>
+              From sign-up to{" "}
+              <em className="text-crimson-400 not-italic">funded</em>
             </h2>
             <p className="text-white/50 text-base mt-3 max-w-xl mx-auto">
-              Here&apos;s exactly what happens after you take the first step with MakeoverArena.
+              Here&apos;s exactly what happens after you subscribe to the database.
             </p>
           </div>
 
@@ -456,11 +435,9 @@ export default function HomePage() {
             </div>
           </div>
 
-          <p className="text-white/30 text-xs text-center mt-6">* Timelines are estimates and may vary by institution, intake period, and individual circumstances.</p>
-
           <div className="text-center mt-8">
             <Link
-              href="/apply"
+              href="/signup"
               className="inline-flex items-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
             >
               Begin Your Journey →
@@ -514,9 +491,9 @@ export default function HomePage() {
               <Link href="/faq" className="px-4 py-2 rounded-lg border border-navy-200 text-navy-700 text-sm font-medium hover:bg-white transition-colors">
                 Browse FAQs
               </Link>
-              <Link href="/book" className="px-4 py-2 rounded-lg bg-crimson-500 text-white text-sm font-semibold hover:bg-crimson-400 transition-colors">
-                Book a Call
-              </Link>
+              <a href="mailto:info@makeoverarena.com" className="px-4 py-2 rounded-lg bg-crimson-500 text-white text-sm font-semibold hover:bg-crimson-400 transition-colors">
+                Email Us
+              </a>
             </div>
           </div>
         </div>
@@ -542,27 +519,27 @@ export default function HomePage() {
             <div className="h-px w-8 bg-crimson-400" />
           </div>
           <h2 className="font-display text-4xl md:text-5xl font-light text-white mb-5 leading-tight">
-            Your dream university{" "}
+            Your scholarship{" "}
             <em className="text-crimson-400 not-italic">is waiting</em>
           </h2>
           <p className="text-white/60 text-lg mb-10">
-            Take the first step today. Our application takes 5 minutes and our team responds within 24 hours.
+            Create a free account today — subscribe to unlock the full database and start your search.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/apply"
+              href="/signup"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-crimson-500 text-white rounded-xl font-semibold text-base hover:bg-crimson-400 transition-colors"
             >
-              Start Application — Free
+              Create a Free Account
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
             </Link>
             <Link
-              href="/book"
+              href="/services/scholarships"
               className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/20 text-white rounded-xl font-medium text-base hover:bg-white/10 transition-colors"
             >
-              Book a Consultation
+              View Plans & Pricing
             </Link>
           </div>
         </div>

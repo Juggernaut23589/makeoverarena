@@ -12,7 +12,6 @@ function SignupForm() {
   const searchParams = useSearchParams();
   const prefillEmail = searchParams.get("email") ?? "";
   const prefillName = searchParams.get("name") ?? "";
-  const fromApplication = searchParams.get("applied") === "1";
 
   const [form, setForm] = useState({ fullName: prefillName, email: prefillEmail, password: "", confirmPassword: "" });
 
@@ -100,21 +99,8 @@ function SignupForm() {
                 <span className="font-display text-crimson-400 font-bold text-xl leading-none">M</span>
               </div>
             </Link>
-            {fromApplication ? (
-              <>
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold mb-3">
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Application received!
-                </div>
-                <h1 className="font-display text-2xl text-navy-900">Create your account</h1>
-                <p className="text-navy-500 text-sm mt-1">Set up your dashboard to track your application and book a free consultation</p>
-              </>
-            ) : (
-              <>
-                <h1 className="font-display text-2xl text-navy-900">Create your account</h1>
-                <p className="text-navy-500 text-sm mt-1">Track your application, and subscribe to search our scholarship database</p>
-              </>
-            )}
+            <h1 className="font-display text-2xl text-navy-900">Create your account</h1>
+            <p className="text-navy-500 text-sm mt-1">Subscribe to search, save, and track scholarships in our database</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">

@@ -61,20 +61,20 @@ export default function SuccessStoriesPage() {
             <em className="text-crimson-500 not-italic">starts here</em>
           </h2>
           <p className="text-navy-600 mb-8">
-            Start your application and work with an advisor on your study abroad journey.
+            Subscribe to the scholarship database and start your own funding search today.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link
-              href="/apply"
+              href="/signup"
               className="inline-flex items-center justify-center px-7 py-3.5 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
             >
-              Start Your Application →
+              Subscribe Now →
             </Link>
             <Link
-              href="/book"
+              href="/services/scholarships"
               className="inline-flex items-center justify-center px-7 py-3.5 border border-navy-200 text-navy-700 rounded-xl text-sm hover:bg-navy-50 transition-colors"
             >
-              Book Free Consultation
+              View Plans & Pricing
             </Link>
           </div>
         </div>

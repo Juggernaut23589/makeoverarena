@@ -9,96 +9,53 @@ const faqCategories = [
     faqs: [
       {
         q: "What is MakeoverArena?",
-        a: "MakeoverArena is a Nigeria-based study abroad consultancy that helps students gain admission to top universities in the US, UK, Canada, Australia, and Europe. We provide end-to-end support from university selection to visa application.",
+        a: "MakeoverArena is a centralised, verified scholarship database for African students pursuing study abroad — search, save, and track funding opportunities to universities in the US, UK, Canada, Australia, and Europe.",
       },
       {
         q: "Where is your office?",
         a: "We serve students across Nigeria and Africa. Our team works remotely and online, so you can get our full support regardless of your location.",
       },
       {
-        q: "What countries do you support?",
-        a: "We currently specialise in the US, UK, Canada, Australia, Germany, France, Netherlands, Ireland, Sweden, and other European destinations.",
+        q: "What countries are covered?",
+        a: "The database includes scholarships for the US, UK, Canada, Australia, Germany, France, Netherlands, and other European destinations, with new listings added continuously.",
       },
-    ],
-  },
-  {
-    category: "Application Process",
-    faqs: [
       {
         q: "How do I get started?",
-        a: "Start by filling out our free application form — it takes about 5 minutes. Our advisor will review your profile and reach out within 24 hours to schedule a free consultation.",
-      },
-      {
-        q: "How long does the application process take?",
-        a: "Typically 3–6 months from initial inquiry to receiving your admission offer, depending on the intake cycle and number of universities you apply to.",
-      },
-      {
-        q: "Do you help with the application essays?",
-        a: "Yes — personal statement and essay review is included in all our packages. We review and provide detailed feedback to help your writing shine.",
-      },
-      {
-        q: "Can I apply if I have a low GPA?",
-        a: "Absolutely. A strong application is more than just grades. We help you present your profile holistically, identify the right universities, and craft a compelling narrative.",
+        a: "Create a free account — it takes about a minute. Tell us your academic profile, pick an access tier, and start searching.",
       },
     ],
   },
   {
-    category: "Pricing & Packages",
+    category: "The Scholarship Database",
+    faqs: [
+      {
+        q: "How are listings verified?",
+        a: "Every scholarship goes through a staged research, verification, and approval process by our team before it's published, so you're not wasting time on stale or fake listings.",
+      },
+      {
+        q: "Can I save and download scholarships?",
+        a: "Yes — you can bookmark any scholarship to a saved list and download the full details for later reference.",
+      },
+      {
+        q: "Will I be notified about deadlines or new matches?",
+        a: "Yes — you'll get notifications for upcoming renewal/expiry, failed payments, and new scholarships matching your profile.",
+      },
+    ],
+  },
+  {
+    category: "Pricing & Access",
     faqs: [
       {
         q: "How much does it cost?",
-        a: "Our packages start from ₦150,000 and go up to ₦500,000 depending on the number of universities, service level, and additional support needed. Book a free consultation for a personalised quote.",
+        a: "Access is sold as Basic, Standard, and Premium tiers over a fixed period (e.g. 1, 3, or 6 months) rather than a one-time fee — pricing is shown on the Scholarships page and at signup.",
       },
       {
-        q: "Is there a free consultation?",
-        a: "Yes! We offer a free 30-minute consultation to understand your goals and explain how we can help, with no obligation.",
+        q: "Can I change tiers or renew later?",
+        a: "Yes — you can upgrade, downgrade, or renew your access anytime from your dashboard.",
       },
       {
-        q: "When do I pay?",
-        a: "Payment is discussed during your consultation. We typically require a deposit to begin and the remainder upon completion of key milestones.",
-      },
-      {
-        q: "How much does the scholarship database cost?",
-        a: "The self-serve scholarship database is a separate, lower-cost option from our full-service packages above — it's sold as Basic, Standard, and Premium access tiers with pricing shown on the Scholarships page and at signup. You pay for a fixed access period (e.g. 1, 3, or 6 months) rather than a one-time package fee, and can renew or switch tiers anytime from your dashboard.",
-      },
-    ],
-  },
-  {
-    category: "Documents Required",
-    faqs: [
-      {
-        q: "What documents will I need?",
-        a: "Common documents include academic transcripts, CV/Resume, Statement of Purpose, Letters of Recommendation, standardised test scores (IELTS/TOEFL/GRE), and a valid passport. We provide a personalised checklist for your specific applications.",
-      },
-      {
-        q: "Do I need an IELTS/TOEFL score?",
-        a: "Most English-speaking countries require proof of English proficiency. However, some universities offer conditional offers or waivers for candidates from English-medium schools. We'll advise you on your specific situation.",
-      },
-    ],
-  },
-  {
-    category: "Scholarships",
-    faqs: [
-      {
-        q: "Do you help with scholarship applications?",
-        a: "Yes — our Scholarship Assistance service is dedicated to this. We identify scholarships you qualify for, advise on strategy, review essays, and help with the full application.",
-      },
-      {
-        q: "What is your scholarship success rate?",
-        a: "65% of our scholarship applicants received some form of funding — from partial awards to full scholarships covering tuition and living costs.",
-      },
-    ],
-  },
-  {
-    category: "Visa",
-    faqs: [
-      {
-        q: "Do you help with student visa applications?",
-        a: "Yes. Our Visa Support service covers documentation preparation, form filling guidance, interview preparation, and financial requirement advice for all major destinations.",
-      },
-      {
-        q: "What is your visa success rate?",
-        a: "We have a very high visa success rate when clients follow our guidance carefully. Visa approval depends on meeting the requirements — we make sure you're fully prepared.",
+        q: "What happens when my subscription expires?",
+        a: "You'll get renewal reminders before expiry. Once expired, your access reverts to whatever free listings are available until you renew.",
       },
     ],
   },
@@ -153,7 +110,7 @@ export default function FAQPage() {
             Frequently Asked <em className="text-crimson-400 not-italic">Questions</em>
           </h1>
           <p className="text-white/60 text-lg max-w-xl mx-auto mb-8">
-            Everything you need to know about our services, process, and pricing.
+            Everything you need to know about the scholarship database and pricing.
           </p>
           {/* Search */}
           <div className="relative max-w-md mx-auto">
@@ -231,14 +188,14 @@ export default function FAQPage() {
           <div className="bg-navy-900 rounded-2xl p-8 text-center">
             <h3 className="font-display text-2xl text-white mb-3">Still have questions?</h3>
             <p className="text-white/60 text-sm mb-6">
-              Our team is happy to help. Book a free consultation or send us a message.
+              Our team is happy to help. Subscribe to get started or send us a message.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
-                href="/book"
+                href="/signup"
                 className="inline-flex items-center justify-center px-6 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors"
               >
-                Book Free Consultation
+                Subscribe Now
               </Link>
               <a
                 href="mailto:info@makeoverarena.com"

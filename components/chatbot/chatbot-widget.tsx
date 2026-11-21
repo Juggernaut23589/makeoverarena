@@ -244,7 +244,7 @@ export function ChatbotWidget() {
             </button>
           </form>
           <p className="text-center text-xs text-navy-400 mt-2">
-            Powered by AI · <a href="/book" className="text-crimson-600 hover:underline">Talk to a human</a>
+            Powered by AI · <a href="mailto:info@makeoverarena.com" className="text-crimson-600 hover:underline">Talk to a human</a>
           </p>
         </div>
       </div>
