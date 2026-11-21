@@ -21,6 +21,18 @@ function logSearch(q: string | null | undefined) {
 
 type GatedScholarship = { required_class_id: string | null };
 
+export interface TierGateResult<T> {
+  items: T[];
+  /** How many matching scholarships exist but are hidden behind a tier the
+   *  caller doesn't have — the upsell signal the whole tier system exists
+   *  to create. Previously this was silently dropped; the caller never
+   *  knew anything was hidden at all. */
+  hiddenCount: number;
+  /** The name of the cheapest tier that would unlock at least one more
+   *  hidden item, or null if nothing is hidden / no upgrade would help. */
+  nextTierName: string | null;
+}
+
 /**
  * Tier gating is independent of, and layered on top of, GPA gating —
  * both must pass. An anonymous or non-subscribed caller is rank 0, so only
@@ -29,9 +41,10 @@ type GatedScholarship = { required_class_id: string | null };
  * filter is simpler and cheap enough to avoid denormalizing a rank column
  * onto every scholarship row.
  */
-async function filterByAccessTier<T extends GatedScholarship>(items: T[]): Promise<T[]> {
-  if (!supabaseAdmin) return items;
-  if (items.every((i) => i.required_class_id === null)) return items;
+async function filterByAccessTier<T extends GatedScholarship>(items: T[]): Promise<TierGateResult<T>> {
+  if (!supabaseAdmin || items.every((i) => i.required_class_id === null)) {
+    return { items, hiddenCount: 0, nextTierName: null };
+  }
 
   let callerRank = 0;
   try {
@@ -57,14 +70,35 @@ async function filterByAccessTier<T extends GatedScholarship>(items: T[]): Promi
     // Anonymous/unauthenticated callers are simply free-tier — no error.
   }
 
-  const { data: classes } = await supabaseAdmin.from("access_classes").select("id, rank");
-  const rankMap = new Map((classes ?? []).map((c: { id: string; rank: number }) => [c.id, c.rank]));
+  const { data: classes } = await supabaseAdmin.from("access_classes").select("id, name, rank").order("rank", { ascending: true });
+  const classRows = classes ?? [];
+  const rankMap = new Map(classRows.map((c: { id: string; rank: number }) => [c.id, c.rank]));
 
-  return items.filter((item) => {
-    if (item.required_class_id === null) return true;
+  const visible: T[] = [];
+  let hiddenCount = 0;
+  let cheapestHiddenRank: number | null = null;
+
+  for (const item of items) {
+    if (item.required_class_id === null) {
+      visible.push(item);
+      continue;
+    }
     const requiredRank = rankMap.get(item.required_class_id);
-    return requiredRank !== undefined && requiredRank <= callerRank;
-  });
+    if (requiredRank !== undefined && requiredRank <= callerRank) {
+      visible.push(item);
+    } else {
+      hiddenCount++;
+      if (requiredRank !== undefined && (cheapestHiddenRank === null || requiredRank < cheapestHiddenRank)) {
+        cheapestHiddenRank = requiredRank;
+      }
+    }
+  }
+
+  const nextTierName = cheapestHiddenRank !== null
+    ? classRows.find((c: { rank: number }) => c.rank === cheapestHiddenRank)?.name ?? null
+    : null;
+
+  return { items: visible, hiddenCount, nextTierName };
 }
 
 export async function GET(request: NextRequest) {
@@ -100,7 +134,8 @@ export async function GET(request: NextRequest) {
     if (institution) query = query.ilike("institution_name", `%${institution}%`);
     if (q) query = query.or(`name.ilike.%${q}%,institution_name.ilike.%${q}%,programme_name.ilike.%${q}%`);
     const { data } = await query;
-    return NextResponse.json({ kind: "scholarships", items: await filterByAccessTier(data ?? []) });
+    const gated = await filterByAccessTier(data ?? []);
+    return NextResponse.json({ kind: "scholarships", items: gated.items, hiddenCount: gated.hiddenCount, nextTierName: gated.nextTierName });
   }
 
   const gpaParam = searchParams.get("gpa");
@@ -113,7 +148,8 @@ export async function GET(request: NextRequest) {
       .select(PUBLIC_COLUMNS)
       .eq("is_active", true)
       .order("created_at", { ascending: false });
-    return NextResponse.json({ kind: "scholarships", items: await filterByAccessTier(data ?? []) });
+    const gated = await filterByAccessTier(data ?? []);
+    return NextResponse.json({ kind: "scholarships", items: gated.items, hiddenCount: gated.hiddenCount, nextTierName: gated.nextTierName });
   }
 
   const gpa = gpaParam ? parseFloat(gpaParam) : null;
@@ -147,5 +183,6 @@ export async function GET(request: NextRequest) {
 
   const { data } = await query;
 
-  return NextResponse.json({ kind: "scholarships", items: await filterByAccessTier(data ?? []) });
+  const gated = await filterByAccessTier(data ?? []);
+  return NextResponse.json({ kind: "scholarships", items: gated.items, hiddenCount: gated.hiddenCount, nextTierName: gated.nextTierName });
 }

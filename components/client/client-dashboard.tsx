@@ -219,6 +219,8 @@ export function ClientDashboard({ profile, applications, payments, consultations
   const fileRef = useRef<HTMLInputElement>(null);
   const [scholarshipKind, setScholarshipKind] = useState<"scholarships" | "low_tuition" | null>(null);
   const [scholarshipMatches, setScholarshipMatches] = useState<ScholarshipMatch[]>([]);
+  const [hiddenScholarshipCount, setHiddenScholarshipCount] = useState(0);
+  const [nextTierName, setNextTierName] = useState<string | null>(null);
   const [loadingScholarships, setLoadingScholarships] = useState(false);
   const [browseAllScholarships, setBrowseAllScholarships] = useState(false);
   const [scholarshipCountry, setScholarshipCountry] = useState("");
@@ -263,9 +265,11 @@ export function ClientDashboard({ profile, applications, payments, consultations
 
     fetch(`/api/scholarships?${params.toString()}`)
       .then((res) => res.json())
-      .then((data: { kind: "scholarships" | "low_tuition"; items: ScholarshipMatch[] }) => {
+      .then((data: { kind: "scholarships" | "low_tuition"; items: ScholarshipMatch[]; hiddenCount?: number; nextTierName?: string | null }) => {
         setScholarshipKind(data.kind);
         setScholarshipMatches(data.items ?? []);
+        setHiddenScholarshipCount(data.hiddenCount ?? 0);
+        setNextTierName(data.nextTierName ?? null);
       })
       .finally(() => setLoadingScholarships(false));
   }, [
@@ -537,6 +541,35 @@ export function ClientDashboard({ profile, applications, payments, consultations
             <h2 className="font-display text-2xl text-navy-900 dark:text-white">
               Welcome back, {profile.full_name.split(" ")[0]}
             </h2>
+
+            {/* Subscription status — surfaced here, not just buried in Plans */}
+            {subscriptionActive && currentAccessClass ? (
+              <div className={cn(
+                "rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap",
+                daysLeft !== null && daysLeft < 7
+                  ? "bg-amber-50 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30"
+                  : "bg-white dark:bg-navy-800 border border-border"
+              )}>
+                <p className="text-sm text-navy-700 dark:text-white/70">
+                  <span className="font-semibold">{currentAccessClass.name}</span> plan active
+                  {daysLeft !== null && (
+                    <span className={daysLeft < 7 ? "text-amber-700 dark:text-amber-400 font-medium" : ""}>
+                      {" "}— expires in {daysLeft} day{daysLeft === 1 ? "" : "s"}
+                    </span>
+                  )}
+                </p>
+                <button onClick={() => setActiveTab("plans")} className="text-xs font-semibold px-3 py-1.5 rounded-full border border-border text-navy-600 dark:text-white/70 hover:bg-navy-50 dark:hover:bg-white/5 shrink-0">
+                  {daysLeft !== null && daysLeft < 7 ? "Renew now →" : "Manage plan →"}
+                </button>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-navy-800 border border-border rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap">
+                <p className="text-sm text-navy-500 dark:text-white/50">No active scholarship-database plan yet.</p>
+                <button onClick={() => setActiveTab("plans")} className="text-xs font-semibold px-3 py-1.5 rounded-full bg-crimson-500 text-white hover:bg-crimson-400 shrink-0">
+                  View plans →
+                </button>
+              </div>
+            )}
 
             {/* Next steps banner — shown until both are done */}
             {(!documentsCompleted || !consultationBooked) && (
@@ -1084,6 +1117,20 @@ export function ClientDashboard({ profile, applications, payments, consultations
         {/* ── SCHOLARSHIPS / LOW TUITION ── */}
         {activeTab === "scholarships" && (
           <div className="space-y-4">
+            {hiddenScholarshipCount > 0 && (
+              <div className="bg-gradient-to-r from-crimson-500 to-crimson-600 rounded-xl p-4 flex items-center justify-between gap-4 flex-wrap text-white">
+                <p className="text-sm font-medium">
+                  🔒 {hiddenScholarshipCount} more scholarship{hiddenScholarshipCount === 1 ? "" : "s"} match your profile
+                  {nextTierName ? <> on <strong>{nextTierName}</strong></> : null} — upgrade to unlock {hiddenScholarshipCount === 1 ? "it" : "them"}.
+                </p>
+                <button
+                  onClick={() => setActiveTab("plans")}
+                  className="text-xs font-semibold px-3 py-1.5 rounded-full bg-white text-crimson-600 hover:bg-white/90 transition-colors shrink-0"
+                >
+                  View plans →
+                </button>
+              </div>
+            )}
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <h2 className="font-display text-2xl text-navy-900 dark:text-white">
                 {scholarshipKind === "low_tuition" ? "Low Tuition Packages" : "Matched Scholarships"}
@@ -1092,13 +1139,15 @@ export function ClientDashboard({ profile, applications, payments, consultations
                 <button
                   onClick={() => setShowSavedOnly((v) => !v)}
                   className={cn(
-                    "text-xs font-medium px-3 py-1.5 rounded-full border transition-colors",
+                    "text-xs font-semibold px-3 py-1.5 rounded-full border-2 transition-colors flex items-center gap-1.5",
                     showSavedOnly
-                      ? "bg-crimson-500 text-white border-crimson-500"
-                      : "border-border text-navy-600 dark:text-white/60 hover:bg-navy-50 dark:hover:bg-white/5"
+                      ? "bg-amber-400 text-navy-900 border-amber-400"
+                      : savedIds.size > 0
+                      ? "border-amber-400 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10"
+                      : "border-border text-navy-500 dark:text-white/50 hover:bg-navy-50 dark:hover:bg-white/5"
                   )}
                 >
-                  {showSavedOnly ? `Saved (${savedIds.size})` : "Show saved only"}
+                  ★ Saved{savedIds.size > 0 ? ` (${savedIds.size})` : ""}
                 </button>
                 {scholarshipKind !== "low_tuition" && (
                   <button

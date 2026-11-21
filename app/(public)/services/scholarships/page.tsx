@@ -3,6 +3,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabaseAdmin } from "@/lib/supabase";
 
+// Revalidate hourly — the plan tiers/prices section is sourced live from
+// the same tables the staff Pricing tab writes to; without this, a price
+// change wouldn't show here until the next deploy, defeating the point of
+// sourcing it live instead of hardcoding it.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: "Scholarship Applications | MakeoverArena",
   description:
@@ -117,8 +123,32 @@ async function getFeaturedScholarships(): Promise<FeaturedScholarship[]> {
   return data ?? [];
 }
 
+interface PlanTier {
+  id: string;
+  name: string;
+  description: string | null;
+  rank: number;
+  cheapestPriceNaira: number | null;
+}
+
+/** Pulled live from the same tables the staff Pricing tab and client Plans
+ *  tab read — so this marketing section can never drift out of sync with
+ *  what's actually configured. Publicly readable under existing RLS. */
+async function getPlanTiers(): Promise<PlanTier[]> {
+  if (!supabaseAdmin) return [];
+  const [{ data: classes }, { data: prices }] = await Promise.all([
+    supabaseAdmin.from("access_classes").select("id, name, description, rank").eq("is_active", true).order("rank", { ascending: true }),
+    supabaseAdmin.from("access_class_prices").select("class_id, price_naira"),
+  ]);
+  return (classes ?? []).map((c) => {
+    const classPrices = (prices ?? []).filter((p) => p.class_id === c.id).map((p) => p.price_naira);
+    return { ...c, cheapestPriceNaira: classPrices.length > 0 ? Math.min(...classPrices) : null };
+  });
+}
+
 export default async function ScholarshipsPage() {
   const featured = await getFeaturedScholarships();
+  const planTiers = await getPlanTiers();
   return (
     <div className="pt-20">
       {/* Hero */}
@@ -250,6 +280,50 @@ export default async function ScholarshipsPage() {
                 </div>
               )}
 
+              {/* Scholarship database access tiers — the self-serve product,
+                  distinct from the full-service consultancy package below.
+                  Sourced live so this can never say something different
+                  from what's actually configured in the Pricing tab. */}
+              {planTiers.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="h-px w-6 bg-crimson-500" />
+                    <span className="text-crimson-600 text-xs font-semibold tracking-widest uppercase">
+                      Self-Serve Database
+                    </span>
+                  </div>
+                  <h2 className="font-display text-3xl text-navy-900 mb-2">
+                    Search it yourself — subscribe to the scholarship database
+                  </h2>
+                  <p className="text-navy-600 text-sm mb-6 max-w-2xl">
+                    Prefer to browse and apply on your own? Create an account and
+                    subscribe to one of our access tiers for full database search,
+                    filters, and saved opportunities.
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {planTiers.map((tier) => (
+                      <div key={tier.id} className="bg-white rounded-xl p-5 shadow-card border border-border">
+                        <h3 className="font-display text-lg text-navy-900 mb-1">{tier.name}</h3>
+                        {tier.description && (
+                          <p className="text-navy-500 text-xs leading-relaxed mb-3">{tier.description}</p>
+                        )}
+                        <p className="text-crimson-600 font-semibold text-sm">
+                          {tier.cheapestPriceNaira !== null
+                            ? `From ₦${tier.cheapestPriceNaira.toLocaleString()}`
+                            : "Pricing coming soon"}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <Link
+                    href="/signup"
+                    className="inline-block mt-5 text-crimson-600 hover:text-crimson-700 text-sm font-semibold"
+                  >
+                    Create an account to subscribe →
+                  </Link>
+                </div>
+              )}
+
               {/* What's included */}
               <div>
                 <div className="flex items-center gap-3 mb-5">
@@ -331,14 +405,22 @@ export default async function ScholarshipsPage() {
                   Apply for funding
                 </h3>
                 <p className="text-navy-600 text-sm mb-5">
-                  Tell us about your profile and we&apos;ll identify every scholarship
-                  you&apos;re eligible for — at no upfront cost.
+                  Tell us about your profile for a free initial scholarship
+                  match — our full-service application support and the
+                  self-serve database are both paid, with pricing shown
+                  before you commit to either.
                 </p>
                 <Link
                   href="/apply"
                   className="block w-full text-center px-5 py-3 bg-crimson-500 text-white rounded-xl font-semibold text-sm hover:bg-crimson-400 transition-colors mb-3"
                 >
                   Start Application →
+                </Link>
+                <Link
+                  href="/signup"
+                  className="block w-full text-center px-5 py-3 border border-navy-200 text-navy-700 rounded-xl text-sm hover:bg-navy-50 transition-colors mb-3"
+                >
+                  Subscribe to the Database
                 </Link>
                 <Link
                   href="/book"
@@ -349,28 +431,10 @@ export default async function ScholarshipsPage() {
 
                 <div className="mt-6 pt-6 border-t border-border">
                   <p className="text-xs text-navy-500 leading-relaxed">
-                    Our scholarship service is often bundled with admissions
-                    packages at no extra cost. Book a consultation to discuss
-                    your options.
+                    Our full-service scholarship support can be bundled with
+                    an admissions package — book a consultation to discuss
+                    pricing for your situation.
                   </p>
-                </div>
-              </div>
-
-              <div className="bg-navy-900 rounded-2xl p-6 text-white">
-                <div className="text-crimson-400 text-3xl mb-2">🏅</div>
-                <div className="text-white font-display text-xl mb-2">
-                  Success story
-                </div>
-                <blockquote className="text-white/60 text-sm leading-relaxed italic mb-4">
-                  &ldquo;MakeoverArena helped me win the Chevening Scholarship. I had
-                  applied twice before on my own and failed. They knew exactly
-                  what the selectors were looking for.&rdquo;
-                </blockquote>
-                <div className="text-white/80 text-sm font-medium">
-                  Chioma A.
-                </div>
-                <div className="text-white/40 text-xs">
-                  Chevening Scholar, LSE — MSc Development Studies
                 </div>
               </div>
             </div>

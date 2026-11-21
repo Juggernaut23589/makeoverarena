@@ -57,6 +57,10 @@ const faqCategories = [
         q: "When do I pay?",
         a: "Payment is discussed during your consultation. We typically require a deposit to begin and the remainder upon completion of key milestones.",
       },
+      {
+        q: "How much does the scholarship database cost?",
+        a: "The self-serve scholarship database is a separate, lower-cost option from our full-service packages above — it's sold as Basic, Standard, and Premium access tiers with pricing shown on the Scholarships page and at signup. You pay for a fixed access period (e.g. 1, 3, or 6 months) rather than a one-time package fee, and can renew or switch tiers anytime from your dashboard.",
+      },
     ],
   },
   {

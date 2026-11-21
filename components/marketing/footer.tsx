@@ -52,7 +52,7 @@ export function Footer() {
                 <em className="text-crimson-400 not-italic">journey?</em>
               </h2>
               <p className="text-white/60 text-base max-w-md">
-                Join 2,000+ students who have achieved their dream of studying abroad with our expert guidance.
+                Join 2,400+ students who have achieved their dream of studying abroad with our expert guidance.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 shrink-0">

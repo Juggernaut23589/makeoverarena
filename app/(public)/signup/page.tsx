@@ -112,7 +112,7 @@ function SignupForm() {
             ) : (
               <>
                 <h1 className="font-display text-2xl text-navy-900">Create your account</h1>
-                <p className="text-navy-500 text-sm mt-1">Track your study abroad journey in one place</p>
+                <p className="text-navy-500 text-sm mt-1">Track your application, and subscribe to search our scholarship database</p>
               </>
             )}
           </div>
