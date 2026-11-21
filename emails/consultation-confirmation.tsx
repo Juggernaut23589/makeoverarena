@@ -49,7 +49,7 @@ export default function ConsultationConfirmation({
               </Text>
               <Text style={{ color: "#6B7280", fontSize: "14px", lineHeight: "1.6", marginTop: "16px" }}>
                 To rebook, please visit{" "}
-                <a href={`${APP_URL}/book`} style={footerLink}>hub.makeoverarena.com/book</a>
+                <a href={`${APP_URL}/book`} style={footerLink}>www.makeoverarena.com/book</a>
                 {" "}or reply to this email and we will find a new time for you.
               </Text>
             </Section>

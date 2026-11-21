@@ -86,7 +86,7 @@ export default function InquiryConfirmation({
               {
                 step: "2",
                 title: "Consultation Scheduling",
-                desc: "We'll reach out to schedule your free 30-minute strategy call. You can also book directly at hub.makeoverarena.com/book.",
+                desc: "We'll reach out to schedule your free 30-minute strategy call. You can also book directly at www.makeoverarena.com/book.",
               },
               {
                 step: "3",
